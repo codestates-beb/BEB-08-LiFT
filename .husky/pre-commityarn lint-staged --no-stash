@@ -2,5 +2,3 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 undefined
-
-yarn lint-staged --no-stash
