@@ -1,11 +1,17 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import styles from '../styles/Home.module.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const handleClick = () => {
+    fetch('/api/add-dnft?name=DNFT')
+      .then((res) => res.json())
+      .then((data) => alert(data.message))
+  }
+
   return (
     <>
       <Head>
@@ -38,6 +44,8 @@ export default function Home() {
             </a>
           </div>
         </div>
+
+        <button onClick={handleClick}>Add DNFT</button>
 
         <div className={styles.center}>
           <Image
