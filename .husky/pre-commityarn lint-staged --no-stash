@@ -3,4 +3,4 @@
 
 undefined
 
-yarn lint-staged
+yarn lint-staged --no-stash
