@@ -2,12 +2,30 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
+import { useEffect, useRef, useState } from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const [products, setProducts] = useState<
+    { id: string; properties: { id: string }[] }[]
+  >([])
+  // 주어진 데이터에서 어떤 데이터들을 표시할 것인가?
+
+  useEffect(() => {
+    fetch('/api/get-dnfts')
+      .then((res) => res.json())
+      .then((data) => setProducts(data.dnfts))
+  }, [])
+
+  const inputRef = useRef<HTMLInputElement>(null)
+
   const handleClick = () => {
-    fetch('/api/add-item?name=DNFT1')
+    if (inputRef.current == null || inputRef.current.value === '') {
+      alert('name을 넣어주세요.')
+      return
+    }
+    fetch(`/api/add-dnft?name=${inputRef.current.value}`)
       .then((res) => res.json())
       .then((data) => alert(data.message))
   }
@@ -45,7 +63,36 @@ export default function Home() {
           </div>
         </div>
 
+        <input ref={inputRef} type="text" placeholder="name" />
         <button onClick={handleClick}>Add DNFT</button>
+
+        <div>
+          <p>DNFT List</p>
+          {products &&
+            products.map((dnft) => (
+              <div key={dnft.id}>
+                {JSON.stringify(dnft)}
+                {dnft.properties &&
+                  Object.entries(dnft.properties).map(([key, value]) => (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        fetch(
+                          `/api/get-detail?pageId=${dnft.id}&propertyId=${value.id}`
+                        )
+                          .then((res) => res.json())
+                          .then((data) => alert(JSON.stringify(data.detail)))
+                      }}
+                    >
+                      {key}
+                    </button>
+                  ))}
+                <br />
+                <br />
+              </div>
+            ))}
+          {/* div로 return */}
+        </div>
 
         <div className={styles.center}>
           <Image
@@ -65,65 +112,6 @@ export default function Home() {
               priority
             />
           </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
         </div>
       </main>
     </>
