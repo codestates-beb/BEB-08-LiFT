@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 	"sync"
@@ -40,6 +41,16 @@ var (
 //----------
 // Handlers
 //----------
+
+func (ipfs *IpfsStorage) Upload(ctx context.Context, data map[string]interface{}, contractAddress string, signerAddress string) (string, error) {
+	baseUriWithUris, err := ipfs.UploadBatch(ctx, []map[string]interface{}{data}, 0, contractAddress, signerAddress)
+	if err != nil {
+		return "", err
+	}
+
+	baseUri := baseUriWithUris.baseUri + "0"
+	return baseUri, nil
+}
 
 func createNFT(c echo.Context) error {
 	lock.Lock()
