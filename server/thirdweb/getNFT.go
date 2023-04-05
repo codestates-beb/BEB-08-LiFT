@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/thirdweb-dev/go-sdk/v2/thirdweb"
 )
@@ -13,13 +14,14 @@ type NFT struct {
 }
 
 func getNFT() {
+
 	sdk, err := thirdweb.NewThirdwebSDK("mumbai", nil)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("sdk", sdk)
 
-	address := "0x7684992428a8E5600C0510c48ba871311067d74c"
+	address := os.Args[1] //0x7684992428a8E5600C0510c48ba871311067d74c
 	nft, err := sdk.GetNFTCollection(address)
 	fmt.Println("nft", nft)
 	if err != nil {

@@ -8,6 +8,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	//"github.com/thirdweb-dev/go-sdk/v2/thirdweb"
+	thirdweb "github.com/thirdwebio/go-thirdweb-sdk"
 )
 
 type IpfsStorage struct {
@@ -42,19 +45,19 @@ var (
 // Handlers
 //----------
 
-func (ipfs *IpfsStorage) Upload(ctx context.Context, data map[string]interface{}, contractAddress string, signerAddress string) (string, error) {
-	baseUriWithUris, err := ipfs.UploadBatch(ctx, []map[string]interface{}{data}, 0, contractAddress, signerAddress)
-	if err != nil {
-		return "", err
-	}
-
-	baseUri := baseUriWithUris.baseUri + "0"
-	return baseUri, nil
-}
-
 func createNFT(c echo.Context) error {
 	lock.Lock()
 	defer lock.Unlock()
+
+	metadata := map[string]interface{}{
+		"name":        "yong",
+		"image":       "",
+		"description": "",
+	}
+	uri, _ := thirdweb.sdk.Storage.Upload(context.Background(), metadata, "", "")
+
+	
+
 	a := &nft{
 		Name:        name,
 		Description: description,
@@ -115,6 +118,7 @@ func getAllUsers(c echo.Context) error {
 
 func main() {
 	e := echo.New()
+	sdk, err := thirdweb.NewThirdwebSDK("mumbai", nil)
 
 	// Middleware
 	e.Use(middleware.Logger())
