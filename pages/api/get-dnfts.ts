@@ -1,4 +1,4 @@
-// db에 데이터 입력
+// db에 데이터 조회
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { Client } from '@notionhq/client'
 
