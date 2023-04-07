@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract LiFTs is ERC721URIStorage, Ownable {
+    event MintNFT(address NFTOwner, uint256 tokenId); 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
@@ -25,14 +26,10 @@ contract LiFTs is ERC721URIStorage, Ownable {
         uint256 newItemId = _tokenIds.current();
         _mint(recipient, newItemId);
         _setTokenURI(newItemId, tokenURI);
- 
-        return newItemId;
-    }
 
-    function testapprove(uint256 _tokenId) public view returns(address, address) {
-        address a = ownerOf(_tokenId); 
-        address b = _msgSender(); 
-        return (a, b);
+        emit MintNFT(recipient, newItemId); 
+        return newItemId;
+
     }
 }
 
