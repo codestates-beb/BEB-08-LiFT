@@ -13,7 +13,6 @@ import (
 	"strings"
 	"sync"
 
-	shell "github.com/ipfs/go-ipfs-api"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -85,27 +84,8 @@ func MultipleCreateNFT(c echo.Context) error {
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to create json file"})
 		}
-		// upload the file to IPFS
-		sh := shell.NewShell("localhost:5001")
-		fmt.Println("sh", sh)
-		// cid, err := sh.AddDir("nft-json/" + filename)
-		// fmt.Println("cid", cid)
-		// if err != nil {
-		// 	return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to upload JSON file to IPFS"})
-		// }
-
-		//fmt.Printf("Uploaded NFT file to IPFS with CID: %s\n", cid)
 
 	}
-	// metadata := map[string]interface{}{
-	// 	"name":        "test",
-	// 	"image":       "test",
-	// 	"description": "test",
-	// }
-	// sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
-	// uri, _ := sdk.Storage.Upload(context.Background(), metadata, "", "")
-	fmt.Println("sdk", sdk)
-	fmt.Println("uri", uri)
 
 	return c.JSON(http.StatusOK, map[string]string{"message": "NFTs saved to database"})
 
