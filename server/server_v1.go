@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -20,12 +19,6 @@ import (
 )
 
 type (
-	mnft struct {
-		mnftsId int
-	}
-)
-
-type (
 	nft struct {
 		Name        string `json:"name"`
 		Description string `json:"description"`
@@ -34,62 +27,11 @@ type (
 	}
 )
 
-// 다음 코드에서는 배열의 JSON 객체를 나타내는 NFT 구조체를 정의한다
-type NFT struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	TokenURI    string `json:"tokenuri"`
-}
-
-// 배열과 함께 JSON 페이로드를 나타내는 DataRequest 구조체를 정의합니다.
-type DataRequest struct {
-	Array []NFT `json:"array"`
-}
-
 var (
-	mnfts = map[int]*mnft{}
-	nfts  = map[int]*nft{}
-	seq   = 1
-	lock  = sync.Mutex{}
+	nfts = map[int]*nft{}
+	seq  = 1
+	lock = sync.Mutex{}
 )
-
-func MultipleCreateNFT(c echo.Context) error {
-
-	//mnfts 경로에 대한 핸들러 함수에서는 먼저 json.NewDecoder().Decode()를 사용하여 JSON 페이로드를 DataRequest 구조체로 구문 분석합니다.
-	var dataRequest DataRequest
-	err := json.NewDecoder(c.Request().Body).Decode(&dataRequest)
-
-	fmt.Println("dataRequest", dataRequest)
-	err = os.MkdirAll("nft-json", 0755)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"Error: ": "failed to create folder "})
-	}
-
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request payload "})
-	}
-	//NFT 객체 배열을 반복하고 각 객체를 순회
-	// iterate over the array of NFT objects and create a JSON file for each object
-	for i, nft := range dataRequest.Array {
-
-		// create the filename for the JSON file
-		filename := fmt.Sprintf("nft-%d.json", i)
-
-		//marshal the nft object to json bytes
-		jsonBytes, err := json.Marshal(nft)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to create json file"})
-		}
-		err = ioutil.WriteFile("nft-json/"+filename, jsonBytes, 0644)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to create json file"})
-		}
-
-	}
-
-	return c.JSON(http.StatusOK, map[string]string{"message": "NFTs saved to database"})
-
-}
 
 func createNFT(c echo.Context) error {
 	fmt.Println("c", c)
@@ -203,7 +145,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Routes
-	e.POST("/mnfts", MultipleCreateNFT)
+
 	e.POST("/nft", createNFT)
 	e.GET("/nfts", getAllNFTS)
 	e.GET("/nfts/:id", getNFT)
