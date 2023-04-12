@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -38,7 +37,7 @@ type (
 type NFT struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	TokenURI    string `json:"tokenuri"`
+	Image       string `json:"image"`
 }
 
 // 배열과 함께 JSON 페이로드를 나타내는 DataRequest 구조체를 정의합니다.
@@ -54,40 +53,24 @@ var (
 )
 
 func MultipleCreateNFT(c echo.Context) error {
+	lock.Lock()
+	defer lock.Unlock()
 
-	//mnfts 경로에 대한 핸들러 함수에서는 먼저 json.NewDecoder().Decode()를 사용하여 JSON 페이로드를 DataRequest 구조체로 구문 분석합니다.
-	var dataRequest DataRequest
-	err := json.NewDecoder(c.Request().Body).Decode(&dataRequest)
+	var data map[string]NFT
 
-	fmt.Println("dataRequest", dataRequest)
-	err = os.MkdirAll("nft-json", 0755)
+	if err := c.Bind(&data); err != nil {
+		return err
+	}
+
+	response, err := json.Marshal(data)
+	stringResponse := string(response)
+	fmt.Println("stringResponse", stringResponse)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"Error: ": "failed to create folder "})
+		return err
 	}
 
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request payload "})
-	}
-	//NFT 객체 배열을 반복하고 각 객체를 순회
-	// iterate over the array of NFT objects and create a JSON file for each object
-	for i, nft := range dataRequest.Array {
-
-		// create the filename for the JSON file
-		filename := fmt.Sprintf("nft-%d.json", i)
-
-		//marshal the nft object to json bytes
-		jsonBytes, err := json.Marshal(nft)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to create json file"})
-		}
-		err = ioutil.WriteFile("nft-json/"+filename, jsonBytes, 0644)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to create json file"})
-		}
-
-	}
-
-	return c.JSON(http.StatusOK, map[string]string{"message": "NFTs saved to database"})
+	fmt.Println("response", response)
+	return c.JSONBlob(http.StatusOK, response)
 
 }
 
