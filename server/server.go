@@ -63,13 +63,42 @@ func MultipleCreateNFT(c echo.Context) error {
 	}
 
 	response, err := json.Marshal(data)
-	stringResponse := string(response)
-	fmt.Println("stringResponse", stringResponse)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println("response", response)
+	if err := json.Unmarshal(response, &data); err != nil {
+		return err
+	}
+	fmt.Println("len(data)", len(data))
+	metadataSlice := make([]string, len(data))
+	for _, v := range data {
+		fmt.Println("name:", v.Name)
+		fmt.Println("description:", v.Description)
+		fmt.Println("image:", v.Image)
+		metadata := map[string]interface{}{
+			"name":        v.Name,
+			"description": v.Description,
+			"image":       v.Image,
+		}
+		fmt.Println("metadata", metadata)
+		sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
+		uri, _ := sdk.Storage.Upload(context.Background(), metadata, "", "")
+		// metadataArr = insert(metadataArr, uri, 1)
+		fmt.Println("sdk", sdk)
+		fmt.Println("uri", uri)
+		// fmt.Println("metadataArr", metadataArr)
+
+		removeUri := strings.Replace(uri, "ipfs://", "", 1)
+		fmt.Println("removeUri", removeUri)
+		newMetaDataUri := "https://gateway.ipfscdn.io/ipfs/" + removeUri
+		fmt.Println("typeCheck", reflect.TypeOf(newMetaDataUri))
+		fmt.Println("newMetaDataUri", newMetaDataUri)
+		metadataSlice = append(metadataSlice, newMetaDataUri)
+
+	}
+	fmt.Println("metadataSlice", metadataSlice)
+
 	return c.JSONBlob(http.StatusOK, response)
 
 }
@@ -172,6 +201,10 @@ func getAllNFTS(c echo.Context) error {
 	return c.JSON(http.StatusOK, nfts)
 }
 
+func getTest(c echo.Context) error {
+	return c.String(http.StatusOK, "Hello, World!")
+}
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -192,7 +225,9 @@ func main() {
 	e.GET("/nfts/:id", getNFT)
 	e.PUT("/nfts/:id", updateNFT)
 	e.DELETE("/nfts/:id", deleteNFT)
+	e.GET("/", getTest)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
+	//e.Logger.Fatal(e.Start("152.69.231.140:1323"))
 }
