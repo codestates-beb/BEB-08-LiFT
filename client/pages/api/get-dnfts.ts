@@ -1,29 +1,59 @@
 // db에 데이터 조회
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { Client } from '@notionhq/client'
+import { PrismaClient } from '@prisma/client'
+import { getOrderBy } from '@/utils/getorder'
 
-const notion = new Client({
-  auth: 'secret_KVcAo09Bln9wipOU2jCDxOWCbdr7Yuth0FrZqFHqOaQ',
-  // 내부 통합 토큰 secreat 값
-})
+const prisma = new PrismaClient()
 
-const databaseId = '1a83014b630148dcae71b4a31c5a48a9'
+async function getDNFTs({
+  skip,
+  take,
+  category,
+  orderBy,
+  contains,
+}: {
+  skip: number
+  take: number
+  category: number
+  orderBy: string
+  contains: string
+}) {
+  const containCondition =
+    contains && contains != ''
+      ? {
+          name: { contains: contains },
+        }
+      : undefined
 
-async function getDNFTs() {
+  const where =
+    category && category != -1
+      ? {
+          category_id: category,
+          ...containCondition,
+        }
+      : containCondition
+      ? containCondition
+      : undefined
+
+  const orderByCondition = getOrderBy(orderBy)
+
+  console.log(where)
+  // api 조회
+
   try {
-    const response = await notion.databases.query({
-      database_id: databaseId,
-      sorts: [
-        {
-          property: 'price',
-          direction: 'ascending',
-        },
-      ],
+    const response = await prisma.dnfts.findMany({
+      skip: skip,
+      take: take,
+      ...orderByCondition,
+      where: where, // {}: 객체 내용물 : ...
+      // orderBy: {
+      //   price: 'asc', // 낮은 가격 순서대로
+      // },
     })
     console.log(response)
     return response
   } catch (error) {
-    console.error(JSON.stringify(error))
+    console.error(error)
   }
 }
 
@@ -36,9 +66,24 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  const { skip, take, category, orderBy, contains } = req.query
+
+  if (skip == null || take == null) {
+    res.status(400).json({ message: 'no skip or take' })
+  }
+
+  // TODO: 보안상 다른 문자가 오면 에러를 발생시켜야 한다.
   try {
-    const response = await getDNFTs()
-    res.status(200).json({ dnfts: response?.results, message: 'Success' })
+    const dnfts = await getDNFTs({
+      // 객체로 만들어서 순서와 유무의 상관관계를 없앤다.
+      skip: Number(skip),
+      take: Number(take),
+      category: Number(category),
+      orderBy: String(orderBy),
+      contains: contains ? String(contains) : '', // 이렇게 해줌으로써 undefined를 검색하지 않도록 한다.
+    })
+
+    res.status(200).json({ dnfts: dnfts, message: 'Success' })
   } catch (error) {
     res.status(400).json({ message: 'Failed' })
   }
