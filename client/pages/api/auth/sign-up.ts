@@ -2,11 +2,11 @@
 // session에 정보가 담겨 있는 만큼 session을 가져와서 적용
 //!  jwtDecode가 필요한지는 확인 필요
 
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient } from '@prisma/client'
-import jwtDecode from 'jwt-decode'
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { PrismaClient } from '@prisma/client';
+import jwtDecode from 'jwt-decode';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function signUp(address: string) {
   // const decoded: {
@@ -24,31 +24,32 @@ async function signUp(address: string) {
       },
       update: {},
       create: {
+        id: address,
         address: address,
       },
-    })
+    });
 
-    console.log(response)
-    return response
+    console.log(response);
+    return response;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
 type Data = {
-  dnfts?: any
-  message: string
-}
+  dnfts?: any;
+  message: string;
+};
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { address } = req.query
+  const { address } = req.query;
   try {
-    const dnfts = await signUp(String(address))
-    res.status(200).json({ dnfts: dnfts, message: 'Success' })
+    const dnfts = await signUp(String(address));
+    res.status(200).json({ dnfts: dnfts, message: 'Success' });
   } catch (error) {
-    res.status(400).json({ message: 'Failed' })
+    res.status(400).json({ message: 'Failed' });
   }
 }

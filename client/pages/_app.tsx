@@ -1,9 +1,8 @@
 import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-// import { GoogleOAuthProvider } from '@react-oauth/google' // google
-// import { CLIENT_ID } from '@/constants/clinets'
 
+import { ThirdwebProvider } from '@thirdweb-dev/react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Session } from 'next-auth';
@@ -40,9 +39,10 @@ export default function App({
       queries: { staleTime: Infinity },
     },
   });
-  // session => pageProps.session
-  // + refetchInterval={0}
+  const activeChain = 'ethereum';
+
   return (
+    // <ThirdwebProvider activeChain={activeChain}>
     <WagmiConfig client={client}>
       <SessionProvider session={session} refetchInterval={0}>
         <QueryClientProvider client={queryClient}>
@@ -54,5 +54,6 @@ export default function App({
         </QueryClientProvider>
       </SessionProvider>
     </WagmiConfig>
+    // </ThirdwebProvider>
   );
 }

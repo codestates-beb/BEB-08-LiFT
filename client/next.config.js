@@ -7,7 +7,6 @@ const nextConfig = {
   images: {
     domains: [
       'picsum.photos',
-      'lh3.googleusercontent.com',
       'gateway.ipfscdn.io', // thirdweb의 ipfs 사진에 대한 도메인 수락
     ],
   },
@@ -16,6 +15,6 @@ const nextConfig = {
   // siteUrl: process.env.SITE_URL || 'https://example.com',
   // generateRobotsTxt: true, // (optional)
   // // ...other options
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

@@ -1,7 +1,7 @@
-import NextAuth from "next-auth";
-import { MoralisNextAuthProvider } from "@moralisweb3/next";
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import { MoralisNextAuthProvider } from '@moralisweb3/next';
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [MoralisNextAuthProvider()],
   // adding user info to the user session object
   callbacks: {
@@ -13,7 +13,9 @@ export default NextAuth({
     },
     async session({ session, token }) {
       (session as { user: unknown }).user = token.user;
-      return session;
+      return session.user;
     },
   },
-});
+};
+
+export default NextAuth(authOptions);

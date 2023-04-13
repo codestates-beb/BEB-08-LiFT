@@ -1,10 +1,10 @@
 // db에 데이터 조회
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { Cart, PrismaClient } from '@prisma/client'
-import { getServerSession } from 'next-auth'
-import { authOptions } from './auth/[...nextauth]'
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { Cart, PrismaClient } from '@prisma/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from './auth/[...nextauth]';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function addCart(userId: string, item: Omit<Cart, 'id' | 'userId'>) {
   // omit : db가 업데이트하면서 id를 생성한다.
@@ -14,37 +14,37 @@ async function addCart(userId: string, item: Omit<Cart, 'id' | 'userId'>) {
         userId,
         ...item,
       },
-    })
+    });
 
-    console.log(response)
+    console.log(response);
 
-    return response
+    return response;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
 type Data = {
-  dnfts?: any
-  message: string
-}
+  dnfts?: any;
+  message: string;
+};
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const session = await getServerSession(req, res, authOptions)
-  const { item } = JSON.parse(req.body)
+  const session = await getServerSession(req, res, authOptions);
+  const { item } = JSON.parse(req.body);
 
   if (session == null) {
-    res.status(200).json({ dnfts: [], message: 'no Session' })
-    return
+    res.status(200).json({ dnfts: [], message: 'no Session' });
+    return;
   }
 
   try {
-    const wishlist = await addCart(String(session), item)
-    res.status(200).json({ dnfts: wishlist, message: 'Success' })
+    const wishlist = await addCart(String(session.address), item);
+    res.status(200).json({ dnfts: wishlist, message: 'Success' });
   } catch (error) {
-    res.status(400).json({ message: 'Failed' })
+    res.status(400).json({ message: 'Failed' });
   }
 }
