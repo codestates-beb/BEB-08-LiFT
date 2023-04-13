@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -38,7 +37,7 @@ type (
 type NFT struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	TokenURI    string `json:"tokenuri"`
+	Image       string `json:"image"`
 }
 
 // 배열과 함께 JSON 페이로드를 나타내는 DataRequest 구조체를 정의합니다.
@@ -54,40 +53,53 @@ var (
 )
 
 func MultipleCreateNFT(c echo.Context) error {
+	lock.Lock()
+	defer lock.Unlock()
 
-	//mnfts 경로에 대한 핸들러 함수에서는 먼저 json.NewDecoder().Decode()를 사용하여 JSON 페이로드를 DataRequest 구조체로 구문 분석합니다.
-	var dataRequest DataRequest
-	err := json.NewDecoder(c.Request().Body).Decode(&dataRequest)
+	var data map[string]NFT
 
-	fmt.Println("dataRequest", dataRequest)
-	err = os.MkdirAll("nft-json", 0755)
+	if err := c.Bind(&data); err != nil {
+		return err
+	}
+
+	response, err := json.Marshal(data)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"Error: ": "failed to create folder "})
+		return err
 	}
 
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid request payload "})
+	if err := json.Unmarshal(response, &data); err != nil {
+		return err
 	}
-	//NFT 객체 배열을 반복하고 각 객체를 순회
-	// iterate over the array of NFT objects and create a JSON file for each object
-	for i, nft := range dataRequest.Array {
-
-		// create the filename for the JSON file
-		filename := fmt.Sprintf("nft-%d.json", i)
-
-		//marshal the nft object to json bytes
-		jsonBytes, err := json.Marshal(nft)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to create json file"})
+	fmt.Println("len(data)", len(data))
+	metadataSlice := make([]string, len(data))
+	for _, v := range data {
+		fmt.Println("name:", v.Name)
+		fmt.Println("description:", v.Description)
+		fmt.Println("image:", v.Image)
+		metadata := map[string]interface{}{
+			"name":        v.Name,
+			"description": v.Description,
+			"image":       v.Image,
 		}
-		err = ioutil.WriteFile("nft-json/"+filename, jsonBytes, 0644)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to create json file"})
-		}
+		fmt.Println("metadata", metadata)
+		sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
+		uri, _ := sdk.Storage.Upload(context.Background(), metadata, "", "")
+		// metadataArr = insert(metadataArr, uri, 1)
+		fmt.Println("sdk", sdk)
+		fmt.Println("uri", uri)
+		// fmt.Println("metadataArr", metadataArr)
+
+		removeUri := strings.Replace(uri, "ipfs://", "", 1)
+		fmt.Println("removeUri", removeUri)
+		newMetaDataUri := "https://gateway.ipfscdn.io/ipfs/" + removeUri
+		fmt.Println("typeCheck", reflect.TypeOf(newMetaDataUri))
+		fmt.Println("newMetaDataUri", newMetaDataUri)
+		metadataSlice = append(metadataSlice, newMetaDataUri)
 
 	}
+	fmt.Println("metadataSlice", metadataSlice)
 
-	return c.JSON(http.StatusOK, map[string]string{"message": "NFTs saved to database"})
+	return c.JSONBlob(http.StatusOK, response)
 
 }
 
@@ -189,6 +201,10 @@ func getAllNFTS(c echo.Context) error {
 	return c.JSON(http.StatusOK, nfts)
 }
 
+func getTest(c echo.Context) error {
+	return c.String(http.StatusOK, "Hello, World!")
+}
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -209,7 +225,9 @@ func main() {
 	e.GET("/nfts/:id", getNFT)
 	e.PUT("/nfts/:id", updateNFT)
 	e.DELETE("/nfts/:id", deleteNFT)
+	e.GET("/", getTest)
 
 	// Start server
 	e.Logger.Fatal(e.Start(":1323"))
+	//e.Logger.Fatal(e.Start("152.69.231.140:1323"))
 }

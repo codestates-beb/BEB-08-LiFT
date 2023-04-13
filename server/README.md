@@ -31,3 +31,12 @@ go run getNFT.go 0x7684992428a8E5600C0510c48ba871311067d74c
 - 많은 부분에서 촘촘하게 테스트를 하면 기능검증에 유리하다.
 
 ## 벤치마크 테스트
+
+- 코드별로 벤치마크 테스트 필요
+
+## .env 구성
+
+- ADRESS=""
+- NETWORK="mumbai"
+- PRIVATEKEY=""
+- NFT_FOLDER=""

@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-04-11T02:36:39.963Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" etag="s75Yiv_0BFJvgi7vbPzs" version="21.1.5" type="device" pages="3">
+<mxfile host="app.diagrams.net" modified="2023-04-11T08:47:12.354Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" etag="eMzadhnUKkkLUaK0OgA-" version="21.1.5" type="device" pages="4">
   <diagram name="FlowChart" id="xWKXRxRdfDGj4UYGWa_t">
     <mxGraphModel dx="3038" dy="1948" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -679,8 +679,8 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="6iPURGmFG6XIA7-5Rq81" name="페이지-3">
-    <mxGraphModel dx="3903" dy="1576" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <diagram id="6iPURGmFG6XIA7-5Rq81" name="Dynamic NFT Minting">
+    <mxGraphModel dx="4287" dy="2942" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -756,17 +756,20 @@
         <mxCell id="0K6K56dYVLz_8w4jnRnm-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-22" target="0K6K56dYVLz_8w4jnRnm-28">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="0K6K56dYVLz_8w4jnRnm-22" value="&lt;b&gt;&lt;font style=&quot;font-size: 23px;&quot;&gt;IPFS 폴더 업로드&lt;br&gt;BaseURL/sun.json&lt;br&gt;BaseURL/cloud.json&lt;br&gt;&lt;/font&gt;&lt;/b&gt;&lt;b style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;BaseURL/snow.json&lt;/font&gt;&lt;/b&gt;&lt;b style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;&amp;nbsp;&lt;br&gt;&lt;/font&gt;&lt;/b&gt;&lt;b style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;BaseURL/snow.json&lt;/font&gt;&lt;/b&gt;&lt;b style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="910" y="180" width="300" height="340" as="geometry" />
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-22" value="&lt;b style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;백엔드 API&amp;nbsp;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/b&gt;&lt;b&gt;&lt;font style=&quot;font-size: 23px;&quot;&gt;&lt;br&gt;IPFS 폴더 업로드&lt;br&gt;BaseURL/sun.json&lt;br&gt;BaseURL/cloud.json&lt;br&gt;&lt;/font&gt;&lt;/b&gt;&lt;b style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;BaseURL/snow.json&lt;/font&gt;&lt;/b&gt;&lt;b style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;&amp;nbsp;&lt;br&gt;&lt;/font&gt;&lt;/b&gt;&lt;b style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;BaseURL/snow.json&lt;/font&gt;&lt;/b&gt;&lt;b style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="177.5" width="300" height="340" as="geometry" />
         </mxCell>
         <mxCell id="0K6K56dYVLz_8w4jnRnm-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-23" target="0K6K56dYVLz_8w4jnRnm-22">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="0K6K56dYVLz_8w4jnRnm-23" value="&lt;span style=&quot;font-size: 23px;&quot;&gt;&lt;b&gt;백엔드에서 프론트에서 보내준 데이터를 취합한 뒤 각각 json 파일로 만들고, 폴더 만들기&amp;nbsp;&lt;br&gt;&lt;br&gt;&lt;/b&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-23" value="&lt;b style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;백엔드 API&amp;nbsp;&lt;br&gt;&lt;/b&gt;&lt;span style=&quot;font-size: 23px;&quot;&gt;&lt;b&gt;&lt;br&gt;백엔드에서 프론트에서 보내준 데이터를 취합한 뒤 각각 json 파일로 만들고, 폴더 만들기&amp;nbsp;&lt;br&gt;&lt;br&gt;&lt;/b&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="440" y="180" width="300" height="335" as="geometry" />
         </mxCell>
-        <mxCell id="0K6K56dYVLz_8w4jnRnm-28" value="&lt;span style=&quot;font-size: 23px;&quot;&gt;&lt;b&gt;날씨 Dynamic NFT 발급&lt;/b&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="1430" y="180" width="300" height="340" as="geometry" />
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-28" target="0K6K56dYVLz_8w4jnRnm-38">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-28" value="&lt;b style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;백엔드 API&amp;nbsp;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/b&gt;&lt;span style=&quot;font-size: 23px;&quot;&gt;&lt;b&gt;&lt;br&gt;날씨 Dynamic NFT 발급&lt;/b&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1850" y="180" width="300" height="340" as="geometry" />
         </mxCell>
         <mxCell id="0K6K56dYVLz_8w4jnRnm-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-30" target="0K6K56dYVLz_8w4jnRnm-31">
           <mxGeometry relative="1" as="geometry" />
@@ -776,6 +779,147 @@
         </mxCell>
         <mxCell id="0K6K56dYVLz_8w4jnRnm-31" value="&lt;span style=&quot;font-size: 23px;&quot;&gt;&lt;b&gt;Automation을 이용한 동적 NFT 발급&amp;nbsp;&lt;br&gt;&lt;/b&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="900" y="910" width="300" height="455" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-34" target="0K6K56dYVLz_8w4jnRnm-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-54" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-34" target="0K6K56dYVLz_8w4jnRnm-38">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-57" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-34" target="0K6K56dYVLz_8w4jnRnm-35">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-34" target="0K6K56dYVLz_8w4jnRnm-38">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-34" value="&lt;font style=&quot;font-size: 25px;&quot;&gt;&lt;b&gt;Transaction Daemon&lt;br&gt;스마트컨트랙트 체결됐는지 체크하고 블록정보도 체크하기&amp;nbsp;&lt;br&gt;&lt;/b&gt;&lt;/font&gt;" style="whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1870" y="-140" width="370" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-35" value="&lt;span style=&quot;font-size: 25px;&quot;&gt;&lt;b&gt;DataBase&lt;br&gt;스마트 컨트랙트 체결 전 데이터 저장?&lt;br&gt;스마트 컨트랙트 체결 후 데이터 저장?&lt;br&gt;&lt;/b&gt;&lt;/span&gt;" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="-140" width="450" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-38" value="&lt;b style=&quot;border-color: var(--border-color); font-size: 23px;&quot;&gt;백엔드 API&amp;nbsp;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;/b&gt;&lt;span style=&quot;font-size: 23px;&quot;&gt;&lt;b&gt;&lt;br&gt;트랜잭션 완료, DB저장&lt;/b&gt;&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="2370" y="180" width="300" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-55" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-39" target="0K6K56dYVLz_8w4jnRnm-35">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-39" target="0K6K56dYVLz_8w4jnRnm-22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="0K6K56dYVLz_8w4jnRnm-39" target="0K6K56dYVLz_8w4jnRnm-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="0K6K56dYVLz_8w4jnRnm-39" value="&lt;font style=&quot;font-size: 23px;&quot;&gt;&lt;b&gt;백엔드 API&lt;br&gt;스마트 컨트랙트가 체결되기 전에 DB에서 저장하고 먼저 리턴하기&amp;nbsp;&lt;/b&gt;&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="620" y="-150" width="430" height="150" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="WJxOhHFmnBUW--XgT20r" name="Weater DNFT">
+    <mxGraphModel dx="3134" dy="2351" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="RONzwoN60ZHBinwb71qn-9" value="&lt;font style=&quot;font-size: 22px;&quot;&gt;Collection&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="500" y="80" width="420" height="610" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-1" value="&lt;font style=&quot;font-size: 21px;&quot;&gt;Automation&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="70" y="130" width="300" height="560" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-2" value="서울&amp;nbsp;&lt;br&gt;lat, long" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="160" y="240" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-3" value="부산&amp;nbsp;&lt;br&gt;lat, long" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="160" y="330" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-4" value="인천&amp;nbsp;&lt;br&gt;lat, long" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="160" y="410" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-6" value="대구&lt;br&gt;lat, long" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="160" y="500" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-7" value="광주&lt;br&gt;lat, long" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="160" y="585" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-8" value="Weather NFT - 1&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="520" y="170" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-10" value="Weather NFT - 2&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="520" y="260" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-11" value="Weather NFT - 3&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="520" y="350" width="160" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-12" target="RONzwoN60ZHBinwb71qn-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-12" target="RONzwoN60ZHBinwb71qn-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-12" target="RONzwoN60ZHBinwb71qn-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-12" value="tokenID :0&amp;nbsp;&lt;br&gt;URI - 0" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="740" y="130" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-14" target="RONzwoN60ZHBinwb71qn-7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="805" y="600" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-14" target="RONzwoN60ZHBinwb71qn-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-14" value="tokenID :1&amp;nbsp;&lt;br&gt;URI - 1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="740" y="190" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-13" target="RONzwoN60ZHBinwb71qn-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-13" value="tokenID :2&amp;nbsp;&lt;br&gt;URI - 2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="740" y="250" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-20" value="ERC721 컨트랙트에서&amp;nbsp;&lt;br&gt;tokenURI에는 날씨 배열데이터를 배열 아이디에 따라 데이터를 가져온다.&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="990" y="115" width="230" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-22" target="RONzwoN60ZHBinwb71qn-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-22" target="RONzwoN60ZHBinwb71qn-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-22" target="RONzwoN60ZHBinwb71qn-25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-35" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-22" target="RONzwoN60ZHBinwb71qn-26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-22" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;mint&lt;br&gt;_to&lt;br&gt;_feed&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="580" y="-260" width="230" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-23" target="RONzwoN60ZHBinwb71qn-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-23" value="Weather" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="310" y="-75" width="230" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="RONzwoN60ZHBinwb71qn-24" target="RONzwoN60ZHBinwb71qn-30">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-24" value="Automation" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="-250" y="-75" width="230" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-25" value="Game" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="-80" width="230" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-26" value="Sports" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="-80" width="230" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="RONzwoN60ZHBinwb71qn-30" value="&lt;font style=&quot;font-size: 23px;&quot;&gt;Automation&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;1. 시간별로 동적 NFT 변화&lt;br&gt;2. 로직에 따라 동적 NFT 변화" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="-240" y="140" width="210" height="550" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
