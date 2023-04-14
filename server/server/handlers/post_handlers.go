@@ -79,13 +79,13 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 		metadataSlice = append(metadataSlice, newMetaDataUri)
 
 	}
-	contractAddress := os.Getenv(CONTRACTS)
-	balance, err := contract.Call("balanceOf", "{{wallet_address}}")
+	// contractAddress := os.Getenv(CONTRACTS)
+	// balance, err := contract.Call("balanceOf", "{{wallet_address}}")
 
-	// You can also make a transaction to your contract with the call method
-	tx, err := contract.Call("mintTo", "{{wallet_address}}", "ipfs://...")
+	// // You can also make a transaction to your contract with the call method
+	// tx, err := contract.Call("mintTo", "{{wallet_address}}", "ipfs://...")
 
-	fmt.Println("metadataSlice", metadataSlice)
+	// fmt.Println("metadataSlice", metadataSlice)
 
 	return c.JSONBlob(http.StatusOK, response)
 
