@@ -1,6 +1,8 @@
 #!/bin/bash
 
-curl --location --request POST 'http://localhost:1323/mnfts' \
+#curl --location --request POST 'http://localhost:1323/mnfts' \
+
+curl --location --request POST 'http://152.69.231.140:1323/mnfts' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "sunny": {

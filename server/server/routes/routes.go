@@ -17,5 +17,6 @@ func ConfigureRoutes(server *s.Server) {
 
 	server.Echo.GET("/get", getHandler.GetHandle)
 	server.Echo.POST("/mnfts", postHandler.MultipleCreateNFT)
+	server.Echo.POST("/snfts", postHandler.SimpleCreateNFT)
 
 }

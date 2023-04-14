@@ -14,18 +14,15 @@ contract PolyBloom is ERC721, ERC721URIStorage{
 
     uint interval; 
     uint lastTimeStamp;
+    string[] IpfsUri; 
 
-//1차 사진 > ipfs 변환 
-//2차 사진 url, 메타데이터(네임, 설명, 이미지url,  ) > ipfs 변환 
-//3차 위의 것을 반복했을 때 배열값으로 저장 
-//UI에서 한번에 업로드 할 수 있게 설정하기
+    function setIpfsUri(string[] memory _uri) public {
+        IpfsUri = _uri;
+    }
 
-
-    string[] IpfsUri = [
-        "https://ipfs.thirdwebcdn.com/ipfs/QmQZzXjVu24gfcr8z7hW7xF8MhGd6YeorGE89rErgbTtZC/0",
-        "https://ipfs.thirdwebcdn.com/ipfs/QmSHvPSTJUbbaj7xsm8rJCwx88jeRAtDij94D6pXG9X4mJ/0",
-        "https://ipfs.thirdwebcdn.com/ipfs/QmTqVehhJLYHUKqUBb4sotya1mvB5AAx3CZFZ1goGKABdy/0"
-    ];
+    function getIpfsUri() public view returns (string[] memory) {
+        return IpfsUri;
+    }
 
     constructor(uint _interval ) ERC721("POLYdNFTs", "dNFT"){
         interval = _interval ; 
@@ -58,7 +55,14 @@ contract PolyBloom is ERC721, ERC721URIStorage{
 
     function flowerStage(uint256 _tokenId) public view returns (uint256){
         string memory _uri = tokenURI(_tokenId);
-    }
+        for (uint256 i = 0; i < IpfsUri.length; i++) {
+            if (keccak256(bytes(_uri)) == keccak256(bytes(IpfsUri[i]))) {
+                return i;
+        }
+         }
+                return 0;
+         }
+
 
     /// @dev this method is called by the Automation Nodes to check if `performUpkeep` should be performed
     function checkUpkeep(bytes calldata) external view returns (bool upkeepNeeded, bytes memory){
