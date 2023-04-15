@@ -1,0 +1,78 @@
+{
+  "sun": {
+    "name": "sun",
+    "description": "sun description",
+    "image": "http://gateway",
+    "attributes": [
+      {
+        "trait_type": "location name",
+        "value": "서울"
+      },
+      {
+        "trait_type": "latitude",
+        "value": "37"
+      },
+      {
+        "trait_type": "longitude",
+        "value": "127"
+      }
+    ]
+  },
+  "rain": {
+    "name": "sun",
+    "description": "sun description",
+    "image": "http://gateway",
+    "attributes": [
+      {
+        "trait_type": "location name",
+        "value": "서울"
+      },
+      {
+        "trait_type": "latitude",
+        "value": "37"
+      },
+      {
+        "trait_type": "longitude",
+        "value": "127"
+      }
+    ]
+  },
+  "cloud": {
+    "name": "sun",
+    "description": "sun description",
+    "image": "http://gateway",
+    "attributes": [
+      {
+        "trait_type": "location name",
+        "value": "서울"
+      },
+      {
+        "trait_type": "latitude",
+        "value": "37"
+      },
+      {
+        "trait_type": "longitude",
+        "value": "127"
+      }
+    ]
+  },
+  "snow": {
+    "name": "sun",
+    "description": "sun description",
+    "image": "http://gateway",
+    "attributes": [
+      {
+        "trait_type": "location name",
+        "value": "서울"
+      },
+      {
+        "trait_type": "latitude",
+        "value": "37"
+      },
+      {
+        "trait_type": "longitude",
+        "value": "127"
+      }
+    ]
+  }
+}

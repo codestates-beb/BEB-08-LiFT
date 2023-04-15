@@ -1,7 +1,6 @@
-import Link from 'next/link'
-import styles from './footer.module.css'
-import packageJSON from '../package.json'
-import Siwe from '@/pages/siwe'
+import Link from 'next/link';
+import styles from './footer.module.css';
+import packageJSON from '../package.json';
 
 export default function Footer() {
   return (
@@ -9,21 +8,23 @@ export default function Footer() {
       <hr />
       <ul className={styles.navItems}>
         <li className={styles.navItem}>
-          <a href="https://next-auth.js.org">Documentation</a>
+          <span>LiFT</span>
         </li>
         <li className={styles.navItem}>
-          <a href="https://www.npmjs.com/package/next-auth">NPM</a>
+          <span>Dynamic NFT commerce</span>
         </li>
         <li className={styles.navItem}>
-          <a href="https://github.com/nextauthjs/next-auth-example">GitHub</a>
+          <span>with Chainlink</span>
         </li>
         <li className={styles.navItem}>
-          <Link href="/policy">Policy</Link>
+          <Link href='https://github.com/codestates-beb/BEB-08-LiFT'>
+            GitHub
+          </Link>
         </li>
         <li className={styles.navItem}>
           <em>next-auth@{packageJSON.dependencies['next-auth']}</em>
         </li>
       </ul>
     </footer>
-  )
+  );
 }

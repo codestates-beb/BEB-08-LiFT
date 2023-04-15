@@ -2,10 +2,9 @@ import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
-import { ThirdwebProvider } from '@thirdweb-dev/react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Session } from 'next-auth';
+
 import {
   mainnet,
   polygon,
@@ -42,18 +41,18 @@ export default function App({
   const activeChain = 'ethereum';
 
   return (
-    // <ThirdwebProvider activeChain={activeChain}>
     <WagmiConfig client={client}>
       <SessionProvider session={session} refetchInterval={0}>
         <QueryClientProvider client={queryClient}>
           <div className='px-36'>
             <Header />
+
             <Component {...pageProps} />
+
             <Footer />
           </div>
         </QueryClientProvider>
       </SessionProvider>
     </WagmiConfig>
-    // </ThirdwebProvider>
   );
 }
