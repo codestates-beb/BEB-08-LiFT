@@ -3,13 +3,12 @@ module echo-dnft
 go 1.20
 
 require (
+	github.com/ethereum/go-ethereum v1.10.15
 	github.com/jinzhu/gorm v1.9.16
 	github.com/joho/godotenv v1.5.1
-	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/thirdweb-dev/go-sdk v1.3.4
 	github.com/thirdweb-dev/go-sdk/v2 v2.0.2
-	gorm.io/gorm v1.25.0
 )
 
 require (
@@ -17,7 +16,6 @@ require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce // indirect
 	github.com/cbergoon/merkletree v0.2.0 // indirect
 	github.com/deckarep/golang-set v0.0.0-20180603214616-504e848d77ea // indirect
-	github.com/ethereum/go-ethereum v1.10.15 // indirect
 	github.com/fxamacker/cbor v1.5.1 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
