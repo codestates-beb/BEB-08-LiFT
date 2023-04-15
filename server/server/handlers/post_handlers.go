@@ -596,6 +596,15 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	fmt.Println("contract", contract)
 	balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
 	fmt.Println("balance", balance)
+
+	contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", metadataSlice)
+	if err != nil {
+		panic(err)
+	}
+	getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c")
+
+	fmt.Println("getIpfsUri", getIpfsUri)
+
 	metadataBytes := []byte(strings.Join(metadataSlice, "\n"))
 
 	return c.JSONBlob(http.StatusOK, metadataBytes)
