@@ -60,15 +60,6 @@ type WeatherModal struct {
 	Latitude    string
 	Longitude   string
 }
-type Abi []struct {
-	Inputs []struct {
-		InternalType string `json:"internalType"`
-		Name         string `json:"name"`
-		Type         string `json:"type"`
-	} `json:"inputs"`
-	StateMutability string `json:"stateMutability"`
-	Type            string `json:"type"`
-}
 
 // 변수 설정
 var (
@@ -77,21 +68,19 @@ var (
 )
 
 func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
-	lock.Lock()
-	defer lock.Unlock()
+	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
+	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
 	var data map[string]MNFT
 
+	//데이터 바인딩
 	if err := c.Bind(&data); err != nil {
 		return err
 	}
-	// fmt.Printf("data :%s\n", data)
-
-	type result struct {
-		value map[string]interface{}
-		err   error
-	}
 
 	metadataSlice := make([]string, len(data))
+
+	//채널을 만들어서 메타데이터 URL을 받는다.
+	metadataURLs := make(chan string, len(data))
 
 	for _, v := range data {
 
@@ -120,470 +109,19 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 		uri, _ := sdk.Storage.Upload(metadata, "", "")
 		removeUri := strings.Replace(uri, "ipfs://", "", 1)
 		newMetaDataUri := "https://gateway.ipfscdn.io/ipfs/" + removeUri
-		fmt.Println("typeCheck", reflect.TypeOf(newMetaDataUri))
 		fmt.Println("newMetaDataUri", newMetaDataUri)
-
-		metadataSlice = append(metadataSlice, newMetaDataUri)
+		//데이터를 채널에 넣기.
+		metadataURLs <- newMetaDataUri
 
 	}
 
-	fmt.Println("metadataSlice", metadataSlice)
+	for i := 0; i < len(data); i++ {
+		metadataSlice[i] = <-metadataURLs
+	}
 
+	fmt.Println("metadataSlice", metadataSlice)
 	contractAddress := os.Getenv("CONTRACTS")
 	fmt.Println("contractAddress", contractAddress)
-
-	abi := `[
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "uint256",
-	        "name": "_interval",
-	        "type": "uint256"
-	      }
-	    ],
-	    "stateMutability": "nonpayable",
-	    "type": "constructor"
-	  },
-	  {
-	    "anonymous": false,
-	    "inputs": [
-	      {
-	        "indexed": true,
-	        "internalType": "address",
-	        "name": "owner",
-	        "type": "address"
-	      },
-	      {
-	        "indexed": true,
-	        "internalType": "address",
-	        "name": "approved",
-	        "type": "address"
-	      },
-	      {
-	        "indexed": true,
-	        "internalType": "uint256",
-	        "name": "tokenId",
-	        "type": "uint256"
-	      }
-	    ],
-	    "name": "Approval",
-	    "type": "event"
-	  },
-	  {
-	    "anonymous": false,
-	    "inputs": [
-	      {
-	        "indexed": true,
-	        "internalType": "address",
-	        "name": "owner",
-	        "type": "address"
-	      },
-	      {
-	        "indexed": true,
-	        "internalType": "address",
-	        "name": "operator",
-	        "type": "address"
-	      },
-	      {
-	        "indexed": false,
-	        "internalType": "bool",
-	        "name": "approved",
-	        "type": "bool"
-	      }
-	    ],
-	    "name": "ApprovalForAll",
-	    "type": "event"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "address",
-	        "name": "to",
-	        "type": "address"
-	      },
-	      {
-	        "internalType": "uint256",
-	        "name": "tokenId",
-	        "type": "uint256"
-	      }
-	    ],
-	    "name": "approve",
-	    "outputs": [],
-	    "stateMutability": "nonpayable",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "uint256",
-	        "name": "_tokenId",
-	        "type": "uint256"
-	      }
-	    ],
-	    "name": "growFlower",
-	    "outputs": [],
-	    "stateMutability": "nonpayable",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "bytes",
-	        "name": "",
-	        "type": "bytes"
-	      }
-	    ],
-	    "name": "performUpkeep",
-	    "outputs": [],
-	    "stateMutability": "nonpayable",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "address",
-	        "name": "to",
-	        "type": "address"
-	      }
-	    ],
-	    "name": "safeMint",
-	    "outputs": [],
-	    "stateMutability": "nonpayable",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "address",
-	        "name": "from",
-	        "type": "address"
-	      },
-	      {
-	        "internalType": "address",
-	        "name": "to",
-	        "type": "address"
-	      },
-	      {
-	        "internalType": "uint256",
-	        "name": "tokenId",
-	        "type": "uint256"
-	      }
-	    ],
-	    "name": "safeTransferFrom",
-	    "outputs": [],
-	    "stateMutability": "nonpayable",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "address",
-	        "name": "from",
-	        "type": "address"
-	      },
-	      {
-	        "internalType": "address",
-	        "name": "to",
-	        "type": "address"
-	      },
-	      {
-	        "internalType": "uint256",
-	        "name": "tokenId",
-	        "type": "uint256"
-	      },
-	      {
-	        "internalType": "bytes",
-	        "name": "data",
-	        "type": "bytes"
-	      }
-	    ],
-	    "name": "safeTransferFrom",
-	    "outputs": [],
-	    "stateMutability": "nonpayable",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "address",
-	        "name": "operator",
-	        "type": "address"
-	      },
-	      {
-	        "internalType": "bool",
-	        "name": "approved",
-	        "type": "bool"
-	      }
-	    ],
-	    "name": "setApprovalForAll",
-	    "outputs": [],
-	    "stateMutability": "nonpayable",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "string[]",
-	        "name": "_uri",
-	        "type": "string[]"
-	      }
-	    ],
-	    "name": "setIpfsUri",
-	    "outputs": [],
-	    "stateMutability": "nonpayable",
-	    "type": "function"
-	  },
-	  {
-	    "anonymous": false,
-	    "inputs": [
-	      {
-	        "indexed": true,
-	        "internalType": "address",
-	        "name": "from",
-	        "type": "address"
-	      },
-	      {
-	        "indexed": true,
-	        "internalType": "address",
-	        "name": "to",
-	        "type": "address"
-	      },
-	      {
-	        "indexed": true,
-	        "internalType": "uint256",
-	        "name": "tokenId",
-	        "type": "uint256"
-	      }
-	    ],
-	    "name": "Transfer",
-	    "type": "event"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "address",
-	        "name": "from",
-	        "type": "address"
-	      },
-	      {
-	        "internalType": "address",
-	        "name": "to",
-	        "type": "address"
-	      },
-	      {
-	        "internalType": "uint256",
-	        "name": "tokenId",
-	        "type": "uint256"
-	      }
-	    ],
-	    "name": "transferFrom",
-	    "outputs": [],
-	    "stateMutability": "nonpayable",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "address",
-	        "name": "owner",
-	        "type": "address"
-	      }
-	    ],
-	    "name": "balanceOf",
-	    "outputs": [
-	      {
-	        "internalType": "uint256",
-	        "name": "",
-	        "type": "uint256"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "bytes",
-	        "name": "",
-	        "type": "bytes"
-	      }
-	    ],
-	    "name": "checkUpkeep",
-	    "outputs": [
-	      {
-	        "internalType": "bool",
-	        "name": "upkeepNeeded",
-	        "type": "bool"
-	      },
-	      {
-	        "internalType": "bytes",
-	        "name": "",
-	        "type": "bytes"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "uint256",
-	        "name": "_tokenId",
-	        "type": "uint256"
-	      }
-	    ],
-	    "name": "flowerStage",
-	    "outputs": [
-	      {
-	        "internalType": "uint256",
-	        "name": "",
-	        "type": "uint256"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "uint256",
-	        "name": "tokenId",
-	        "type": "uint256"
-	      }
-	    ],
-	    "name": "getApproved",
-	    "outputs": [
-	      {
-	        "internalType": "address",
-	        "name": "",
-	        "type": "address"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [],
-	    "name": "getIpfsUri",
-	    "outputs": [
-	      {
-	        "internalType": "string[]",
-	        "name": "",
-	        "type": "string[]"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "address",
-	        "name": "owner",
-	        "type": "address"
-	      },
-	      {
-	        "internalType": "address",
-	        "name": "operator",
-	        "type": "address"
-	      }
-	    ],
-	    "name": "isApprovedForAll",
-	    "outputs": [
-	      {
-	        "internalType": "bool",
-	        "name": "",
-	        "type": "bool"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [],
-	    "name": "name",
-	    "outputs": [
-	      {
-	        "internalType": "string",
-	        "name": "",
-	        "type": "string"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "uint256",
-	        "name": "tokenId",
-	        "type": "uint256"
-	      }
-	    ],
-	    "name": "ownerOf",
-	    "outputs": [
-	      {
-	        "internalType": "address",
-	        "name": "",
-	        "type": "address"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "bytes4",
-	        "name": "interfaceId",
-	        "type": "bytes4"
-	      }
-	    ],
-	    "name": "supportsInterface",
-	    "outputs": [
-	      {
-	        "internalType": "bool",
-	        "name": "",
-	        "type": "bool"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [],
-	    "name": "symbol",
-	    "outputs": [
-	      {
-	        "internalType": "string",
-	        "name": "",
-	        "type": "string"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  },
-	  {
-	    "inputs": [
-	      {
-	        "internalType": "uint256",
-	        "name": "tokenId",
-	        "type": "uint256"
-	      }
-	    ],
-	    "name": "tokenURI",
-	    "outputs": [
-	      {
-	        "internalType": "string",
-	        "name": "",
-	        "type": "string"
-	      }
-	    ],
-	    "stateMutability": "view",
-	    "type": "function"
-	  }
-	]
-	`
 
 	sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
 		PrivateKey: os.Getenv("PRIVATEKEY"),
@@ -592,18 +130,45 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 		panic(err)
 	}
 
-	contract, err := sdk.GetContractFromAbi(contractAddress, abi)
-	fmt.Println("contract", contract)
-	balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
-	fmt.Println("balance", balance)
-
-	contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", metadataSlice)
+	contract, err := sdk.GetContractFromAbi(contractAddress, ABI)
 	if err != nil {
 		panic(err)
 	}
-	getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	fmt.Println("contract", contract)
 
-	fmt.Println("getIpfsUri", getIpfsUri)
+	balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("balance", balance)
+
+	getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
+	if err != nil {
+		panic(err)
+	}
+	var result string
+	var elements []string
+	for _, v := range metadataSlice {
+		elements = append(elements, v)
+		result = "[" + strings.Join(elements, ", ") + "]"
+	}
+	fmt.Println("result 2 ", result)
+	fmt.Println("getIpfsUri1", getIpfsUri)
+	fmt.Println("type check result 2 ", reflect.TypeOf(result))
+	fmt.Println("type check result 2 ", reflect.TypeOf(metadataSlice))
+	//메타데이터 4개를 설정하는 함수 실행
+	contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", result)
+	if err != nil {
+		panic(err)
+	}
+
+	//메타데이터를 잘 가져왔는지 체크
+	getIpfsUri2, err := contract.Call(context.Background(), "getIpfsUri")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("getIpfsUri2", getIpfsUri2)
 
 	metadataBytes := []byte(strings.Join(metadataSlice, "\n"))
 

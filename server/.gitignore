@@ -1,3 +1,5 @@
 main/.env
 .env
 ../.deps
+./sol/.deps
+./sol/artifacts
