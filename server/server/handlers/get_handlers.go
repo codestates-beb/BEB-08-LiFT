@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	s "echo-dnft/server"
 	"fmt"
 	"net/http"
@@ -25,6 +26,34 @@ func (g *GetHandler) GetHandle(c echo.Context) error {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("sdk", sdk)
+	address := os.Getenv(os.Getenv("LOCATIONMANAGER"))
+	fmt.Println("address", address)
+	nft, err := sdk.GetNFTCollection(address)
+
+	fmt.Println(reflect.TypeOf(nft))
+	fmt.Println("nft", nft)
+
+	if err != nil {
+		panic(err)
+	}
+
+	nfts, err := nft.GetAll(context.Background())
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("nfts", nfts)
+	return c.JSON(http.StatusOK, nfts)
+
+}
+
+func (g *GetHandler) GetMyPage(c echo.Context) error {
+	fmt.Println("test")
+	sdk, err := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
+	if err != nil {
+		panic(err)
+	}
 	address := os.Getenv(os.Getenv("ADDRESS"))
 	nft, err := sdk.GetNFTCollection(address)
 	fmt.Println(reflect.TypeOf(nft))
@@ -32,13 +61,11 @@ func (g *GetHandler) GetHandle(c echo.Context) error {
 	if err != nil {
 		panic(err)
 	}
-
-	// nfts, err := nft.GetAll()
+	// nfts, err := nft.GetAll(context.Background())
 	// if err != nil {
 	// 	panic(err)
 	// }
-
+	// fmt.Println("nfts", nfts)
 	return c.JSON(http.StatusOK, nft)
-	//return c.String(http.StatusOK, "Hello, World!")
-	// return responses.MessageResponse(c, http.StatusCreated, "User successfully created")
+
 }

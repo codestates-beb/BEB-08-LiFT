@@ -67,6 +67,11 @@ var (
 	lock = sync.Mutex{}
 )
 
+// 1: locationManager : 0x8DB93Ede3bC2b1AdE17352aFB3077749400F83A0
+// 2: weatherFeed: 0x988934F6B8B0a264e342b846cA87FdB361BAf7e1
+// 3: weatherNft: 0x1077a33ED9aDD3d55aE3ef66C28b9638B9611C1d
+// 4: weatherUpKeep: 0x5Cd75C04Bf0de56FB94BaFdF2DC26F6A46Cdc031
+
 func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
 	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
