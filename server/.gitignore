@@ -1,2 +1,5 @@
+main/.env
 .env
-conDB.sh
+../.deps
+./sol/.deps
+./sol/artifacts
