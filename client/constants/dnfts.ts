@@ -1,6 +1,6 @@
-export const CATEGORY_NAME = ['WeatherDNFT', 'TimeDNFT', 'CoinPriceDNFT']
+export const CATEGORY_NAME = ['WeatherDNFT', 'SportDNFT'];
 
-export const TAKE = 9
+export const TAKE = 9;
 
 export const FILTERS = [
   {
@@ -9,4 +9,4 @@ export const FILTERS = [
   },
   { label: '가격 높은 순', value: 'expensive' },
   { label: '가격 낮은 순', value: 'cheap' },
-]
+];

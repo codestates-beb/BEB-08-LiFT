@@ -2,9 +2,8 @@ import Image from 'next/image';
 import Carousel from 'nuka-carousel/lib/carousel';
 import { useEffect, useMemo, useState } from 'react';
 
-import CustomEditor from '@/components/Editor';
 import { useRouter } from 'next/router';
-import { EditorState, convertFromRaw, convertToRaw } from 'draft-js';
+
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import { Cart, OrderItem, Wishlist, dnfts } from '@prisma/client';
 import { format } from 'date-fns';
@@ -24,8 +23,6 @@ import {
 import { useSession } from 'next-auth/react';
 import { CART_QUERY_KEY } from '@/pages/cart';
 import { ORDER_QUERY_KEY } from '../../my';
-import { error } from 'console';
-import { stringify } from 'querystring';
 
 interface CartData {
   dnfts: {
@@ -35,6 +32,7 @@ interface CartData {
   // other properties of the cart object
 }
 
+// 만약 DNFT를 적용한다면 이 부분은 제외되어야 한다.
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const product = await fetch(
     `http://localhost:3000/api/get-DNFT?id=${context.params?.id}`
@@ -44,7 +42,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   return {
     props: {
-      product: { ...product, images: [product.image_url, product.image_url] },
+      product: {
+        ...product,
+        images: [product.image_url, product.image_url, product.image_url],
+      },
     },
   };
 }
@@ -62,12 +63,8 @@ export default function Products(props: {
   const router = useRouter();
   const { id: dnftId } = router.query;
 
-  const [editorState] = useState<EditorState | undefined>(() =>
-    props.product.contents
-      ? EditorState.createWithContent(
-          convertFromRaw(JSON.parse(props.product.contents))
-        )
-      : EditorState.createEmpty()
+  const descriptions = useState<undefined>(() =>
+    props.product.contents ? JSON.parse(props.product.contents) : ''
   );
 
   const { data: wishlist } = useQuery([WISHLIST_QUERY_KEY], () =>
@@ -209,7 +206,6 @@ export default function Products(props: {
               //autoplay
               withoutControls
               wrapAround
-              speed={10}
               slideIndex={index}
             >
               {product.images.map((url, idx) => (
@@ -229,9 +225,10 @@ export default function Products(props: {
                 </div>
               ))}
             </div>
-            {editorState != null && (
+            // ! 이 부분에 description 만 보일 수 있도록 수정
+            {/* {editorState != null && (
               <CustomEditor editorState={editorState} readOnly />
-            )}
+            )} */}
           </div>
           <div style={{ maxWidth: 600 }} className='flex flex-col space-y-6'>
             <div className='text-lg text-zinc-400'>

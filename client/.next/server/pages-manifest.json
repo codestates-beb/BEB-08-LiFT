@@ -2,11 +2,11 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/mintDNFT": "pages/mintDNFT.js",
-  "/": "pages/index.js",
-  "/api/get-categories": "pages/api/get-categories.js",
-  "/api/get-dnfts": "pages/api/get-dnfts.js",
-  "/api/get-DNFTs-count": "pages/api/get-DNFTs-count.js",
+  "/api/get-wishlist": "pages/api/get-wishlist.js",
   "/api/auth/[...nextauth]": "pages/api/auth/[...nextauth].js",
+  "/api/get-dnfts": "pages/api/get-dnfts.js",
+  "/api/get-categories": "pages/api/get-categories.js",
+  "/": "pages/index.js",
+  "/api/get-DNFTs-count": "pages/api/get-DNFTs-count.js",
   "/api/moralis/[...moralis]": "pages/api/moralis/[...moralis].js"
 }

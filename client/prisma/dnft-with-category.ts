@@ -1,75 +1,58 @@
-import { Prisma, PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client';
+import { address, tsHash } from './ganache_address';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-// const productData: Prisma.productsCreateInput[] = Array.apply(
-//   null,
-//   Array(30)
-// ).map((_, idx) => ({
-//   name: `HOODIE ${idx + 1}`,
-//   contents: `{\"blocks\":[{\"key\":\"uhd0\",\"text\":\"안녕 나는 HOODIE No.${
-//     idx + 1
-//   } 입니다.\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}`,
-//   category_id: 5,
-//   image_url: `https://picsum.photos/id/${Math.floor(
-//     Math.random() * (1000 - idx + 1)
-//   )}/1000/600`,
-//   price: Math.floor(Math.random() * (100000 - 20000) + 20000)
-// }));
-
-export const WeatherDNFTs: Prisma.dnftsCreateInput[] = Array.apply(
+export const WeatherDNFTs: Prisma.nftCreateInput[] = Array.apply(
   null,
   Array(30)
 ).map((_, idx) => ({
   name: `Weather DNFT ${idx + 1}`,
-  contents: `{\"blocks\":[{\"key\":\"uhd0\",\"text\":\"저는 Weather DNFT No.${
-    idx + 1
-  } 입니다.\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}`,
+  description: `저는 Weather DNFT No.${idx + 1} 입니다.`,
   category_id: 1,
-  image_url: `https://picsum.photos/id/${Math.floor(
+  owner_address: `${address[idx + 1]}`,
+  ipfs_url: `https://picsum.photos/id/${Math.floor(
     Math.random() * (1000 - idx + 1)
   )}/1000/600`,
-  price: Math.floor(Math.random() * (10 - 20) + 20),
-}))
+  tx_hash: `${tsHash[idx + 1]}`,
+  price: Math.random() * (0.1 - 0.05) + 0.05,
+}));
 
-export const CoinPriceDNFTs: Prisma.dnftsCreateInput[] = Array.apply(
+export const SportsDNFTs: Prisma.nftCreateInput[] = Array.apply(
   null,
   Array(30)
 ).map((_, idx) => ({
-  name: `Time DNFT ${idx + 1}`,
-  contents: `{\"blocks\":[{\"key\":\"uhd0\",\"text\":\"저는 Time DNFT No.${
-    idx + 1
-  } 입니다.\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}`,
+  name: `Sports DNFT ${idx + 1}`,
+  description: `저는 Sports DNFT No.${idx + 1} 입니다.`,
   category_id: 2,
-  image_url: `https://picsum.photos/id/${Math.floor(
+  owner_address: `${address[idx + 1]}`,
+  ipfs_url: `https://picsum.photos/id/${Math.floor(
     Math.random() * (400 - idx + 1)
   )}/1000/600`,
-  price: Math.floor(Math.random() * (10 - 20) + 20),
-}))
+  tx_hash: `${tsHash[idx + 1]}`,
+  price: Math.random() * (0.1 - 0.05) + 0.05,
+}));
 
-export const TimeDNFTs: Prisma.dnftsCreateInput[] = Array.apply(
-  null,
-  Array(30)
-).map((_, idx) => ({
-  name: `Coin Price DNFT ${idx + 1}`,
-  contents: `{\"blocks\":[{\"key\":\"uhd0\",\"text\":\"저는 Coin Price DNFT No.${
-    idx + 1
-  } 입니다.\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}`,
-  category_id: 3,
-  image_url: `https://picsum.photos/id/${Math.floor(
-    Math.random() * (700 - idx + 1)
-  )}/1000/600`,
-  price: Math.floor(Math.random() * (10 - 20) + 20),
-}))
+// export const TimeDNFTs: Prisma.dnftsCreateInput[] = Array.apply(
+//   null,
+//   Array(30)
+// ).map((_, idx) => ({
+//   name: `Coin Price DNFT ${idx + 1}`,
+//   contents: `저는 Coin Price DNFT No.${idx + 1} 입니다.`,
+//   category_id: 3,
+//   image_url: `https://picsum.photos/id/${Math.floor(
+//     Math.random() * (700 - idx + 1)
+//   )}/1000/600`,
+//   price: Math.floor(Math.random() * (10 - 20) + 20),
+// }));
 
-export const productsItmes: Prisma.dnftsCreateInput[] = [
+export const productsItmes: Prisma.nftCreateInput[] = [
   ...WeatherDNFTs,
-  ...CoinPriceDNFTs,
-  ...TimeDNFTs,
-]
+  ...SportsDNFTs,
+];
 
 const main = async () => {
-  const CATEGORY_NAME = ['WeatherDNFT', 'TimeDNFT', 'CoinPriceDNFT']
+  const CATEGORY_NAME = ['WeatherDNFT', 'SportsDNFT'];
 
   CATEGORY_NAME.forEach(async (name, idx) => {
     const category = await prisma.categories.upsert({
@@ -82,32 +65,32 @@ const main = async () => {
       create: {
         name: name,
       },
-    })
+    });
     console.log(
       'category id : ',
       category.id,
       'category name : ',
       category.name
-    )
-  })
+    );
+  });
 
   // await prisma.products.deleteMany({});
 
   for (const p of productsItmes) {
-    const product = await prisma.dnfts.create({
+    const product = await prisma.nft.create({
       data: p,
-    })
+    });
 
-    console.log(`== Created == : ${product.id} / ${product.name}`)
+    console.log(`== Created == : ${product.id} / ${product.name}`);
   }
-}
+};
 
 main()
   .then(async () => {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   })
   .catch(async (error) => {
-    console.error(error)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(error);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

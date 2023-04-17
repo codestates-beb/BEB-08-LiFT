@@ -201,12 +201,6 @@ const Create: NextPage = () => {
     setActivating(false);
   };
 
-  // console.log(ipfsUrlArray);
-  // console.log('1: ' + sunImageUri);
-  // console.log('2: ' + rainImageUri);
-  // console.log('3: ' + cloudyImageUri);
-  // console.log('4: ' + snowImageUri);
-
   const addProperty = () => {
     setProperties((properties) => [
       ...properties,
@@ -216,8 +210,6 @@ const Create: NextPage = () => {
       },
     ]);
   };
-
-  //console.log('properties  ' + JSON.stringify(properties));
 
   const handlePropertyChange =
     (index: number, key: keyof Property) =>
@@ -244,61 +236,6 @@ const Create: NextPage = () => {
       setMessage('Error: ' + error.message);
     }
   };
-
-  // seoul: 37.5 126.9 / london: 36.9 -93.9 new york 40.7 -74
-
-  // const handleLocationChange = (event) => { // ! -> 이 방법을 사용하면 location 값이 고정되어 버리고 변화될 수가 없음
-  //   event.preventDefault();
-  //   if ((event.target.value = 'Seoul')) {
-  //     setLocation(event.target.value);
-  //     setLatitude('37.5519');
-  //     setLongitude('126.9918');
-  //     Weather.sun.attributes[0].value = location;
-  //     Weather.sun.attributes[1].value = latitude;
-  //     Weather.sun.attributes[2].value = longitude;
-  //     Weather.rain.attributes[0].value = location;
-  //     Weather.rain.attributes[1].value = latitude;
-  //     Weather.rain.attributes[2].value = longitude;
-  //     Weather.cloud.attributes[0].value = location;
-  //     Weather.cloud.attributes[1].value = latitude;
-  //     Weather.cloud.attributes[2].value = longitude;
-  //     Weather.snow.attributes[0].value = location;
-  //     Weather.snow.attributes[1].value = latitude;
-  //     Weather.snow.attributes[2].value = longitude;
-  //   } else if ((event.target.value = 'London')) {
-  //     setLocation(event.target.value);
-  //     setLatitude('51.5072');
-  //     setLongitude('0.1276');
-  //     Weather.sun.attributes[0].value = location;
-  //     Weather.sun.attributes[1].value = latitude;
-  //     Weather.sun.attributes[2].value = longitude;
-  //     Weather.rain.attributes[0].value = location;
-  //     Weather.rain.attributes[1].value = latitude;
-  //     Weather.rain.attributes[2].value = longitude;
-  //     Weather.cloud.attributes[0].value = location;
-  //     Weather.cloud.attributes[1].value = latitude;
-  //     Weather.cloud.attributes[2].value = longitude;
-  //     Weather.snow.attributes[0].value = location;
-  //     Weather.snow.attributes[1].value = latitude;
-  //     Weather.snow.attributes[2].value = longitude;
-  //   } else {
-  //     setLocation(event.target.value);
-  //     setLatitude('40.7128');
-  //     setLongitude('74.0060');
-  //     Weather.sun.attributes[0].value = location;
-  //     Weather.sun.attributes[1].value = latitude;
-  //     Weather.sun.attributes[2].value = longitude;
-  //     Weather.rain.attributes[0].value = location;
-  //     Weather.rain.attributes[1].value = latitude;
-  //     Weather.rain.attributes[2].value = longitude;
-  //     Weather.cloud.attributes[0].value = location;
-  //     Weather.cloud.attributes[1].value = latitude;
-  //     Weather.cloud.attributes[2].value = longitude;
-  //     Weather.snow.attributes[0].value = location;
-  //     Weather.snow.attributes[1].value = latitude;
-  //     Weather.snow.attributes[2].value = longitude;
-  //   }
-  // };
 
   const handleLocationChange = (event) => {
     event.preventDefault();
@@ -371,234 +308,239 @@ const Create: NextPage = () => {
 
   return (
     <div>
-      <CreatePageWrapper>
-        <CreateView>
-          <Title>Create New Weather DNFT</Title>
-          <Box>
-            <FieldTitle>Set Location</FieldTitle>
-            <Helper>
-              Enter the location so that your DNFT knows what local weather it
-              will follow
-            </Helper>
-            <FormControl fullWidth className='mt-4'>
-              <InputLabel id='demo-simple-select-label'>Location</InputLabel>
-              <Select
-                labelId='demo-simple-select-label'
-                id='demo-simple-select'
-                value={location}
-                label='Location'
-                onChange={handleLocationChange}
+      <LoadingOverlay
+        active={activating}
+        spinner
+        text='Uploading to thridweb IPFS...'
+      >
+        <CreatePageWrapper>
+          <CreateView>
+            <Title>Create New Weather DNFT</Title>
+            <Box>
+              <FieldTitle>Set Location</FieldTitle>
+              <Helper>
+                Enter the location so that your DNFT knows what local weather it
+                will follow
+              </Helper>
+              <FormControl fullWidth className='mt-8'>
+                <InputLabel id='demo-simple-select-label'>Location</InputLabel>
+                <Select
+                  labelId='demo-simple-select-label'
+                  id='demo-simple-select'
+                  value={location}
+                  label='Location'
+                  onChange={handleLocationChange}
+                >
+                  <MenuItem value='Seoul'>Seoul</MenuItem>
+                  <MenuItem value='London'>London</MenuItem>
+                  <MenuItem value='New York'>New York</MenuItem>
+                </Select>
+              </FormControl>
+
+              <FieldTitle>Image setting by weather</FieldTitle>
+              <Helper>
+                File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV,
+                OGG, GLB, GLTF. Max size: 100 MB
+              </Helper>
+              <Helper>It is stored in ipfs of thirdweb.</Helper>
+
+              <div className='flex mb-2 mt-4'>
+                <span className='text-3xl mr-3'>☀️</span>
+                <Input
+                  type='file'
+                  className='w-full'
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setFile1(e.target.files[0]);
+                    }
+                  }}
+                />
+              </div>
+              <TextField
+                fullWidth
+                label='Sunny Weather DNFT-name'
+                margin='dense'
+                id='token-name'
+                onChange={handleNameChange1}
+              ></TextField>
+              <TextField
+                multiline
+                fullWidth
+                label='Sunny Weather DNFT-description'
+                rows={2}
+                margin='dense'
+                id='description'
+                onChange={handleDesciptionChange1}
+              ></TextField>
+
+              <div className='flex mb-2 mt-4'>
+                <span className='text-3xl mr-3'>🌧️</span>
+                <Input
+                  type='file'
+                  className='w-full'
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setFile2(e.target.files[0]);
+                    }
+                  }}
+                />
+              </div>
+              <TextField
+                fullWidth
+                label='Rainy Weather DNFT-name'
+                margin='dense'
+                id='token-name'
+                onChange={handleNameChange2}
+              ></TextField>
+              <TextField
+                multiline
+                fullWidth
+                label='Rainy Weather DNFT-description'
+                rows={2}
+                margin='dense'
+                id='description'
+                onChange={handleDesciptionChange2}
+              ></TextField>
+
+              <div className='flex mb-2 mt-4'>
+                <span className='text-3xl mr-3'>☁️</span>
+                <Input
+                  type='file'
+                  className='w-full'
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setFile3(e.target.files[0]);
+                    }
+                  }}
+                />
+              </div>
+              <TextField
+                fullWidth
+                label='Cloudy Weather DNFT-name'
+                margin='dense'
+                id='token-name'
+                onChange={handleNameChange3}
+              ></TextField>
+              <TextField
+                multiline
+                fullWidth
+                label='Cloudy Weather DNFT-description'
+                rows={2}
+                margin='dense'
+                id='description'
+                onChange={handleDesciptionChange3}
+              ></TextField>
+
+              <div className='flex mb-2 mt-4'>
+                <span className='text-3xl mr-3'>❄️</span>
+                <Input
+                  type='file'
+                  className='w-full'
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      setFile4(e.target.files[0]);
+                    }
+                  }}
+                />
+              </div>
+              <TextField
+                fullWidth
+                label='Snow Weather DNFT-name'
+                margin='dense'
+                id='token-name'
+                onChange={handleNameChange4}
+              ></TextField>
+              <TextField
+                multiline
+                fullWidth
+                label='Snow Weather DNFT-description'
+                rows={2}
+                margin='dense'
+                id='description'
+                onChange={handleDesciptionChange4}
+              ></TextField>
+
+              <Button
+                onClick={uploadToIpfs}
+                variant='outlined'
+                fullWidth
+                className='mt-5'
               >
-                <MenuItem value='Seoul'>Seoul</MenuItem>
-                <MenuItem value='London'>London</MenuItem>
-                <MenuItem value='New York'>New York</MenuItem>
-              </Select>
-            </FormControl>
+                {activating ? (
+                  // <LoadingOverlay spinner text='Loading your content...' />
+                  <Image alt='Loading' src='/123.gif' width={30} height={30} />
+                ) : (
+                  <>Upload to IPFS</>
+                )}
+              </Button>
 
-            <FieldTitle>Image setting by weather</FieldTitle>
-            <Helper>
-              File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, WAV,
-              OGG, GLB, GLTF. Max size: 100 MB
-            </Helper>
-            <Helper>It is stored in ipfs of thirdweb.</Helper>
-
-            <div className='flex mb-2 mt-4'>
-              <span className='text-3xl mr-3'>☀️</span>
-              <Input
-                type='file'
-                className='w-full'
-                onChange={(e) => {
-                  if (e.target.files) {
-                    setFile1(e.target.files[0]);
-                  }
-                }}
-              />
-            </div>
-            <TextField
-              fullWidth
-              label='Sunny Weather DNFT-name'
-              margin='dense'
-              id='token-name'
-              onChange={handleNameChange1}
-            ></TextField>
-            <TextField
-              multiline
-              fullWidth
-              label='Sunny Weather DNFT-description'
-              rows={2}
-              margin='dense'
-              id='description'
-              onChange={handleDesciptionChange1}
-            ></TextField>
-
-            <div className='flex mb-2 mt-4'>
-              <span className='text-3xl mr-3'>🌧️</span>
-              <Input
-                type='file'
-                className='w-full'
-                onChange={(e) => {
-                  if (e.target.files) {
-                    setFile2(e.target.files[0]);
-                  }
-                }}
-              />
-            </div>
-            <TextField
-              fullWidth
-              label='Rainy Weather DNFT-name'
-              margin='dense'
-              id='token-name'
-              onChange={handleNameChange2}
-            ></TextField>
-            <TextField
-              multiline
-              fullWidth
-              label='Rainy Weather DNFT-description'
-              rows={2}
-              margin='dense'
-              id='description'
-              onChange={handleDesciptionChange2}
-            ></TextField>
-
-            <div className='flex mb-2 mt-4'>
-              <span className='text-3xl mr-3'>☁️</span>
-              <Input
-                type='file'
-                className='w-full'
-                onChange={(e) => {
-                  if (e.target.files) {
-                    setFile3(e.target.files[0]);
-                  }
-                }}
-              />
-            </div>
-            <TextField
-              fullWidth
-              label='Cloudy Weather DNFT-name'
-              margin='dense'
-              id='token-name'
-              onChange={handleNameChange3}
-            ></TextField>
-            <TextField
-              multiline
-              fullWidth
-              label='Cloudy Weather DNFT-description'
-              rows={2}
-              margin='dense'
-              id='description'
-              onChange={handleDesciptionChange3}
-            ></TextField>
-
-            <div className='flex mb-2 mt-4'>
-              <span className='text-3xl mr-3'>❄️</span>
-              <Input
-                type='file'
-                className='w-full'
-                onChange={(e) => {
-                  if (e.target.files) {
-                    setFile4(e.target.files[0]);
-                  }
-                }}
-              />
-            </div>
-            <TextField
-              fullWidth
-              label='Snow Weather DNFT-name'
-              margin='dense'
-              id='token-name'
-              onChange={handleNameChange4}
-            ></TextField>
-            <TextField
-              multiline
-              fullWidth
-              label='Snow Weather DNFT-description'
-              rows={2}
-              margin='dense'
-              id='description'
-              onChange={handleDesciptionChange4}
-            ></TextField>
-
-            <Button
-              onClick={uploadToIpfs}
-              variant='outlined'
-              fullWidth
-              className='mt-4'
-            >
-              {activating ? (
-                // <LoadingOverlay spinner text='Loading your content...' />
-                <Image alt='Loading' src='/123.gif' width={30} height={30} />
-              ) : (
-                <>Upload to IPFS</>
-              )}
-            </Button>
-
-            <FieldTitle className='flex'>
-              {sunImageUri ? (
-                <>IPFS URLs have been created.</>
-              ) : (
-                <> Create IPFS URLs by clicking the button above ⬆️.</>
-              )}
-            </FieldTitle>
-            <div className='w-100%'>
-              <UriHelper>
-                Sunny Image IPFS URI:{' '}
+              <FieldTitle className='flex'>
                 {sunImageUri ? (
-                  <Link
-                    href='#'
-                    underline='always'
-                    onClick={() => openNewWindow(sunImageUri)}
-                  >
-                    {sunImageUri}
-                  </Link>
+                  <>IPFS URLs have been created.</>
                 ) : (
-                  <></>
+                  <> Create IPFS URLs by clicking the button above ⬆️.</>
                 )}
-              </UriHelper>
-              <UriHelper>
-                Rainy Image IPFS URI:{' '}
-                {rainImageUri ? (
-                  <Link
-                    href='#'
-                    underline='always'
-                    onClick={() => openNewWindow(rainImageUri)}
-                  >
-                    {rainImageUri}
-                  </Link>
-                ) : (
-                  <></>
-                )}
-              </UriHelper>
-              <UriHelper>
-                Cloudy Image IPFS URI:{' '}
-                {cloudyImageUri ? (
-                  <Link
-                    href='#'
-                    underline='always'
-                    onClick={() => openNewWindow(cloudyImageUri)}
-                  >
-                    {cloudyImageUri}
-                  </Link>
-                ) : (
-                  <></>
-                )}
-              </UriHelper>
-              <UriHelper>
-                Snow Image IPFS URI:{' '}
-                {snowImageUri ? (
-                  <Link
-                    href='#'
-                    underline='always'
-                    onClick={() => openNewWindow(snowImageUri)}
-                  >
-                    {snowImageUri}
-                  </Link>
-                ) : (
-                  <></>
-                )}
-              </UriHelper>
-            </div>
+              </FieldTitle>
+              <div className='w-100%'>
+                <UriHelper>
+                  Sunny Image IPFS URI:{' '}
+                  {sunImageUri ? (
+                    <Link
+                      href='#'
+                      underline='always'
+                      onClick={() => openNewWindow(sunImageUri)}
+                    >
+                      {sunImageUri}
+                    </Link>
+                  ) : (
+                    <></>
+                  )}
+                </UriHelper>
+                <UriHelper>
+                  Rainy Image IPFS URI:{' '}
+                  {rainImageUri ? (
+                    <Link
+                      href='#'
+                      underline='always'
+                      onClick={() => openNewWindow(rainImageUri)}
+                    >
+                      {rainImageUri}
+                    </Link>
+                  ) : (
+                    <></>
+                  )}
+                </UriHelper>
+                <UriHelper>
+                  Cloudy Image IPFS URI:{' '}
+                  {cloudyImageUri ? (
+                    <Link
+                      href='#'
+                      underline='always'
+                      onClick={() => openNewWindow(cloudyImageUri)}
+                    >
+                      {cloudyImageUri}
+                    </Link>
+                  ) : (
+                    <></>
+                  )}
+                </UriHelper>
+                <UriHelper>
+                  Snow Image IPFS URI:{' '}
+                  {snowImageUri ? (
+                    <Link
+                      href='#'
+                      underline='always'
+                      onClick={() => openNewWindow(snowImageUri)}
+                    >
+                      {snowImageUri}
+                    </Link>
+                  ) : (
+                    <></>
+                  )}
+                </UriHelper>
+              </div>
 
-            {/* <FieldTitle>Token Name</FieldTitle>
+              {/* <FieldTitle>Token Name</FieldTitle>
             <Helper>
               Please enter a name for a DNFT that covers the above
             </Helper>
@@ -646,35 +588,36 @@ const Create: NextPage = () => {
             <Button variant='outlined' fullWidth onClick={addProperty}>
               Add Property
             </Button> */}
-            <CreateButtonView className='flex'>
-              <button
-                onClick={handleClick}
-                disabled={sunImageUri ? false : true}
-                type='button'
-                className=' text-gray-900 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-10 py-2.5  place-items-center inline-flex  dark:focus:ring-gray-500 flex-1 mb-2'
-              >
-                <svg
-                  className='w-4 h-4 mr-2 mx-40 text-[#626890]'
-                  aria-hidden='true'
-                  focusable='false'
-                  data-prefix='fab'
-                  data-icon='ethereum'
-                  role='img'
-                  xmlns='http://www.w3.org/2000/svg'
-                  viewBox='0 0 320 512'
+              <CreateButtonView className='flex'>
+                <button
+                  onClick={handleClick}
+                  disabled={sunImageUri ? false : true}
+                  type='button'
+                  className=' text-gray-900 bg-gray-200 hover:bg-gray-300 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-10 py-2.5  place-items-center inline-flex  dark:focus:ring-gray-500 flex-1 mb-2'
                 >
-                  <path
-                    fill='currentColor'
-                    d='M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z'
-                  ></path>
-                </svg>
-                Create Weather DNFT
-              </button>
-            </CreateButtonView>
-            <span>{message}</span>
-          </Box>
-        </CreateView>
-      </CreatePageWrapper>
+                  <svg
+                    className='w-4 h-4 mr-2 mx-40 text-[#626890]'
+                    aria-hidden='true'
+                    focusable='false'
+                    data-prefix='fab'
+                    data-icon='ethereum'
+                    role='img'
+                    xmlns='http://www.w3.org/2000/svg'
+                    viewBox='0 0 320 512'
+                  >
+                    <path
+                      fill='currentColor'
+                      d='M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z'
+                    ></path>
+                  </svg>
+                  Create Weather DNFT
+                </button>
+              </CreateButtonView>
+              <span>{message}</span>
+            </Box>
+          </CreateView>
+        </CreatePageWrapper>
+      </LoadingOverlay>
     </div>
   );
 };
