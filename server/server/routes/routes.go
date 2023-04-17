@@ -15,7 +15,8 @@ func ConfigureRoutes(server *s.Server) {
 	server.Echo.Use(middleware.Recover())
 	server.Echo.Use(middleware.CORS())
 
-	server.Echo.GET("/main",  getHandler.GetHandle)
+	server.Echo.GET("/main", getHandler.GetHandle)
+	server.Echo.GET("/location", getHandler.GetMyWeather)
 	server.Echo.GET("/mypage", getHandler.GetMyPage)
 	server.Echo.POST("/mnfts", postHandler.MultipleCreateNFT)
 	server.Echo.POST("/snfts", postHandler.SimpleCreateNFT)
