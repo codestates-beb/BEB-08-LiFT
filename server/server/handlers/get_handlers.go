@@ -63,11 +63,16 @@ func (g *GetHandler) GetMyPage(c echo.Context) error {
 }
 
 func (g *GetHandler) GetMyWeather(c echo.Context) error {
-	fmt.Println("test")
+	
+	//user, pw 정보 가져오기 
 	user := os.Getenv("user")
 	password := os.Getenv("password")
+
+	//db url 설정 
 	db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
 	fmt.Println("db_url", db_url)
+
+
 	db, err := sql.Open("mysql", db_url)
 	if err != nil {
 		log.Fatal(err)
@@ -79,10 +84,12 @@ func (g *GetHandler) GetMyWeather(c echo.Context) error {
 	if err != nil {
 		return err
 	}
+	
 	fmt.Println("rows", rows)
 	defer rows.Close()
 
 	var weatherList []WeatherRef
+	
 	for rows.Next() {
 		var weather WeatherRef
 		err := rows.Scan(&weather.ID, &weather.LocationID, &weather.Name, &weather.Latitude, &weather.Longitude)

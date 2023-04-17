@@ -11,7 +11,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
 	"github.com/thirdweb-dev/go-sdk/thirdweb"
 )
@@ -31,34 +30,15 @@ type Attribute struct {
 
 // 다음 코드에서는 배열의 JSON 객체를 나타내는 NFT 구조체를 정의한다
 type MNFT struct {
+	LocationId string  `json:"locationId"`
+	NFTData    NFTData `json:"nftData"`
+}
+
+type NFTData struct {
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
 	Image       string      `json:"image"`
 	Attributes  []Attribute `json:"attributes"`
-}
-
-type WeatherData struct {
-	Sun   Weather `json:"sun"`
-	Rain  Weather `json:"rain"`
-	Cloud Weather `json:"cloud"`
-	Snow  Weather `json:"snow"`
-}
-
-type Weather struct {
-	Name        string      `json:"name"`
-	Description string      `json:"name"`
-	Image       string      `json:"image"`
-	Attributes  []Attribute `json:"attributes"`
-}
-
-type WeatherModal struct {
-	gorm.Model
-	Name        string
-	Description string
-	Image       string
-	Location    string
-	Latitude    string
-	Longitude   string
 }
 
 // 변수 설정
@@ -75,14 +55,21 @@ var (
 func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
 	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
-	var data map[string]MNFT
+	// var data map[string]struct {
+	// 	LocationId int     `json:"locationId"`
+	// 	NFTData    NFTData `json:"nftData"`
+	// }
+
+	var data []MNFT
 
 	//데이터 바인딩
 	if err := c.Bind(&data); err != nil {
 		return err
 	}
 
-	//메타데이터 슬라이스
+	fmt.Println("data", data)
+	fmt.Println("type check", reflect.TypeOf(data))
+	//메타데이터 슬라이스s
 	metadataSlice := make([]string, len(data))
 
 	//채널을 만들어서 메타데이터 URL을 받는다.
@@ -90,27 +77,35 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 	// WaitGroup을 사용하여 각 goroutine의 종료를 기다립니다.
 	var wg sync.WaitGroup
+
+	//data 길이만큼 작업개수 추가
 	wg.Add(len(data))
+
 	for _, v := range data {
 
-		go func(v MNFT) {
+		go func(v struct {
+			LocationId string  `json:"locationId"`
+			NFTData    NFTData `json:"nftData"`
+		}) {
+			//고루팀 작업 종료
 			defer wg.Done()
+			// v = .Marshal(v)
 			metadata := map[string]interface{}{
-				"name":        v.Name,
-				"description": v.Description,
-				"image":       v.Image,
+				"name":        v.NFTData.Name,
+				"description": v.NFTData.Description,
+				"image":       v.NFTData.Image,
 				"attributes": []interface{}{
 					map[string]interface{}{
-						"trait_type": v.Attributes[0].TraitType,
-						"value":      v.Attributes[0].Value,
+						"trait_type": v.NFTData.Attributes[0].TraitType,
+						"value":      v.NFTData.Attributes[0].Value,
 					},
 					map[string]interface{}{
-						"trait_type": v.Attributes[1].TraitType,
-						"value":      v.Attributes[1].Value,
+						"trait_type": v.NFTData.Attributes[1].TraitType,
+						"value":      v.NFTData.Attributes[1].Value,
 					},
 					map[string]interface{}{
-						"trait_type": v.Attributes[2].TraitType,
-						"value":      v.Attributes[2].Value,
+						"trait_type": v.NFTData.Attributes[2].TraitType,
+						"value":      v.NFTData.Attributes[2].Value,
 					},
 				},
 			}
@@ -197,7 +192,7 @@ func (p *PostHandlers) SimpleCreateNFT(c echo.Context) error {
 	lock.Lock()
 	defer lock.Unlock()
 
-	var data map[string]MNFT
+	var data map[string]NFTData
 
 	if err := c.Bind(&data); err != nil {
 		return err
