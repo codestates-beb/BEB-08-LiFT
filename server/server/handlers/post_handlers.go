@@ -82,46 +82,58 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 		return err
 	}
 
+	//메타데이터 슬라이스
 	metadataSlice := make([]string, len(data))
 
 	//채널을 만들어서 메타데이터 URL을 받는다.
 	metadataURLs := make(chan string, len(data))
 
+	// WaitGroup을 사용하여 각 goroutine의 종료를 기다립니다.
+	var wg sync.WaitGroup
+	wg.Add(len(data))
 	for _, v := range data {
 
-		metadata := map[string]interface{}{
-			"name":        v.Name,
-			"description": v.Description,
-			"image":       v.Image,
-			"attributes": []interface{}{
-				map[string]interface{}{
-					"trait_type": v.Attributes[0].TraitType,
-					"value":      v.Attributes[0].Value,
+		go func(v MNFT) {
+			defer wg.Done()
+			metadata := map[string]interface{}{
+				"name":        v.Name,
+				"description": v.Description,
+				"image":       v.Image,
+				"attributes": []interface{}{
+					map[string]interface{}{
+						"trait_type": v.Attributes[0].TraitType,
+						"value":      v.Attributes[0].Value,
+					},
+					map[string]interface{}{
+						"trait_type": v.Attributes[1].TraitType,
+						"value":      v.Attributes[1].Value,
+					},
+					map[string]interface{}{
+						"trait_type": v.Attributes[2].TraitType,
+						"value":      v.Attributes[2].Value,
+					},
 				},
-				map[string]interface{}{
-					"trait_type": v.Attributes[1].TraitType,
-					"value":      v.Attributes[1].Value,
-				},
-				map[string]interface{}{
-					"trait_type": v.Attributes[2].TraitType,
-					"value":      v.Attributes[2].Value,
-				},
-			},
-		}
-		fmt.Println("metadata", metadata)
+			}
+			fmt.Println("metadata", metadata)
 
-		sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
-		uri, _ := sdk.Storage.Upload(metadata, "", "")
-		removeUri := strings.Replace(uri, "ipfs://", "", 1)
-		newMetaDataUri := "https://gateway.ipfscdn.io/ipfs/" + removeUri
-		fmt.Println("newMetaDataUri", newMetaDataUri)
-		//데이터를 채널에 넣기.
-		metadataURLs <- newMetaDataUri
+			sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
+			uri, _ := sdk.Storage.Upload(metadata, "", "")
+			removeUri := strings.Replace(uri, "ipfs://", "", 1)
+			newMetaDataUri := "https://gateway.ipfscdn.io/ipfs/" + removeUri
+			fmt.Println("newMetaDataUri", newMetaDataUri)
+			//데이터를 채널에 넣기.
+			metadataURLs <- newMetaDataUri
+		}(v)
 
 	}
+	go func() {
+		wg.Wait()
+		//채널 닫기
+		close(metadataURLs)
+	}()
 
-	for i := 0; i < len(data); i++ {
-		metadataSlice[i] = <-metadataURLs
+	for uri := range metadataURLs {
+		metadataSlice = append(metadataSlice, uri)
 	}
 
 	fmt.Println("metadataSlice", metadataSlice)

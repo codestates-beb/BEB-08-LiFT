@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"context"
 	s "echo-dnft/server"
 	"fmt"
 	"net/http"
@@ -27,9 +26,9 @@ func (g *GetHandler) GetHandle(c echo.Context) error {
 		panic(err)
 	}
 	fmt.Println("sdk", sdk)
-	address := os.Getenv(os.Getenv("LOCATIONMANAGER"))
-	fmt.Println("address", address)
-	nft, err := sdk.GetNFTCollection(address)
+	contract_address := os.Getenv("CONTRACTS")
+	fmt.Println("contract_address", contract_address)
+	nft, err := sdk.GetNFTCollection(contract_address)
 
 	fmt.Println(reflect.TypeOf(nft))
 	fmt.Println("nft", nft)
@@ -38,13 +37,19 @@ func (g *GetHandler) GetHandle(c echo.Context) error {
 		panic(err)
 	}
 
-	nfts, err := nft.GetAll(context.Background())
-	if err != nil {
-		panic(err)
-	}
+	// nfts, err := nft.GetAll(context.Background())
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	fmt.Println("nfts", nfts)
-	return c.JSON(http.StatusOK, nfts)
+	// fmt.Println("nfts", nfts)
+
+	owner := os.Getenv("WALLET_ADDRESS")
+	// nfts, err := nft.GetOwned(context.Background(), owner)
+	// name := nfts[0].Metadata.Name
+	fmt.Println("owner", owner)
+
+	return c.JSON(http.StatusOK, nft)
 
 }
 

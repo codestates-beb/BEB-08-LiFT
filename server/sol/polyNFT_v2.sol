@@ -6,6 +6,10 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 //0x5DfB8244EcCF8a65bA65824435484643f3c65f4b
+//0xd9145CCE52D386f254917e481eB44e9943F39138
+//0x18Ae43bC0d59AdfC1F0E1ce9c73A17058A7fa1F3
+
+//0x18Ae43bC0d59AdfC1F0E1ce9c73A17058A7fa1F3
 contract PolyBloom is ERC721, ERC721URIStorage{
 
     using Counters for Counters.Counter; 
