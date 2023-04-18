@@ -5,12 +5,17 @@ import (
 	s "echo-dnft/server"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"reflect"
 	"strings"
 	"sync"
 
+	// "github.com/ava-labs/coreth/ethclient"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/labstack/echo/v4"
 	"github.com/thirdweb-dev/go-sdk/thirdweb"
 )
@@ -46,11 +51,32 @@ type Attribute struct {
 	Value     string `json:"value"`
 }
 
+// type MyContract struct {
+// 	contract *contracts.MyContract // contracts.MyContract는 ERC721 컨트랙트의 Go 패키지입니다.
+// }
+
 // 변수 설정
 var (
 	//Mutex 동시실행 방지하는 변수
 	lock = sync.Mutex{}
 )
+
+// func NewMyContract(address common.Address, client *ethclient.Client) (*MyContract, error) {
+// 	contract, err := contracts.NewMyContract(address, client)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return &MyContract{contract: contract}, nil
+// }
+
+// func (c *MyContract) GetTokenURI(tokenId *big.Int) (string, error) {
+// 	uri, err := c.contract.GetTokenURI(nil, tokenId)
+// 	fmt.Println("uri", uri)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	return uri, nil
+// }
 
 // 1: locationManager : 0x8DB93Ede3bC2b1AdE17352aFB3077749400F83A0
 // 2: weatherFeed: 0x988934F6B8B0a264e342b846cA87FdB361BAf7e1
@@ -89,7 +115,7 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 	//채널을 만들어서 메타데이터 URL을 받는다.
 	metadataURLs := make(chan string, len(data2))
-	fmt.Println("metadataSlice metadataURLs", metadataSlice, metadataURLs)
+	//fmt.Println("metadataSlice metadataURLs", metadataSlice, metadataURLs)
 	///WaitGroup을 사용하여 각 goroutine의 종료를 기다립니다.
 	var wg sync.WaitGroup
 
@@ -115,12 +141,12 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 				"image":       meta["image"].(string),
 				"attributes":  meta["attributes"].([]interface{}),
 			}
-			fmt.Println("metadata", metadata)
+			//fmt.Println("metadata", metadata)
 			sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
 			uri, _ := sdk.Storage.Upload(metadata, "", "")
 			removeUri := strings.Replace(uri, "ipfs://", "", 1)
 			newMetaDataUri := "https://gateway.ipfscdn.io/ipfs/" + removeUri
-			fmt.Println("newMetaDataUri", newMetaDataUri)
+			//fmt.Println("newMetaDataUri", newMetaDataUri)
 			//데이터를 채널에 넣기.
 			metadataURLs <- newMetaDataUri
 			fmt.Println("metadataURLs", metadataURLs)
@@ -139,7 +165,6 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 	}
 
-	fmt.Println("metadataSlice", metadataSlice)
 	for i, v := range metadataSlice {
 		metadataSlice[i] = strings.TrimSpace(v)
 		fmt.Println(metadataSlice)
@@ -157,8 +182,8 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	fmt.Println("result 2 ", result)
 	fmt.Println("type check result 2 ", reflect.TypeOf(result))
 	//contractAddress := os.Getenv("CONTRACTS")
-	contractAddress := os.Getenv("WEATHERNFT")
-	fmt.Println("contractAddress", contractAddress)
+	// contractAddress := os.Getenv("WEATHERNFT")
+	// fmt.Println("contractAddress", contractAddress)
 
 	// sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
 	// 	PrivateKey: os.Getenv("PRIVATEKEY"),
@@ -173,27 +198,101 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	// }
 	// fmt.Println("contract", contract)
 
-	contract, err := sdk.GetContract(os.Getenv("WEATHERNFT"))
+	// balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("balance", balance)
+
+	// 노드 RPC 엔드포인트
+	//client, err := ethclient.Dial("https://rpc-mumbai.maticvigil.com")
+	//https://polygon-mumbai.g.alchemy.com/v2/FmAXvDRDA0EhqdaHRUeFMBmx6TgkYZG6
+	client, err := ethclient.Dial("https://polygon-mumbai.g.alchemy.com/v2/FmAXvDRDA0EhqdaHRUeFMBmx6TgkYZG6")
 	if err != nil {
-		panic(err)
+		// 오류 처리
+		return err
 	}
-	fmt.Println("contract", contract)
+	account := common.HexToAddress("0x7684992428a8E5600C0510c48ba871311067d74c")
+	balance, err := client.BalanceAt(context.Background(), account, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("account :", account)        // 25893180161173005034
+	fmt.Println("Account balance:", balance) // 25893180161173005034
+
+	nftcontractAddress := common.HexToAddress("0x87eF7353aE7619B0403E50b78A215D6Cee9f4abf")
+	fmt.Println("nftcontractAddress", nftcontractAddress)
+
+	block, err := client.BlockByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Latest block:", block.Number().Uint64())
+
+	// instance, err := token.NewToken(account, client)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	//fmt.Println("instance", instance)
+	//name, _ := instance.Name(&bind.CallOpts{})
+	// symbol, err := instance.Symbol(&bind.CallOpts{})
+	// decimals, err := instance.Decimals(&bind.CallOpts{})
+	// fmt.Println("name, symbol, decimals", name, symbol, decimals)
+
+	// instance, err := NewMyContract(nftcontractAddress, client)
+	// if err != nil {
+	// 	// 오류 처리
+	// }
+	// fmt.Println("instance", instance)
+
+	// name, _ := contract.Call(context.Background(), "name", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	// fmt.Println("name", name)
+
+	// symbol, _ := contract.Call(context.Background(), "symbol", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	// fmt.Println("symbol", symbol)
+
+	// getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
+	// if err != nil {
+	// 	fmt.Println("err", err)
+	// 	panic(err)
+	// }
+	// fmt.Println("getIpfsUri1", getIpfsUri)
+
+	// //메타데이터 4개를 설정하는 함수 실행
+	// contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", metadataSlice)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// //메타데이터를 잘 가져왔는지 체크
+	// getIpfsUri2, err := contract.Call(context.Background(), "getIpfsUri")
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// fmt.Println("getIpfsUri2", getIpfsUri2)
+
+	// contract, err := sdk.GetContract(os.Getenv("WEATHERNFT"))
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("contract", contract)
 
 	// fmt.Println("type check result 2 ", reflect.TypeOf(metadataSlice))
 	// fmt.Println("metadataSlice", metadataSlice)
 	//메타데이터 4개를 설정하는 함수 실행
 
-	tx, err := contract.Call(context.Background(), "mint", "0x7684992428a8E5600C0510c48ba871311067d74c", "0x7684992428a8E5600C0510c48ba871311067d74c", result, weatherLocationId)
-	if err != nil {
-		fmt.Println("contractCall mint ")
-		panic(err)
-	}
-	fmt.Println("tx", tx)
+	// tx, err := contract.Call(context.Background(), "mint", "0x7684992428a8E5600C0510c48ba871311067d74c", "0x7684992428a8E5600C0510c48ba871311067d74c", result, weatherLocationId)
+	// if err != nil {
+	// 	fmt.Println("contractCall mint ")
+	// 	panic(err)
+	// }
+	// fmt.Println("tx", tx)
 
-	metadataBytes := []byte(strings.Join(metadataSlice, "\n"))
+	//metadataBytes := []byte(strings.Join(metadataSlice, "\n"))
 
-	return c.JSONBlob(http.StatusOK, metadataBytes)
-	//return c.String(http.StatusOK, "Hello")
+	//return c.JSONBlob(http.StatusOK, metadataBytes)
+	return c.String(http.StatusOK, "Hello")
 }
 
 func (p *PostHandlers) SimpleCreateNFT(c echo.Context) error {
@@ -260,10 +359,16 @@ func (p *PostHandlers) SimpleCreateNFT(c echo.Context) error {
 	}
 	fmt.Println("balance", balance)
 
-	getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
-	if err != nil {
-		panic(err)
-	}
+	// name, _ := contract.Call(context.Background(), "name", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	// fmt.Println("name", name)
+
+	// symbol, _ := contract.Call(context.Background(), "symbol", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	// fmt.Println("symbol", symbol)
+
+	// getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
+	// if err != nil {
+	// 	panic(err)
+	// }
 	var result string
 	var elements []string
 	for _, v := range metadataSlice {
@@ -271,21 +376,22 @@ func (p *PostHandlers) SimpleCreateNFT(c echo.Context) error {
 		result = "[" + strings.Join(elements, ", ") + "]"
 	}
 	fmt.Println("result 2 ", result)
-	fmt.Println("getIpfsUri1", getIpfsUri)
+	//fmt.Println("getIpfsUri1", getIpfsUri)
 	fmt.Println("type check result 2 ", reflect.TypeOf(result))
 	fmt.Println("type check result 2 ", reflect.TypeOf(metadataSlice))
 	//메타데이터 4개를 설정하는 함수 실행
-	contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", result)
-	if err != nil {
-		panic(err)
-	}
+	// contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", result)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	//메타데이터를 잘 가져왔는지 체크
-	getIpfsUri2, err := contract.Call(context.Background(), "getIpfsUri")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("getIpfsUri2", getIpfsUri2)
+	// //메타데이터를 잘 가져왔는지 체크
+	// getIpfsUri2, err := contract.Call(context.Background(), "getIpfsUri")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("getIpfsUri2", getIpfsUri2)
+
 	return c.JSONBlob(http.StatusOK, response)
 
 }
