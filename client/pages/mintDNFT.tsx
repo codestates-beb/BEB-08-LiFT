@@ -28,6 +28,7 @@ interface Weather {
 }
 
 interface WeatherData {
+  locationId: Number;
   sun: Weather;
   rain: Weather;
   cloud: Weather;
@@ -35,6 +36,7 @@ interface WeatherData {
 }
 
 const Weather: WeatherData = {
+  locationId: 1, // 추가하기
   sun: {
     name: 'sun',
     description: 'sun description',
@@ -121,7 +123,7 @@ interface Property {
 // sun, rain, cloudy, snow => 0, 1, 2, 3
 // seoul: 37.5 126.9 / london: 36.9 -93.9 new york 40.7 -74
 
-const Create: NextPage = () => {
+const Create: NextPage = (props) => {
   const [ImageUri, setImageUri] = useState('https://example.com/snow.jpg');
 
   const [properties, setProperties] = useState<Property[]>([
@@ -237,33 +239,57 @@ const Create: NextPage = () => {
     }
   };
 
+  // const handleLocationChange = (event) => {
+  //   event.preventDefault();
+  //   setLocation(event.target.value);
+  //   console.log('check: ' + event.target.value);
+  //   let latitude, longitude;
+  //   if (event.target.value === 'Seoul') {
+  //     latitude = '37.5519';
+  //     longitude = '126.9918';
+  //   } else if (event.target.value === 'London') {
+  //     latitude = '51.5072';
+  //     longitude = '0.1276';
+  //   } else {
+  //     latitude = '40.7128';
+  //     longitude = '74.0060';
+  //   }
+  //   console.log('wefwe' + location); //  한박자 늦게 입력값이 저장됨
+  //   Weather.sun.attributes[0].value = event.target.value;
+  //   Weather.sun.attributes[1].value = latitude;
+  //   Weather.sun.attributes[2].value = longitude;
+  //   Weather.rain.attributes[0].value = event.target.value;
+  //   Weather.rain.attributes[1].value = latitude;
+  //   Weather.rain.attributes[2].value = longitude;
+  //   Weather.cloud.attributes[0].value = event.target.value;
+  //   Weather.cloud.attributes[1].value = latitude;
+  //   Weather.cloud.attributes[2].value = longitude;
+  //   Weather.snow.attributes[0].value = event.target.value;
+  //   Weather.snow.attributes[1].value = latitude;
+  //   Weather.snow.attributes[2].value = longitude;
+  // };
+
   const handleLocationChange = (event) => {
     event.preventDefault();
     setLocation(event.target.value);
-    let latitude, longitude;
-    if (event.target.value === 'Seoul') {
-      latitude = '37.5519';
-      longitude = '126.9918';
-    } else if (event.target.value === 'London') {
-      latitude = '51.5072';
-      longitude = '0.1276';
-    } else {
-      latitude = '40.7128';
-      longitude = '74.0060';
+    const selectedLocation = props.location.find(
+      (loc) => loc.name === event.target.value
+    );
+    if (selectedLocation) {
+      Weather.locationId = selectedLocation.locationID.toString();
+      Weather.sun.attributes[0].value = selectedLocation.name;
+      Weather.sun.attributes[1].value = selectedLocation.latitude.toString();
+      Weather.sun.attributes[2].value = selectedLocation.longitude.toString();
+      Weather.rain.attributes[0].value = selectedLocation.name;
+      Weather.rain.attributes[1].value = selectedLocation.latitude.toString();
+      Weather.rain.attributes[2].value = selectedLocation.longitude.toString();
+      Weather.cloud.attributes[0].value = selectedLocation.name;
+      Weather.cloud.attributes[1].value = selectedLocation.latitude.toString();
+      Weather.cloud.attributes[2].value = selectedLocation.longitude.toString();
+      Weather.snow.attributes[0].value = selectedLocation.name;
+      Weather.snow.attributes[1].value = selectedLocation.latitude.toString();
+      Weather.snow.attributes[2].value = selectedLocation.longitude.toString();
     }
-    console.log('wefwe' + location); //  한박자 늦게 입력값이 저장됨
-    Weather.sun.attributes[0].value = event.target.value;
-    Weather.sun.attributes[1].value = latitude;
-    Weather.sun.attributes[2].value = longitude;
-    Weather.rain.attributes[0].value = event.target.value;
-    Weather.rain.attributes[1].value = latitude;
-    Weather.rain.attributes[2].value = longitude;
-    Weather.cloud.attributes[0].value = event.target.value;
-    Weather.cloud.attributes[1].value = latitude;
-    Weather.cloud.attributes[2].value = longitude;
-    Weather.snow.attributes[0].value = event.target.value;
-    Weather.snow.attributes[1].value = latitude;
-    Weather.snow.attributes[2].value = longitude;
   };
 
   const handleNameChange1 = (event) => {
@@ -318,11 +344,11 @@ const Create: NextPage = () => {
             <Title>Create New Weather DNFT</Title>
             <Box>
               <FieldTitle>Set Location</FieldTitle>
-              <Helper>
+              <Helper className='mb-4'>
                 Enter the location so that your DNFT knows what local weather it
                 will follow
               </Helper>
-              <FormControl fullWidth className='mt-8'>
+              <FormControl fullWidth className='mt-4'>
                 <InputLabel id='demo-simple-select-label'>Location</InputLabel>
                 <Select
                   labelId='demo-simple-select-label'
@@ -331,9 +357,11 @@ const Create: NextPage = () => {
                   label='Location'
                   onChange={handleLocationChange}
                 >
-                  <MenuItem value='Seoul'>Seoul</MenuItem>
-                  <MenuItem value='London'>London</MenuItem>
-                  <MenuItem value='New York'>New York</MenuItem>
+                  {props.location.map((location) => (
+                    <MenuItem key={location.value} value={location.name}>
+                      {location.name}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
 
@@ -458,13 +486,14 @@ const Create: NextPage = () => {
                 margin='dense'
                 id='description'
                 onChange={handleDesciptionChange4}
+                className='mb-7'
               ></TextField>
 
               <Button
                 onClick={uploadToIpfs}
                 variant='outlined'
                 fullWidth
-                className='mt-5'
+                className='mt-7'
               >
                 {activating ? (
                   // <LoadingOverlay spinner text='Loading your content...' />
@@ -540,54 +569,6 @@ const Create: NextPage = () => {
                 </UriHelper>
               </div>
 
-              {/* <FieldTitle>Token Name</FieldTitle>
-            <Helper>
-              Please enter a name for a DNFT that covers the above
-            </Helper>
-            <TextField
-              required
-              fullWidth
-              margin='dense'
-              id='token-name'
-            ></TextField>
-
-            <FieldTitle>Token Desription</FieldTitle>
-            <Helper>
-              The description will be included on the item's detail page
-              underneath its image. Markdown syntax is supported.
-            </Helper>
-            <TextField
-              required
-              multiline
-              rows={3}
-              fullWidth
-              margin='dense'
-              id='description'
-            ></TextField>
-
-            <FieldTitle>Properties</FieldTitle>
-            <Helper>Textual traits that show up as rectangles</Helper>
-            <PropertyBox>
-              {properties.map(({ trait_type, value }, index) => (
-                <PropertyRow key={`property-${index}`}>
-                  <PropertyKeyField
-                    id={`property-${index}-key`}
-                    label='key'
-                    value={trait_type}
-                    onChange={handlePropertyChange(index, 'trait_type')}
-                  />
-                  <PropertyValueField
-                    id={`property-${index}-value`}
-                    label='value'
-                    value={value}
-                    onChange={handlePropertyChange(index, 'value')}
-                  />
-                </PropertyRow>
-              ))}
-            </PropertyBox>
-            <Button variant='outlined' fullWidth onClick={addProperty}>
-              Add Property
-            </Button> */}
               <CreateButtonView className='flex'>
                 <button
                   onClick={handleClick}
@@ -686,19 +667,13 @@ const UriHelper = styled.div`
   font-weight: 700;
 `;
 
-{
-  /* <div className='flex mt-2'>
-<TextField
-  className='flex-1 mr-1'
-  label='latitude'
-  id='latitude'
-  onChange={handleLatitudeChange}
-/>
-<TextField
-  className='flex-1 ml-1'
-  label='longitude'
-  id='longitude'
-  onChange={handleLongitudeChange}
-/>
-</div> */
-}
+Create.getInitialProps = async function () {
+  const res = await fetch('http://152.69.231.140:1323/location');
+  const data = await res.json();
+
+  console.log('location data:' + JSON.stringify(data));
+
+  return {
+    location: data,
+  };
+};

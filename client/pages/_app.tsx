@@ -42,7 +42,7 @@ export default function App({
 
   return (
     <WagmiConfig client={client}>
-      <SessionProvider session={session} refetchInterval={0}>
+      <SessionProvider session={pageProps.session} refetchInterval={0}>
         <QueryClientProvider client={queryClient}>
           <div className='px-36'>
             <Header />

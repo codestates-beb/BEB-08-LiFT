@@ -9,10 +9,11 @@ const prisma = new PrismaClient();
 async function addCart(userId: string, item: Omit<Cart, 'id' | 'userId'>) {
   // omit : db가 업데이트하면서 id를 생성한다.
   try {
-    const response = await prisma.cart.create({
+    const response = await prisma.Cart.create({
       data: {
         userId,
         ...item,
+        amount: 1,
       },
     });
 

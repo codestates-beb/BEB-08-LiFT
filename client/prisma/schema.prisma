@@ -8,11 +8,6 @@ datasource db {
   relationMode = "prisma"
 }
 
-model categories {
-  id   Int    @id @default(autoincrement())
-  name String
-}
-
 model Weather {
   id         Int     @id @default(autoincrement())
   locationID Int?
@@ -22,20 +17,15 @@ model Weather {
 }
 
 model nft {
-  id            Int     @id @default(autoincrement())
-  user_id       Int?
-  token_id      Int?
-  owner_address String?
-  name          String?
-  description   String?
-  ipfs_url      String?
-  tx_hash       String?
-
-  category_id Int
-  createdAt   DateTime @default(now())
-  price       Int
+  id              Int     @id @default(autoincrement())
+  user_id         Int?
+  token_id        Int?
+  name            String?
+  description     String?
+  ipfs_url        String?
+  tx_hash         String?
+  creator_address String?
 }
-
 
 model user {
   id          Int     @id @default(autoincrement())
@@ -46,7 +36,7 @@ model user {
 }
 
 model Transaction {
-  id                       Int    @id @default(autoincrement())
+  id                       Int     @id @default(autoincrement())
   SENDER                   String?
   CREATED_CONTRACT_ADDRESS String?
   VALUE                    Float?
@@ -58,7 +48,7 @@ model Transaction {
 }
 
 model Block {
-  id                       Int      @id @default(autoincrement())
+  id                       Int       @id @default(autoincrement())
   FROM_ADDRESS             String?
   CREATED_CONTRACT_ADDRESS String?
   VALUE                    Float?
@@ -67,7 +57,6 @@ model Block {
   MINED_ON_BLOCK           DateTime?
   BLOCKHASH                String?
 }
-
 
 model Wishlist {
   id      Int    @id @default(autoincrement())

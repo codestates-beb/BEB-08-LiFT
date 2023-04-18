@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
-import { Cart, OrderItem, Wishlist, dnfts } from '@prisma/client';
+import { Cart, OrderItem, Wishlist, nft } from '@prisma/client';
 import { format } from 'date-fns';
 import { CATEGORY_NAME } from '@/constants/dnfts';
 import {
@@ -32,7 +32,6 @@ interface CartData {
   // other properties of the cart object
 }
 
-// 만약 DNFT를 적용한다면 이 부분은 제외되어야 한다.
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const product = await fetch(
     `http://localhost:3000/api/get-DNFT?id=${context.params?.id}`
@@ -44,7 +43,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     props: {
       product: {
         ...product,
-        images: [product.image_url, product.image_url, product.image_url],
+        images: [product.ipfs_url, product.ipfs_url, product.ipfs_url],
       },
     },
   };
@@ -53,7 +52,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const WISHLIST_QUERY_KEY = '/api/get-wishlist';
 
 export default function Products(props: {
-  product: dnfts & { images: string[] };
+  product: nft & { ipfs_url: string[] };
 }) {
   const [index, setIndex] = useState(0);
 
@@ -63,9 +62,10 @@ export default function Products(props: {
   const router = useRouter();
   const { id: dnftId } = router.query;
 
-  const descriptions = useState<undefined>(() =>
-    props.product.contents ? JSON.parse(props.product.contents) : ''
-  );
+  // description
+  // const descriptions = useState<undefined>(() =>
+  //   props.product.description ? JSON.stringify(props.product.description) : ''
+  // );
 
   const { data: wishlist } = useQuery([WISHLIST_QUERY_KEY], () =>
     fetch(WISHLIST_QUERY_KEY)
@@ -124,6 +124,7 @@ export default function Products(props: {
         .then((res) => res.item),
     {
       onMutate: () => {
+        // 요청을 초기화 해서 다시 요청을 보낼 수 있도록 한다.
         queryClient.invalidateQueries([CART_QUERY_KEY]);
       },
       onSuccess: () => {
@@ -159,7 +160,7 @@ export default function Products(props: {
   const isWished =
     wishlist != null && dnftId != null ? wishlist.includes(dnftId) : false;
 
-  const { data: dnfts } = useQuery<{ dnfts: dnfts[] }, unknown, dnfts[]>(
+  const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
     ['/api/get-cart'],
     () => fetch('/api/get-cart').then((res) => res.json()),
     {
@@ -171,7 +172,7 @@ export default function Products(props: {
     fetch(CART_QUERY_KEY).then((res) => res.json())
   );
 
-  const result = data ? data.dnfts.flatMap((dnft) => dnft.dnftId) : [];
+  //const result = data ? data.dnfts.flatMap((dnft) => dnft.dnftId) : [];
 
   const validate = (type: 'cart' | 'order') => {
     // console.log(result)
@@ -184,13 +185,13 @@ export default function Products(props: {
     //   }
     // }
     if (type === 'cart') {
-      addCart({ dnftId: product.id, amount: product.price });
+      addCart({ dnftId: product.id });
     }
     if (type === 'order') {
       addOrder([
         {
           dnftId: product.id,
-          amount: product.price,
+          amount: 0,
         },
       ]);
     }
@@ -225,23 +226,24 @@ export default function Products(props: {
                 </div>
               ))}
             </div>
-            // ! 이 부분에 description 만 보일 수 있도록 수정
-            {/* {editorState != null && (
-              <CustomEditor editorState={editorState} readOnly />
-            )} */}
+            <div className='text-2xl mb-3 mt-4'>Description :</div>
+            <div
+              className='w-full flex-col p-4 rounded-md'
+              style={{ border: '1px solid grey' }}
+            >
+              {product.description}
+            </div>
           </div>
           <div style={{ maxWidth: 600 }} className='flex flex-col space-y-6'>
-            <div className='text-lg text-zinc-400'>
-              {CATEGORY_NAME[product.category_id - 1]}
-            </div>
+            <div className='text-lg text-zinc-400'>Weather DNFT</div>
             <div className='text-4xl font-semibold'>{product.name}</div>
-            <div className='text-lg'>
-              {product.price.toLocaleString('ko-kr')}ETH
-            </div>
+            <div className='text-lg'>Creator: {product.creator_address}</div>
+            <div className='text-lg'>0.1 ETH</div>
             <div></div>
             <div className='flex space-x-3'>
               <Button
                 leftIcon={<IconShoppingCart size={20} stroke={1.5} />}
+                className='flex-1'
                 style={{ backgroundColor: 'black' }}
                 radius='xl'
                 size='md'
@@ -254,16 +256,15 @@ export default function Products(props: {
                     router.push('/auth/login');
                     return;
                   }
-                  // 로그인이 된 상태이다.
+
                   validate('cart');
                 }}
               >
                 장바구니
               </Button>
-              <>{JSON.stringify(wishlist)}</>
+
               <Button
-                // loading={isLoading}
-                disabled={wishlist == null}
+                className='flex-1'
                 leftIcon={
                   isWished ? (
                     <IconHeart size={20} stroke={1.5} />
@@ -310,9 +311,9 @@ export default function Products(props: {
               구매하기
             </Button>
             {/* date-fns */}
-            <div className='text-sm text-zinc-300'>
+            {/* <div className='text-sm text-zinc-300'>
               등록: {format(new Date(product.createdAt), 'yyyy년 M월 d일')}
-            </div>
+            </div> */}
           </div>
         </div>
       ) : (

@@ -42,9 +42,9 @@ function SignIn() {
       .then((res) => res.json())
       .then((data) => console.log(data));
 
-    fetch(`/api/auth/enroll-wishlist?address=${account}`) // wishlist DB에 저장
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+    // fetch(`/api/auth/enroll-wishlist?address=${account}`) // wishlist DB에 저장
+    //   .then((res) => res.json())
+    //   .then((data) => console.log(data));
     push(url);
   };
 

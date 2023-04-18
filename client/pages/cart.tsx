@@ -1,7 +1,7 @@
 import { CATEGORY_NAME } from '@/constants/dnfts';
 import styled from '@emotion/styled';
-import { Button } from '@mantine/core';
-import { Cart, OrderItem, dnfts } from '@prisma/client';
+import { Badge, Button, Card, Group, Text } from '@mantine/core';
+import { Cart, OrderItem, nft } from '@prisma/client';
 import { IconX } from '@tabler/icons-react';
 import {
   QueryClient,
@@ -27,7 +27,7 @@ export default function CartPage() {
 
   const queryClient = useQueryClient();
 
-  const { data } = useQuery<{ dnfts: CartItem[] }, unknown, CartItem[]>(
+  const { data } = useQuery<{ nft: CartItem[] }, unknown, CartItem[]>(
     [CART_QUERY_KEY],
     () =>
       fetch(CART_QUERY_KEY)
@@ -50,7 +50,7 @@ export default function CartPage() {
   }, [data]);
 
   // TODO: 찜해놓은 dnft를 보여줘도 좋을 것 같음
-  const { data: dnfts } = useQuery<{ dnfts: dnfts[] }, unknown, dnfts[]>(
+  const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
     [
       `/api/get-dnfts?skip=0
       &take=3`,
@@ -153,37 +153,52 @@ export default function CartPage() {
         </div>
       </div>
       <div className='mt-32'>
-        <p>추천상품</p>
+        <div className='text-2xl mb-3 mt-4'>추천 상품</div>
         {dnfts && (
           <div className='grid grid-cols-3 gap-5'>
             {dnfts.map((dnft) => (
-              <div
+              <Card
+                shadow='sm'
+                padding='lg'
+                radius='md'
                 key={dnft.id}
-                style={{ maxWidth: 500 }}
+                withBorder
+                style={{ maxWidth: 500, cursor: 'pointer' }}
                 onClick={() => router.push(`/dnfts/${dnft.id}`)}
               >
-                <Image
-                  className='rounded'
-                  alt={dnft.name}
-                  src={dnft.image_url ?? ''}
-                  width={500}
-                  height={300}
-                  placeholder='blur'
-                  blurDataURL='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg=='
-                />
-                <div>
-                  <span>{dnft.name}</span>
-
-                  <span className='ml-auto'>
-                    <span className='float-right'>
-                      {dnft.price.toLocaleString('ko-KR')}ETH
-                    </span>
-                  </span>
-                </div>
-                <span className='text-zinc-400'>
-                  {CATEGORY_NAME[dnft.category_id - 1]}
-                </span>
-              </div>
+                <Card.Section
+                  component='a'
+                  onClick={() => router.push(`/dnfts/${dnft.id}`)}
+                >
+                  <Image
+                    className='rounded'
+                    alt={dnft.name ?? ''}
+                    src={dnft.ipfs_url ?? ''}
+                    width={500}
+                    height={300}
+                    placeholder='blur'
+                    blurDataURL='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg=='
+                  />
+                </Card.Section>
+                <Group position='apart' mt='md' mb='xs'>
+                  <Text weight={500}>{dnft.name}</Text>
+                  <Badge color='pink' variant='light'>
+                    On Sale
+                  </Badge>
+                </Group>
+                <Text size='sm' color='dimmed'>
+                  {dnft.description}
+                </Text>
+                <Button
+                  variant='light'
+                  color='blue'
+                  fullWidth
+                  mt='md'
+                  radius='md'
+                >
+                  Weather DNFT
+                </Button>
+              </Card>
             ))}
           </div>
         )}
@@ -237,7 +252,7 @@ const Item = (props: CartItem) => {
   return (
     <div className='w-full flex p-4' style={{ borderBottom: '1px solid grey' }}>
       <Image
-        src={props.image_url}
+        src={props.ipfs_url}
         width={155}
         height={195}
         alt={props.name}
@@ -246,7 +261,8 @@ const Item = (props: CartItem) => {
       <div className='flex flex-col ml-4'>
         <span className='font-semibold mb-2'>{props.name}</span>
         <span className='mb-auto'>
-          가격: {props.price.toLocaleString('ko-kr')}ETH
+          0.1 ETH
+          {/* 가격: {props.price.toLocaleString('ko-kr')}ETH */}
         </span>
       </div>
       <div className='flex ml-auto space-x-4'>

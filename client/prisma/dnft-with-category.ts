@@ -9,29 +9,27 @@ export const WeatherDNFTs: Prisma.nftCreateInput[] = Array.apply(
 ).map((_, idx) => ({
   name: `Weather DNFT ${idx + 1}`,
   description: `저는 Weather DNFT No.${idx + 1} 입니다.`,
-  category_id: 1,
-  owner_address: `${address[idx + 1]}`,
+  creator_address: `${address[idx + 1]}`,
   ipfs_url: `https://picsum.photos/id/${Math.floor(
     Math.random() * (1000 - idx + 1)
   )}/1000/600`,
   tx_hash: `${tsHash[idx + 1]}`,
-  price: Math.random() * (0.1 - 0.05) + 0.05,
 }));
 
-export const SportsDNFTs: Prisma.nftCreateInput[] = Array.apply(
-  null,
-  Array(30)
-).map((_, idx) => ({
-  name: `Sports DNFT ${idx + 1}`,
-  description: `저는 Sports DNFT No.${idx + 1} 입니다.`,
-  category_id: 2,
-  owner_address: `${address[idx + 1]}`,
-  ipfs_url: `https://picsum.photos/id/${Math.floor(
-    Math.random() * (400 - idx + 1)
-  )}/1000/600`,
-  tx_hash: `${tsHash[idx + 1]}`,
-  price: Math.random() * (0.1 - 0.05) + 0.05,
-}));
+// export const SportsDNFTs: Prisma.nftCreateInput[] = Array.apply(
+//   null,
+//   Array(30)
+// ).map((_, idx) => ({
+//   name: `Sports DNFT ${idx + 1}`,
+//   description: `저는 Sports DNFT No.${idx + 1} 입니다.`,
+//   category_id: 2,
+//   owner_address: `${address[idx + 1]}`,
+//   ipfs_url: `https://picsum.photos/id/${Math.floor(
+//     Math.random() * (400 - idx + 1)
+//   )}/1000/600`,
+//   tx_hash: `${tsHash[idx + 1]}`,
+//   price: Math.random() * (0.1 - 0.05) + 0.05,
+// }));
 
 // export const TimeDNFTs: Prisma.dnftsCreateInput[] = Array.apply(
 //   null,
@@ -48,31 +46,31 @@ export const SportsDNFTs: Prisma.nftCreateInput[] = Array.apply(
 
 export const productsItmes: Prisma.nftCreateInput[] = [
   ...WeatherDNFTs,
-  ...SportsDNFTs,
+  //...SportsDNFTs,
 ];
 
 const main = async () => {
-  const CATEGORY_NAME = ['WeatherDNFT', 'SportsDNFT'];
+  const CATEGORY_NAME = ['WeatherDNFT'];
 
-  CATEGORY_NAME.forEach(async (name, idx) => {
-    const category = await prisma.categories.upsert({
-      where: {
-        id: idx + 1,
-      },
-      update: {
-        name: name,
-      },
-      create: {
-        name: name,
-      },
-    });
-    console.log(
-      'category id : ',
-      category.id,
-      'category name : ',
-      category.name
-    );
-  });
+  // CATEGORY_NAME.forEach(async (name, idx) => {
+  //   const category = await prisma.categories.upsert({
+  //     where: {
+  //       id: idx + 1,
+  //     },
+  //     update: {
+  //       name: name,
+  //     },
+  //     create: {
+  //       name: name,
+  //     },
+  //   });
+  //   console.log(
+  //     'category id : ',
+  //     category.id,
+  //     'category name : ',
+  //     category.name
+  //   );
+  // });
 
   // await prisma.products.deleteMany({});
 
