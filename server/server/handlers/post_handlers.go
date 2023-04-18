@@ -5,7 +5,6 @@ import (
 	s "echo-dnft/server"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"reflect"
@@ -14,8 +13,6 @@ import (
 
 	// "github.com/ava-labs/coreth/ethclient"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/labstack/echo/v4"
 	"github.com/thirdweb-dev/go-sdk/thirdweb"
 )
@@ -149,7 +146,7 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 			//fmt.Println("newMetaDataUri", newMetaDataUri)
 			//데이터를 채널에 넣기.
 			metadataURLs <- newMetaDataUri
-			fmt.Println("metadataURLs", metadataURLs)
+			///fmt.Println("metadataURLs", metadataURLs)
 
 		}()
 	}
@@ -162,72 +159,94 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 	for uri := range metadataURLs {
 		metadataSlice = append(metadataSlice, uri)
-
 	}
-
-	for i, v := range metadataSlice {
-		metadataSlice[i] = strings.TrimSpace(v)
-		fmt.Println(metadataSlice)
-	}
-
-	fmt.Println("metadataSlice 2 trimSpace", metadataSlice)
-
-	var result string
-	var elements []string
-
-	for _, v := range metadataSlice {
-		elements = append(elements, v)
-		result = "[" + strings.Join(elements, ",") + "]"
-	}
-	fmt.Println("result 2 ", result)
-	fmt.Println("type check result 2 ", reflect.TypeOf(result))
-	//contractAddress := os.Getenv("CONTRACTS")
-	// contractAddress := os.Getenv("WEATHERNFT")
-	// fmt.Println("contractAddress", contractAddress)
-
-	// sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
-	// 	PrivateKey: os.Getenv("PRIVATEKEY"),
-	// })
-	// if err != nil {
-	// 	panic(err)
+	fmt.Println("metadataSlice slice before", metadataSlice)
+	metadataSlice = metadataSlice[4:]
+	fmt.Println("metadataSlice slice[4:]", metadataSlice)
+	// for i, elem := range metadataSlice {
+	// 	// fmt.Println("i", elem)
+	// 	metadataSlice[i] = "\"" + elem + "\""
 	// }
 
-	// contract, err := sdk.GetContractFromAbi(contractAddress, ABI)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println("contract", contract)
+	metadataString := strings.Join(metadataSlice, ",") // 슬라이스를 하나의 문자열로 결합
+	fmt.Println("metadataString", metadataString)
+	metadataString = strings.Replace(metadataString, "\\", "", -1)
+	metadataelements := strings.Split(metadataString, ",")
+	fmt.Println("metadataelements2", metadataelements)
+	fmt.Println("type check metadataelements", reflect.TypeOf(metadataelements))
 
-	// balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println("balance", balance)
+	contractAddress := os.Getenv("CONTRACTS")
+	accountAddress := os.Getenv("WALLET_ADDRESS")
+	fmt.Println("contractAddress", contractAddress)
+	fmt.Println("accountAddress", accountAddress)
 
+	sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
+		PrivateKey: os.Getenv("PRIVATEKEY"),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	contract, err := sdk.GetContractFromAbi(contractAddress, ABI)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("contract", contract)
+
+	balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("balance", balance)
+
+	getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
+	if err != nil {
+		fmt.Println("getIpfsUri test~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		panic(err)
+	}
+	fmt.Println("getIpfsUri", getIpfsUri)
+	fmt.Println("type check getIpfsUri", reflect.TypeOf(getIpfsUri))
+	//컨트랙트 주소 :0x443F2C402ae77877F0FB011491e02A10E153A33b
+	//metadataelements >> 성공
+	setIpfsUri, err := contract.Call(context.Background(), "setIpfsUri", metadataelements)
+	if err != nil {
+		fmt.Println("getIpfsUri test~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		panic(err)
+	}
+	fmt.Println("setIpfsUri", setIpfsUri)
+
+	safeMint, err := contract.Call(context.Background(), "safeMint", accountAddress)
+	if err != nil {
+		fmt.Println("safeMint test~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		panic(err)
+	}
+	fmt.Println("safeMint", safeMint)
+
+	// golang geth api
 	// 노드 RPC 엔드포인트
 	//client, err := ethclient.Dial("https://rpc-mumbai.maticvigil.com")
 	//https://polygon-mumbai.g.alchemy.com/v2/FmAXvDRDA0EhqdaHRUeFMBmx6TgkYZG6
-	client, err := ethclient.Dial("https://polygon-mumbai.g.alchemy.com/v2/FmAXvDRDA0EhqdaHRUeFMBmx6TgkYZG6")
-	if err != nil {
-		// 오류 처리
-		return err
-	}
-	account := common.HexToAddress("0x7684992428a8E5600C0510c48ba871311067d74c")
-	balance, err := client.BalanceAt(context.Background(), account, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("account :", account)        // 25893180161173005034
-	fmt.Println("Account balance:", balance) // 25893180161173005034
+	// client, err := ethclient.Dial("https://polygon-mumbai.g.alchemy.com/v2/FmAXvDRDA0EhqdaHRUeFMBmx6TgkYZG6")
+	// if err != nil {
+	// 	// 오류 처리
+	// 	return err
+	// }
+	// account := common.HexToAddress("0x7684992428a8E5600C0510c48ba871311067d74c")
+	// balance, err := client.BalanceAt(context.Background(), account, nil)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println("account :", account)        // 25893180161173005034
+	// fmt.Println("Account balance:", balance) // 25893180161173005034
 
-	nftcontractAddress := common.HexToAddress("0x87eF7353aE7619B0403E50b78A215D6Cee9f4abf")
-	fmt.Println("nftcontractAddress", nftcontractAddress)
+	// nftcontractAddress := common.HexToAddress("0x87eF7353aE7619B0403E50b78A215D6Cee9f4abf")
+	// fmt.Println("nftcontractAddress", nftcontractAddress)
 
-	block, err := client.BlockByNumber(context.Background(), nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Latest block:", block.Number().Uint64())
+	// block, err := client.BlockByNumber(context.Background(), nil)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println("Latest block:", block.Number().Uint64())
 
 	// instance, err := token.NewToken(account, client)
 	// if err != nil {
