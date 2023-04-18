@@ -136,58 +136,59 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 	for uri := range metadataURLs {
 		metadataSlice = append(metadataSlice, uri)
+
 	}
 
 	fmt.Println("metadataSlice", metadataSlice)
-	contractAddress := os.Getenv("CONTRACTS")
-	fmt.Println("contractAddress", contractAddress)
-
-	sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
-		PrivateKey: os.Getenv("PRIVATEKEY"),
-	})
-	if err != nil {
-		panic(err)
+	for i, v := range metadataSlice {
+		metadataSlice[i] = strings.TrimSpace(v)
+		fmt.Println(metadataSlice)
 	}
 
-	contract, err := sdk.GetContractFromAbi(contractAddress, ABI)
+	fmt.Println("metadataSlice 2 trimSpace", metadataSlice)
+
+	var result string
+	var elements []string
+
+	for _, v := range metadataSlice {
+		elements = append(elements, v)
+		result = "[" + strings.Join(elements, ",") + "]"
+	}
+	fmt.Println("result 2 ", result)
+	fmt.Println("type check result 2 ", reflect.TypeOf(result))
+	//contractAddress := os.Getenv("CONTRACTS")
+	contractAddress := os.Getenv("WEATHERNFT")
+	fmt.Println("contractAddress", contractAddress)
+
+	// sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
+	// 	PrivateKey: os.Getenv("PRIVATEKEY"),
+	// })
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// contract, err := sdk.GetContractFromAbi(contractAddress, ABI)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println("contract", contract)
+
+	contract, err := sdk.GetContract(os.Getenv("WEATHERNFT"))
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("contract", contract)
 
-	balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("balance", balance)
-
-	getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
-	if err != nil {
-		panic(err)
-	}
-	var result string
-	var elements []string
-	for _, v := range metadataSlice {
-		elements = append(elements, v)
-		result = "[" + strings.Join(elements, ", ") + "]"
-	}
-	fmt.Println("result 2 ", result)
-	fmt.Println("getIpfsUri1", getIpfsUri)
-	fmt.Println("type check result 2 ", reflect.TypeOf(result))
-	fmt.Println("type check result 2 ", reflect.TypeOf(metadataSlice))
+	// fmt.Println("type check result 2 ", reflect.TypeOf(metadataSlice))
+	// fmt.Println("metadataSlice", metadataSlice)
 	//메타데이터 4개를 설정하는 함수 실행
-	contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", result)
+
+	tx, err := contract.Call(context.Background(), "mint", "0x7684992428a8E5600C0510c48ba871311067d74c", "0x7684992428a8E5600C0510c48ba871311067d74c", result, weatherLocationId)
 	if err != nil {
+		fmt.Println("contractCall mint ")
 		panic(err)
 	}
-
-	//메타데이터를 잘 가져왔는지 체크
-	getIpfsUri2, err := contract.Call(context.Background(), "getIpfsUri")
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("getIpfsUri2", getIpfsUri2)
+	fmt.Println("tx", tx)
 
 	metadataBytes := []byte(strings.Join(metadataSlice, "\n"))
 
@@ -253,6 +254,38 @@ func (p *PostHandlers) SimpleCreateNFT(c echo.Context) error {
 	fmt.Println("contractAddress", contract)
 	fmt.Println("metadataSlice", metadataSlice)
 
+	balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("balance", balance)
+
+	getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
+	if err != nil {
+		panic(err)
+	}
+	var result string
+	var elements []string
+	for _, v := range metadataSlice {
+		elements = append(elements, v)
+		result = "[" + strings.Join(elements, ", ") + "]"
+	}
+	fmt.Println("result 2 ", result)
+	fmt.Println("getIpfsUri1", getIpfsUri)
+	fmt.Println("type check result 2 ", reflect.TypeOf(result))
+	fmt.Println("type check result 2 ", reflect.TypeOf(metadataSlice))
+	//메타데이터 4개를 설정하는 함수 실행
+	contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", result)
+	if err != nil {
+		panic(err)
+	}
+
+	//메타데이터를 잘 가져왔는지 체크
+	getIpfsUri2, err := contract.Call(context.Background(), "getIpfsUri")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("getIpfsUri2", getIpfsUri2)
 	return c.JSONBlob(http.StatusOK, response)
 
 }
