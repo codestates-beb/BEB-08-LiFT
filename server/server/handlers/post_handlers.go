@@ -1,10 +1,10 @@
 package handlers
 
 import (
+	"context"
 	s "echo-dnft/server"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"reflect"
@@ -23,40 +23,25 @@ func NewPostHandlers(server *s.Server) *PostHandlers {
 	return &PostHandlers{server: server}
 }
 
-// 다음 코드에서는 배열의 JSON 객체를 나타내는 공통 NFTDATA 구조체를 정의한다
-
 type NFTData struct {
+	LocationId  int         `json:locationId`
 	Name        string      `json:"name"`
 	Description string      `json:"description"`
 	Image       string      `json:"image"`
 	Attributes  []Attribute `json:"attributes"`
 }
-type Attribute struct {
+
+type WeatherAttribute struct {
 	TraitType string `json:"trait_type"`
 	Value     string `json:"value"`
 }
-
-type Weather struct {
-	LocationId string `json:"locationId"`
-	Types      map[string]*WeatherType
-}
-
-// type Weather struct {
-// 	LocationId string      `json:"locationId"`
-// 	Sun        WeatherType `json:"sun"`
-// 	Rain       WeatherType `json:"rain"`
-// 	Cloud      WeatherType `json:"cloud"`
-// 	Snow       WeatherType `json:"snow"`
-// }
-
 type WeatherType struct {
 	Name        string             `json:"name"`
 	Description string             `json:"description"`
 	Image       string             `json:"image"`
 	Attributes  []WeatherAttribute `json:"attributes"`
 }
-
-type WeatherAttribute struct {
+type Attribute struct {
 	TraitType string `json:"trait_type"`
 	Value     string `json:"value"`
 }
@@ -76,152 +61,138 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
 	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
 
-	body, err := ioutil.ReadAll(c.Request().Body)
-	if err != nil {
-		return err
-	}
-	fmt.Println("body", body)
-	//fmt.Println("string(body)", string(body))
-	data2 := string(body)
-	fmt.Println("data2", data2)
-	fmt.Println("type check", reflect.TypeOf(body))
+	var data map[string]interface{}
 
-	var weather Weather
-	// if err := json.Unmarshal(body, &weather); err != nil {
-	// 	return err
-	// }
-	// fmt.Println("weather", weather)
-	if err := c.Bind(&weather); err != nil {
-		return err
-	}
-
-	// data := new(Weather)
-	data := &Weather{}
 	if err := c.Bind(&data); err != nil {
 		return err
 	}
-	fmt.Println("data", data)
 
-	locationId := data.LocationId
-	fmt.Println("locationId", locationId)
+	data2 := make(map[string]interface{})
+	var weatherLocationId string
+	for i, v := range data {
 
-	fmt.Println("type check", reflect.TypeOf(data))
+		if i == "locationId" {
+			switch s := v.(type) {
+			case string:
+				weatherLocationId = s
+			default:
+				fmt.Println("locationId is not a string ")
+			}
+		} else {
+
+			data2[i] = v
+		}
+	}
+	fmt.Println("weatherLocationId", weatherLocationId)
 	//메타데이터 슬라이스 변수를 data.Types 크기만큼 할당해서 생성한다.
-	// metadataSlice := make([]string, len(data.Types))
+	metadataSlice := make([]string, len(data2))
 
-	// //채널을 만들어서 메타데이터 URL을 받는다.
-	// metadataURLs := make(chan string, len(data.Types))
-
-	// //WaitGroup을 사용하여 각 goroutine의 종료를 기다립니다.
-	// var wg sync.WaitGroup
+	//채널을 만들어서 메타데이터 URL을 받는다.
+	metadataURLs := make(chan string, len(data2))
+	fmt.Println("metadataSlice metadataURLs", metadataSlice, metadataURLs)
+	///WaitGroup을 사용하여 각 goroutine의 종료를 기다립니다.
+	var wg sync.WaitGroup
 
 	//data 길이만큼 작업개수 추가
-	// fmt.Println("len(data.Types", len(data.Types))
-	// wg.Add(len(data.Types))
+	wg.Add(len(data2))
+	// fmt.Println("metadataSlice", metadataSlice, metadataURLs)
 
-	// for _, v := range data.Types {
-	// 	typeData := v
+	// cloudData := data2["cloud"].(map[string]interface{})
+	// cloudName := cloudData["name"].(string)
+	// fmt.Println("cloudData", cloudData)
+	// fmt.Println("cloudName", cloudName)
 
-	// 	go func() {
-	// 		defer wg.Done()
-	// 		fmt.Println("typeData", typeData)
-	// 		metadata := map[string]interface{}{
-	// 			"name":        typeData.Name,
-	// 			"description": typeData.Description,
-	// 			"image":       typeData.Image,
-	// 			"attributes": []interface{}{
-	// 				map[string]interface{}{
-	// 					"trait_type": typeData.Attributes[0].TraitType,
-	// 					"value":      typeData.Attributes[0].Value,
-	// 				},
-	// 				map[string]interface{}{
-	// 					"trait_type": typeData.Attributes[1].TraitType,
-	// 					"value":      typeData.Attributes[1].Value,
-	// 				},
-	// 				map[string]interface{}{
-	// 					"trait_type": typeData.Attributes[2].TraitType,
-	// 					"value":      typeData.Attributes[2].Value,
-	// 				},
-	// 			},
-	// 		}
-	// 		fmt.Println("metadata", metadata)
+	for i, _ := range data2 {
+		typeData := i
+		go func() {
+			defer wg.Done()
 
-	// 		sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
-	// 		uri, _ := sdk.Storage.Upload(metadata, "", "")
-	// 		removeUri := strings.Replace(uri, "ipfs://", "", 1)
-	// 		newMetaDataUri := "https://gateway.ipfscdn.io/ipfs/" + removeUri
-	// 		fmt.Println("newMetaDataUri", newMetaDataUri)
-	// 		//데이터를 채널에 넣기.
-	// 		metadataURLs <- newMetaDataUri
-	// 		fmt.Println("metadataURLs", metadataURLs)
-	// 	}()
+			meta := data2[typeData].(map[string]interface{})
 
-	// }
-	// go func() {
-	// 	wg.Wait()
-	// 	//채널 닫기
-	// 	close(metadataURLs)
-	// }()
+			metadata := map[string]interface{}{
+				"name":        meta["name"].(string),
+				"description": meta["description"].(string),
+				"image":       meta["image"].(string),
+				"attributes":  meta["attributes"].([]interface{}),
+			}
+			fmt.Println("metadata", metadata)
+			sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
+			uri, _ := sdk.Storage.Upload(metadata, "", "")
+			removeUri := strings.Replace(uri, "ipfs://", "", 1)
+			newMetaDataUri := "https://gateway.ipfscdn.io/ipfs/" + removeUri
+			fmt.Println("newMetaDataUri", newMetaDataUri)
+			//데이터를 채널에 넣기.
+			metadataURLs <- newMetaDataUri
+			fmt.Println("metadataURLs", metadataURLs)
 
-	// for uri := range metadataURLs {
-	// 	metadataSlice = append(metadataSlice, uri)
-	// }
+		}()
+	}
 
-	// fmt.Println("metadataSlice", metadataSlice)
-	// contractAddress := os.Getenv("CONTRACTS")
-	// fmt.Println("contractAddress", contractAddress)
+	go func() {
+		wg.Wait()
+		//채널 닫기
+		close(metadataURLs)
+	}()
 
-	// sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
-	// 	PrivateKey: os.Getenv("PRIVATEKEY"),
-	// })
-	// if err != nil {
-	// 	panic(err)
-	// }
+	for uri := range metadataURLs {
+		metadataSlice = append(metadataSlice, uri)
+	}
 
-	// contract, err := sdk.GetContractFromAbi(contractAddress, ABI)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println("contract", contract)
+	fmt.Println("metadataSlice", metadataSlice)
+	contractAddress := os.Getenv("CONTRACTS")
+	fmt.Println("contractAddress", contractAddress)
 
-	// balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println("balance", balance)
+	sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
+		PrivateKey: os.Getenv("PRIVATEKEY"),
+	})
+	if err != nil {
+		panic(err)
+	}
 
-	// getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// var result string
-	// var elements []string
-	// for _, v := range metadataSlice {
-	// 	elements = append(elements, v)
-	// 	result = "[" + strings.Join(elements, ", ") + "]"
-	// }
-	// fmt.Println("result 2 ", result)
-	// fmt.Println("getIpfsUri1", getIpfsUri)
-	// fmt.Println("type check result 2 ", reflect.TypeOf(result))
-	// fmt.Println("type check result 2 ", reflect.TypeOf(metadataSlice))
-	// //메타데이터 4개를 설정하는 함수 실행
-	// contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", result)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	contract, err := sdk.GetContractFromAbi(contractAddress, ABI)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("contract", contract)
 
-	// //메타데이터를 잘 가져왔는지 체크
-	// getIpfsUri2, err := contract.Call(context.Background(), "getIpfsUri")
-	// if err != nil {
-	// 	panic(err)
-	// }
+	balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("balance", balance)
 
-	// fmt.Println("getIpfsUri2", getIpfsUri2)
+	getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
+	if err != nil {
+		panic(err)
+	}
+	var result string
+	var elements []string
+	for _, v := range metadataSlice {
+		elements = append(elements, v)
+		result = "[" + strings.Join(elements, ", ") + "]"
+	}
+	fmt.Println("result 2 ", result)
+	fmt.Println("getIpfsUri1", getIpfsUri)
+	fmt.Println("type check result 2 ", reflect.TypeOf(result))
+	fmt.Println("type check result 2 ", reflect.TypeOf(metadataSlice))
+	//메타데이터 4개를 설정하는 함수 실행
+	contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", result)
+	if err != nil {
+		panic(err)
+	}
 
-	// metadataBytes := []byte(strings.Join(metadataSlice, "\n"))
-	// fmt.Println("metadataBytes", metadataBytes)
-	// return c.JSONBlob(http.StatusOK, "metadataBytes")
-	return c.String(http.StatusOK, "Hello")
+	//메타데이터를 잘 가져왔는지 체크
+	getIpfsUri2, err := contract.Call(context.Background(), "getIpfsUri")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("getIpfsUri2", getIpfsUri2)
+
+	metadataBytes := []byte(strings.Join(metadataSlice, "\n"))
+
+	return c.JSONBlob(http.StatusOK, metadataBytes)
+	//return c.String(http.StatusOK, "Hello")
 }
 
 func (p *PostHandlers) SimpleCreateNFT(c echo.Context) error {
@@ -245,8 +216,11 @@ func (p *PostHandlers) SimpleCreateNFT(c echo.Context) error {
 	}
 
 	fmt.Println("len(data)", len(data))
+	fmt.Println("typecheck reflect", reflect.TypeOf(data))
 	metadataSlice := make([]string, len(data))
 	for _, v := range data {
+		fmt.Println("v", v)
+		fmt.Println("v type", reflect.TypeOf(v))
 		fmt.Println("name:", v.Name)
 		fmt.Println("description:", v.Description)
 		fmt.Println("image:", v.Image)
@@ -277,13 +251,109 @@ func (p *PostHandlers) SimpleCreateNFT(c echo.Context) error {
 	abi := os.Getenv("ABI")
 	contract, err := sdk.GetContractFromAbi(contractAddress, abi)
 	fmt.Println("contractAddress", contract)
-	//balance, err := contract.Call("getIpfsUri", "{0x7684992428a8E5600C0510c48ba871311067d74c}")
-
-	// // You can also make a transaction to your contract with the call method
-	// tx, err := contract.Call("mintTo", "{{wallet_address}}", "ipfs://...")
-
 	fmt.Println("metadataSlice", metadataSlice)
 
 	return c.JSONBlob(http.StatusOK, response)
+
+}
+
+func (p *PostHandlers) DefaultCreateNFT(c echo.Context) error {
+	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
+	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
+	var data map[string]NFTData
+
+	//데이터 바인딩
+	if err := c.Bind(&data); err != nil {
+		return err
+	}
+
+	metadataSlice := make([]string, len(data))
+
+	//채널을 만들어서 메타데이터 URL을 받는다.
+	metadataURLs := make(chan string, len(data))
+
+	for _, v := range data {
+
+		metadata := map[string]interface{}{
+			"name":        v.Name,
+			"description": v.Description,
+			"image":       v.Image,
+			"attributes": []interface{}{
+				map[string]interface{}{
+					"trait_type": v.Attributes[0].TraitType,
+					"value":      v.Attributes[0].Value,
+				},
+				map[string]interface{}{
+					"trait_type": v.Attributes[1].TraitType,
+					"value":      v.Attributes[1].Value,
+				},
+				map[string]interface{}{
+					"trait_type": v.Attributes[2].TraitType,
+					"value":      v.Attributes[2].Value,
+				},
+			},
+		}
+
+		sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
+		uri, _ := sdk.Storage.Upload(metadata, "", "")
+		removeUri := strings.Replace(uri, "ipfs://", "", 1)
+		newMetaDataUri := "https://gateway.ipfscdn.io/ipfs/" + removeUri
+
+		//데이터를 채널에 넣기.
+		metadataURLs <- newMetaDataUri
+
+	}
+
+	for i := 0; i < len(data); i++ {
+		metadataSlice[i] = <-metadataURLs
+	}
+
+	contractAddress := os.Getenv("CONTRACTS")
+
+	sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
+		PrivateKey: os.Getenv("PRIVATEKEY"),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	contract, err := sdk.GetContractFromAbi(contractAddress, ABI)
+	if err != nil {
+		panic(err)
+	}
+
+	balance, err := contract.Call(context.Background(), "balanceOf", "0x7684992428a8E5600C0510c48ba871311067d74c")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("balance", balance)
+
+	getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("getIpfsUri", getIpfsUri)
+	var result string
+	var elements []string
+	for _, v := range metadataSlice {
+		elements = append(elements, v)
+		result = "[" + strings.Join(elements, ", ") + "]"
+	}
+
+	//메타데이터 4개를 설정하는 함수 실행
+	contract.Call(context.Background(), "setIpfsUri", "0x7684992428a8E5600C0510c48ba871311067d74c", result)
+	if err != nil {
+		panic(err)
+	}
+
+	//메타데이터를 잘 가져왔는지 체크
+	getIpfsUri2, err := contract.Call(context.Background(), "getIpfsUri")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("getIpfsUri2", getIpfsUri2)
+	metadataBytes := []byte(strings.Join(metadataSlice, "\n"))
+
+	return c.JSONBlob(http.StatusOK, metadataBytes)
 
 }
