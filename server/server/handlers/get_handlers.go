@@ -84,6 +84,37 @@ func (g *GetHandler) GetMyPage(c echo.Context) error {
 
 }
 
+func (g *GetHandler) GetDetail(c echo.Context) error {
+	var nftMain NFTMain
+	num := c.Param("num")
+	user := os.Getenv("user")
+	password := os.Getenv("password")
+	db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
+	db, err := sql.Open("mysql", db_url)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * from nft where id = ?", num)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for rows.Next() {
+
+		err := rows.Scan(&nftMain.ID, &nftMain.UserID, &nftMain.TokenID, &nftMain.OwnerAddress, &nftMain.Name, &nftMain.Description, &nftMain.IpfsUri, &nftMain.nft_contract_address)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	}
+	fmt.Println("nftMain", nftMain)
+
+	return c.JSON(http.StatusOK, nftMain)
+
+}
+
 func (g *GetHandler) GetMyWeather(c echo.Context) error {
 
 	//user, pw 정보 가져오기

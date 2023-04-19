@@ -17,16 +17,25 @@ func ConfigureRoutes(server *s.Server) {
 
 	//Main Api
 	server.Echo.GET("/", getHandler.GetMainPage)
+
 	//Location Api
 	server.Echo.GET("/location", getHandler.GetMyWeather)
+
 	//MyPage Api
 	server.Echo.GET("/mypage", getHandler.GetMyPage)
-	//오토메이션 DNFT
+
+	//NFT Detail Page Api
+	server.Echo.GET("/detail/:num", getHandler.GetDetail)
+
+	//Automation DNFT
 	server.Echo.POST("/mnfts", postHandler.MultipleCreateNFT)
-	//심플 DNFT
-	server.Echo.POST("/snfts", postHandler.SimpleCreateNFT)
+
 	//WEATHER DNFT API
 	server.Echo.POST("/wdnfts", postHandler.WeatherDynamicNFT)
+
+	//Simple DNFT
+	server.Echo.POST("/snfts", postHandler.SimpleCreateNFT)
+
 	//검색 API
 	//server.Echo.POST("/search   ", postHandler.WeatherDynamicNFT)
 
