@@ -15,12 +15,19 @@ func ConfigureRoutes(server *s.Server) {
 	server.Echo.Use(middleware.Recover())
 	server.Echo.Use(middleware.CORS())
 
+	//Main Api
 	server.Echo.GET("/", getHandler.GetMainPage)
+	//Location Api
 	server.Echo.GET("/location", getHandler.GetMyWeather)
+	//MyPage Api
 	server.Echo.GET("/mypage", getHandler.GetMyPage)
+	//오토메이션 DNFT
 	server.Echo.POST("/mnfts", postHandler.MultipleCreateNFT)
+	//심플 DNFT
 	server.Echo.POST("/snfts", postHandler.SimpleCreateNFT)
-	server.Echo.POST("/dnfts", postHandler.DefaultCreateNFT)
-	// server.Echo.POST("/unmar", postHandler.UnmarshalParam)
+	//WEATHER DNFT API
+	server.Echo.POST("/wdnfts", postHandler.WeatherDynamicNFT)
+	//검색 API
+	//server.Echo.POST("/search   ", postHandler.WeatherDynamicNFT)
 
 }

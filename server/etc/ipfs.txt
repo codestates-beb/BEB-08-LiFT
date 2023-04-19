@@ -51,3 +51,9 @@ https://gateway.ipfscdn.io/QmerEwUkicVJ1yAPh3R2joLGUEu8kum5XSVD6tadWTgetx/0
 ✔ Successfully uploaded directory to IPFS
 ✔ Files stored at the following IPFS URI: ipfs://QmbrnTEsM1XywtYXP3GLHW7jpCq233UiNc3vSemWH2h7D6
 ✔ Open this link to view your upload: https://ipfs.thirdwebcdn.com/ipfs/QmbrnTEsM1XywtYXP3GLHW7jpCq233UiNc3vSemWH2h7D6
+
+
+https://ipfs.thirdwebcdn.com/ipfs/QmbrnTEsM1XywtYXP3GLHW7jpCq233UiNc3vSemWH2h7D6/sun-chainlink.gif
+https://ipfs.thirdwebcdn.com/ipfs/QmbrnTEsM1XywtYXP3GLHW7jpCq233UiNc3vSemWH2h7D6/cloud-chainlink.gif	
+https://ipfs.thirdwebcdn.com/ipfs/QmbrnTEsM1XywtYXP3GLHW7jpCq233UiNc3vSemWH2h7D6/rain-chainlink.gif	
+https://ipfs.thirdwebcdn.com/ipfs/QmbrnTEsM1XywtYXP3GLHW7jpCq233UiNc3vSemWH2h7D6/snow-chainlink.gif

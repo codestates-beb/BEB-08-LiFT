@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -231,15 +232,15 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 		fmt.Println("db", db)
 
-		err = db.QueryRow("SELECT IFNULL(id,1)  from nft ").Scan(&nft_id)
+		err = db.QueryRow("SELECT Max(IFNULL(id,1) ) from nft ").Scan(&nft_id)
 		if err != nil {
 			fmt.Println(err)
 		}
-		err = db.QueryRow("SELECT IFNULL(user_id,1)  from nft ").Scan(&user_id)
+		err = db.QueryRow("SELECT Max(IFNULL(user_id,1))  from nft ").Scan(&user_id)
 		if err != nil {
 			fmt.Println(err)
 		}
-		err = db.QueryRow("SELECT IFNULL(token_id,1) from nft where owner_address=?", accountAddress).Scan(&token_id)
+		err = db.QueryRow("SELECT Max(IFNULL(token_id,1)) from nft where owner_address=?", accountAddress).Scan(&token_id)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -281,7 +282,7 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
 	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
 
-	var data map[string]interface{}
+	//var data map[string]interface{}
 
 	if err := c.Bind(&data); err != nil {
 		return err
@@ -311,12 +312,12 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 	metadataURLs := make(chan string, len(data2))
 	//fmt.Println("metadataSlice metadataURLs", metadataSlice, metadataURLs)
 	///WaitGroup을 사용하여 각 goroutine의 종료를 기다립니다.
-	var wg sync.WaitGroup
 
 	//data 길이만큼 작업개수 추가
 	wg.Add(len(data2))
 	// fmt.Println("metadataSlice", metadataSlice, metadataURLs)
 
+	metadataSlice2 := make([]string, 0)
 	for i, _ := range data2 {
 		typeData := i
 		go func() {
@@ -331,6 +332,15 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 				"attributes":  meta["attributes"].([]interface{}),
 			}
 			//fmt.Println("metadata", metadata)
+			//fmt.Println("len(metadataSlice2)", len(metadataSlice2))
+			if len(metadataSlice2) == 0 {
+				metadataSlice2 = append(metadataSlice2, meta["name"].(string))
+				metadataSlice2 = append(metadataSlice2, meta["description"].(string))
+				metadataSlice2 = append(metadataSlice2, meta["image"].(string))
+				//fmt.Println("metadataSlice2", metadataSlice2)
+			}
+
+			//metadataSlice2 = append(metadataSlice2, meta["attributes"].([]interface{}))
 			sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
 			uri, _ := sdk.Storage.Upload(metadata, "", "")
 			removeUri := strings.Replace(uri, "ipfs://", "", 1)
@@ -355,10 +365,6 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 	fmt.Println("metadataSlice slice before", metadataSlice)
 	metadataSlice = metadataSlice[4:]
 	fmt.Println("metadataSlice slice[4:]", metadataSlice)
-	// for i, elem := range metadataSlice {
-	// 	// fmt.Println("i", elem)
-	// 	metadataSlice[i] = "\"" + elem + "\""
-	// }
 
 	metadataString := strings.Join(metadataSlice, ",") // 슬라이스를 하나의 문자열로 결합
 	fmt.Println("metadataString", metadataString)
@@ -367,7 +373,7 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 	fmt.Println("metadataelements2", metadataelements)
 	fmt.Println("type check metadataelements", reflect.TypeOf(metadataelements))
 
-	contractAddress := os.Getenv("CONTRACTS")
+	contractAddress := os.Getenv("WEATHERNFT")
 	accountAddress := os.Getenv("WALLET_ADDRESS")
 	fmt.Println("contractAddress", contractAddress)
 	fmt.Println("accountAddress", accountAddress)
@@ -379,7 +385,7 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 		panic(err)
 	}
 
-	contract, err := sdk.GetContractFromAbi(contractAddress, ABI)
+	contract, err := sdk.GetContractFromAbi(contractAddress, ABI2)
 	if err != nil {
 		panic(err)
 	}
@@ -391,55 +397,85 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 	}
 	fmt.Println("balance", balance)
 
-	getIpfsUri, err := contract.Call(context.Background(), "getIpfsUri")
-	if err != nil {
-		fmt.Println("getIpfsUri test~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-		panic(err)
-	}
-	fmt.Println("getIpfsUri", getIpfsUri)
-	fmt.Println("type check getIpfsUri", reflect.TypeOf(getIpfsUri)) // []string
-	getIpfsUriSlice, _ := getIpfsUri.([]string)
-	fmt.Println("firstElement", getIpfsUriSlice[0])
+	// fmt.Println("type check getIpfsUri", reflect.TypeOf(getIpfsUri)) // []string
+	// getIpfsUriSlice, _ := getIpfsUri.([]string)
+	//fmt.Println("firstElement", getIpfsUriSlice[0])
 
 	//컨트랙트 주소 :0x443F2C402ae77877F0FB011491e02A10E153A33b
 	//metadataelements >> 성공
-	// setIpfsUri, err := contract.Call(context.Background(), "setIpfsUri", metadataelements)
-	// if err != nil {
-	// 	fmt.Println("getIpfsUri test~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-	// 	panic(err)
-	// }
-	// fmt.Println("setIpfsUri", setIpfsUri)
+	// tokenid는 owner address가 일치하면서 디비에 있는 값과 맞췄을 때 마지막 token_id에서 +1
+	// name > 메타데이터
 
-	// safeMint, err := contract.Call(context.Background(), "safeMint", accountAddress)
-	// if err != nil {
-	// 	fmt.Println("safeMint test~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-	// 	panic(err)
-	// } else {
-	// 	fmt.Println("safeMint Success")
-	// 	// user := os.Getenv("user")
-	// 	// password := os.Getenv("password")
-	// 	// //db url 설정
-	// 	// db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
-	// 	// fmt.Println("db_url", db_url)
+	locationNum, _ := strconv.Atoi(weatherLocationId) //locationNum
+	fmt.Println("locationNum", reflect.TypeOf(locationNum))
+	fmt.Println("locationNum", locationNum)
+	mint, err := contract.Call(context.Background(), "mint", accountAddress, metadataelements, locationNum)
+	if err != nil {
+		fmt.Println("mint test~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		panic(err)
+	} else {
+		fmt.Println("mint Success")
+		user := os.Getenv("user")
+		password := os.Getenv("password")
+		//db url 설정
+		db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
 
-	// 	// db, err := sql.Open("mysql", db_url)
-	// 	// if err != nil {
-	// 	// 	log.Fatal(err)
-	// 	// }
-	// 	// defer db.Close()
-	// 	// fmt.Println("db", db)
+		fmt.Println("metadataSlice2[0]", metadataSlice2[0])
+		fmt.Println("metadataSlice2[1]", metadataSlice2[1])
+		fmt.Println("metadataSlice2[2]", metadataSlice2[2])
 
-	// 	// rows, err := db.Query("SELECT id, locationID, name, latitude, longitude FROM Weather")
-	// 	// if err != nil {
-	// 	// 	return err
-	// 	// }
-	// 	// defer rows.Close()
-	// 	// //db.Exec()
+		db, err := sql.Open("mysql", db_url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer db.Close()
 
-	// }
-	// fmt.Println("safeMint", safeMint)
+		fmt.Println("db", db)
 
-	return c.String(http.StatusOK, "Congratulations. You've successfully minted.")
+		err = db.QueryRow("SELECT Max(IFNULL(id,1))  from nft ").Scan(&nft_id)
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = db.QueryRow("SELECT Max(IFNULL(user_id,1))  from nft ").Scan(&user_id)
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = db.QueryRow("SELECT Max(IFNULL(token_id,1)) from nft where owner_address=?", accountAddress).Scan(&token_id)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("nft_id", nft_id)
+		fmt.Println("user_id", user_id)
+		fmt.Println("token_id", token_id)
+		if nft_id == 0 && user_id == 0 || token_id == 0 {
+			nft_id, user_id, token_id = 1, 1, 1
+		} else if nft_id != 0 && user_id != 0 && token_id != 0 {
+			//nft_id 1,2,3,4,5,6
+			//user_id 1,2,3,4,5,6?
+			//token_id 1 1 2 3
+			nft_id += 1
+			user_id += 1
+			token_id += 1
+		}
+
+		fmt.Println("nft_id", nft_id)
+		fmt.Println("user_id", user_id)
+		fmt.Println("token_id", token_id)
+
+		stmt, err := db.Prepare("INSERT INTO nft (id, user_id, token_id, name, description, ipfs_url, nft_contract_address, owner_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer stmt.Close()
+
+		_, err = stmt.Exec(nft_id, user_id, token_id, metadataSlice2[0], metadataSlice2[1], metadataSlice2[2], contractAddress, accountAddress)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	fmt.Println("mint", mint)
+
+	return c.String(http.StatusOK, "Congratulations. You've successfully Weather NFT minted.")
 }
 
 func (p *PostHandlers) SimpleCreateNFT(c echo.Context) error {
