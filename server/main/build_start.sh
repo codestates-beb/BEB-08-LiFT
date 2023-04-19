@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if go run main.go; then 
-   go build main.go
+if go run mainServer.go; then 
+   go build mainServer.go
 	 ./main
 else 
   echo "ERROR" 

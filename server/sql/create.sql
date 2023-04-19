@@ -24,7 +24,19 @@ CREATE TABLE `nft` (
   `name` varchar(255),
   `description` varchar(255), 
   `ipfs_url` varchar(255),
-  `tx_hash` varchar(255),
+  `nft_contract_address` varchar(255)
+);
+
+
+CREATE TABLE `nft_test` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `user_id` int,
+  `token_id` int, 
+  `owner_address` varchar(255),
+  `name` varchar(255),
+  `description` varchar(255), 
+  `ipfs_url` varchar(255),
+  `nft_contract_address` varchar(255)
 );
 
 

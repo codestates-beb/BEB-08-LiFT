@@ -36,3 +36,18 @@ https://gateway.ipfscdn.io/QmerEwUkicVJ1yAPh3R2joLGUEu8kum5XSVD6tadWTgetx/0
 ✔ Successfully uploaded directory to IPFS
 ✔ Files stored at the following IPFS URI: ipfs://Qme4pzFWdY3r4e3sMARhtJ23PfSS9AiuynD5J2Zrz8f3U3
 ✔ Open this link to view your upload: https://ipfs.thirdwebcdn.com/ipfs/Qme4pzFWdY3r4e3sMARhtJ23PfSS9AiuynD5J2Zrz8f3U3
+
+    $$\     $$\       $$\                 $$\                         $$\       
+    $$ |    $$ |      \__|                $$ |                        $$ |      
+  $$$$$$\   $$$$$$$\  $$\  $$$$$$\   $$$$$$$ |$$\  $$\  $$\  $$$$$$\  $$$$$$$\  
+  \_$$  _|  $$  __$$\ $$ |$$  __$$\ $$  __$$ |$$ | $$ | $$ |$$  __$$\ $$  __$$\ 
+    $$ |    $$ |  $$ |$$ |$$ |  \__|$$ /  $$ |$$ | $$ | $$ |$$$$$$$$ |$$ |  $$ |
+    $$ |$$\ $$ |  $$ |$$ |$$ |      $$ |  $$ |$$ | $$ | $$ |$$   ____|$$ |  $$ |
+    \$$$$  |$$ |  $$ |$$ |$$ |      \$$$$$$$ |\$$$$$\$$$$  |\$$$$$$$\ $$$$$$$  |
+     \____/ \__|  \__|\__|\__|       \_______| \_____\____/  \_______|\_______/ 
+
+ 💎 thirdweb-cli v0.10.11 💎
+
+✔ Successfully uploaded directory to IPFS
+✔ Files stored at the following IPFS URI: ipfs://QmbrnTEsM1XywtYXP3GLHW7jpCq233UiNc3vSemWH2h7D6
+✔ Open this link to view your upload: https://ipfs.thirdwebcdn.com/ipfs/QmbrnTEsM1XywtYXP3GLHW7jpCq233UiNc3vSemWH2h7D6
