@@ -34,19 +34,15 @@ type NFTData struct {
 	Attributes  []Attribute `json:"attributes"`
 }
 
-type WeatherAttribute struct {
-	TraitType string `json:"trait_type"`
-	Value     string `json:"value"`
-}
-type WeatherType struct {
-	Name        string             `json:"name"`
-	Description string             `json:"description"`
-	Image       string             `json:"image"`
-	Attributes  []WeatherAttribute `json:"attributes"`
-}
 type Attribute struct {
 	TraitType string `json:"trait_type"`
 	Value     string `json:"value"`
+}
+
+type MyPage struct {
+	Name         string `json:"name"`
+	OwnerAddress string `json:"owner_address"`
+	Description  string `json:"description"`
 }
 
 // 변수 설정
@@ -54,25 +50,16 @@ var (
 	//Mutex 동시실행 방지하는 변수
 	lock = sync.Mutex{}
 	//wg 동시접근시 꼬이지 않게 하기 위한 변수 설정
-	wg sync.WaitGroup
-
-	data map[string]interface{}
-
+	wg       sync.WaitGroup
+	data     map[string]interface{}
 	nft_id   int
 	user_id  int
 	token_id int
 )
 
-// 1: locationManager : 0x8DB93Ede3bC2b1AdE17352aFB3077749400F83A0
-// 2: weatherFeed: 0x988934F6B8B0a264e342b846cA87FdB361BAf7e1
-// 3: weatherNft: 0x1077a33ED9aDD3d55aE3ef66C28b9638B9611C1d
-// 4: weatherUpKeep: 0x5Cd75C04Bf0de56FB94BaFdF2DC26F6A46Cdc031
-
 func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
 	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
-
-	//var data map[string]interface{}
 
 	if err := c.Bind(&data); err != nil {
 		return err
@@ -100,12 +87,8 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 	//채널을 만들어서 메타데이터 URL을 받는다.
 	metadataURLs := make(chan string, len(data2))
-	//fmt.Println("metadataSlice metadataURLs", metadataSlice, metadataURLs)
-	///WaitGroup을 사용하여 각 goroutine의 종료를 기다립니다.
-
-	//data 길이만큼 작업개수 추가
+	///WaitGroup을 사용하여 각 goroutine의 종료를 기다립니다
 	wg.Add(len(data2))
-	// fmt.Println("metadataSlice", metadataSlice, metadataURLs)
 
 	metadataSlice2 := make([]string, 0)
 	for i, _ := range data2 {
@@ -121,24 +104,19 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 				"image":       meta["image"].(string),
 				"attributes":  meta["attributes"].([]interface{}),
 			}
-			//fmt.Println("metadata", metadata)
-			//fmt.Println("len(metadataSlice2)", len(metadataSlice2))
+
 			if len(metadataSlice2) == 0 {
 				metadataSlice2 = append(metadataSlice2, meta["name"].(string))
 				metadataSlice2 = append(metadataSlice2, meta["description"].(string))
 				metadataSlice2 = append(metadataSlice2, meta["image"].(string))
-				//fmt.Println("metadataSlice2", metadataSlice2)
+
 			}
 
-			//metadataSlice2 = append(metadataSlice2, meta["attributes"].([]interface{}))
 			sdk, _ := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
 			uri, _ := sdk.Storage.Upload(metadata, "", "")
 			removeUri := strings.Replace(uri, "ipfs://", "", 1)
 			newMetaDataUri := "https://gateway.ipfscdn.io/ipfs/" + removeUri
-			//fmt.Println("newMetaDataUri", newMetaDataUri)
-			//데이터를 채널에 넣기.
 			metadataURLs <- newMetaDataUri
-			///fmt.Println("metadataURLs", metadataURLs)
 
 		}()
 	}
@@ -193,15 +171,10 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 		panic(err)
 	}
 	fmt.Println("getIpfsUri", getIpfsUri)
-	// fmt.Println("type check getIpfsUri", reflect.TypeOf(getIpfsUri)) // []string
-	// getIpfsUriSlice, _ := getIpfsUri.([]string)
-	//fmt.Println("firstElement", getIpfsUriSlice[0])
 
-	//컨트랙트 주소 :0x443F2C402ae77877F0FB011491e02A10E153A33b
-	//metadataelements >> 성공
 	setIpfsUri, err := contract.Call(context.Background(), "setIpfsUri", metadataelements)
 	if err != nil {
-		fmt.Println("getIpfsUri test~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+		fmt.Println("setIpfsUri test~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 		panic(err)
 	}
 	fmt.Println("setIpfsUri", setIpfsUri)
@@ -219,10 +192,6 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 		password := os.Getenv("password")
 		//db url 설정
 		db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
-
-		fmt.Println("metadataSlice2[0]", metadataSlice2[0])
-		fmt.Println("metadataSlice2[1]", metadataSlice2[1])
-		fmt.Println("metadataSlice2[2]", metadataSlice2[2])
 
 		db, err := sql.Open("mysql", db_url)
 		if err != nil {
@@ -250,9 +219,6 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 		if nft_id == 0 && user_id == 0 || token_id == 0 {
 			nft_id, user_id, token_id = 1, 1, 1
 		} else if nft_id != 0 && user_id != 0 && token_id != 0 {
-			//nft_id 1,2,3,4,5,6
-			//user_id 1,2,3,4,5,6?
-			//token_id 1 1 2 3
 			nft_id += 1
 			user_id += 1
 			token_id += 1
@@ -655,5 +621,56 @@ func (p *PostHandlers) DefaultCreateNFT(c echo.Context) error {
 	metadataBytes := []byte(strings.Join(metadataSlice, "\n"))
 
 	return c.JSONBlob(http.StatusOK, metadataBytes)
+
+}
+func (p *PostHandlers) UpdateMyPage(c echo.Context) error {
+	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
+	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
+
+	var myPage MyPage
+	var user_id int
+	if err := c.Bind(&myPage); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("mint Success")
+	user := os.Getenv("user")
+	password := os.Getenv("password")
+	//db url 설정
+	db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
+
+	fmt.Println("myPage", myPage)
+
+	db, err := sql.Open("mysql", db_url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	fmt.Println("db", db)
+	err = db.QueryRow("SELECT Max(IFNULL(id,1)) from user").Scan(&user_id)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if user_id == 0 {
+		user_id = 1
+	} else if user_id != 0 {
+		user_id += 1
+
+	} 
+
+	stmt, err := db.Prepare("INSERT INTO user(id, name, owner_address, description) VALUES (?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(&user_id, &myPage.Name, &myPage.OwnerAddress, &myPage.Description)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("myPAge", myPage)
+
+	return c.String(http.StatusOK, "Success Edit MyPage")
 
 }

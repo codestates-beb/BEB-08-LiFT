@@ -27,6 +27,9 @@ func ConfigureRoutes(server *s.Server) {
 	//NFT Detail Page Api
 	server.Echo.GET("/detail/:num", getHandler.GetDetail)
 
+	//MyPage Edit Api
+	server.Echo.POST("/mypage/edit", postHandler.UpdateMyPage)
+
 	//Automation DNFT
 	server.Echo.POST("/mnfts", postHandler.MultipleCreateNFT)
 

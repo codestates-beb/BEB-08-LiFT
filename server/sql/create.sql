@@ -6,9 +6,8 @@ use lift;
 CREATE TABLE `user` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
-  `address` varchar(255),
-  `description` varchar(255),
-  `token_id` varchar(255) 
+  `owner_address` varchar(255),
+  `description` varchar(255)
 );
 
 -- 마이페이지 및 전체페이지에서 불러올 데이터
