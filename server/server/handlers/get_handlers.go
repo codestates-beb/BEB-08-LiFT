@@ -7,12 +7,10 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"reflect"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/thirdweb-dev/go-sdk/thirdweb"
 )
 
 type WeatherRef struct {
@@ -21,6 +19,17 @@ type WeatherRef struct {
 	Name       string  `json:"name"`
 	Latitude   float64 `json:"latitude"`
 	Longitude  float64 `json:"longitude"`
+}
+
+type NFTMain struct {
+	ID                   int    `json:"id"`
+	UserID               int    `json:"user_id"`
+	TokenID              int    `json:"token_id"`
+	OwnerAddress         string `json:"owner_address"`
+	Name                 string `json:"name"`
+	Description          string `json:"description"`
+	IpfsUri              string `json:"ipfs_url"`
+	nft_contract_address string `json:"nft_contract_address"`
 }
 
 type GetHandler struct {
@@ -32,28 +41,41 @@ func NewGetHandler(server *s.Server) *GetHandler {
 	return &GetHandler{server: server}
 }
 
-func (g *GetHandler) GetHandle(c echo.Context) error {
-	fmt.Println("test")
-	sdk, err := thirdweb.NewThirdwebSDK(os.Getenv("NETWORK"), nil)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("sdk", sdk)
-	contract_address := os.Getenv("CONTRACTS")
-	fmt.Println("contract_address", contract_address)
-	nft, err := sdk.GetNFTCollection(contract_address)
+func (g *GetHandler) GetMainPage(c echo.Context) error {
 
-	fmt.Println(reflect.TypeOf(nft))
-	fmt.Println("nft", nft)
+	var nftList []NFTMain
+
+	user := os.Getenv("user")
+	password := os.Getenv("password")
+
+	//db url 설정
+	db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
+	db, err := sql.Open("mysql", db_url)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	owner := os.Getenv("WALLET_ADDRESS")
-	fmt.Println("owner", owner)
+	defer db.Close()
+	//QueryRow는 결과가 여러 행인 경우 에러반환, 한개 결과값만 받을 수 있음
+	rows, err := db.Query("SELECT * FROM nft")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for rows.Next() {
+		var nftMain NFTMain
+		err := rows.Scan(&nftMain.ID, &nftMain.UserID, &nftMain.TokenID, &nftMain.OwnerAddress, &nftMain.Name, &nftMain.Description, &nftMain.IpfsUri, &nftMain.nft_contract_address)
+		if err != nil {
+			log.Fatal(err)
+		}
+		nftList = append(nftList, nftMain)
+	}
 
-	return c.JSON(http.StatusOK, nft)
+	if err := rows.Err(); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("nftList", nftList)
 
+	return c.JSON(http.StatusOK, nftList)
 }
 
 func (g *GetHandler) GetMyPage(c echo.Context) error {
@@ -63,15 +85,14 @@ func (g *GetHandler) GetMyPage(c echo.Context) error {
 }
 
 func (g *GetHandler) GetMyWeather(c echo.Context) error {
-	
-	//user, pw 정보 가져오기 
+
+	//user, pw 정보 가져오기
 	user := os.Getenv("user")
 	password := os.Getenv("password")
 
-	//db url 설정 
+	//db url 설정
 	db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
 	fmt.Println("db_url", db_url)
-
 
 	db, err := sql.Open("mysql", db_url)
 	if err != nil {
@@ -84,12 +105,12 @@ func (g *GetHandler) GetMyWeather(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	
+
 	fmt.Println("rows", rows)
 	defer rows.Close()
 
 	var weatherList []WeatherRef
-	
+
 	for rows.Next() {
 		var weather WeatherRef
 		err := rows.Scan(&weather.ID, &weather.LocationID, &weather.Name, &weather.Latitude, &weather.Longitude)
