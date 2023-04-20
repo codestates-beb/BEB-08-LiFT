@@ -24,11 +24,7 @@ async function getDNFTsCount(category: number, contains: string) {
       : undefined;
 
   try {
-<<<<<<< HEAD
-    const response = await prisma.nft.count({ where: where });
-=======
     const response = await prisma.nft_test.count({ where: where });
->>>>>>> 9cb4d6046 (active sale)
     console.log(response);
     return response;
   } catch (error) {

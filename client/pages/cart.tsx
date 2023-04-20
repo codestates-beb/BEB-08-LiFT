@@ -1,11 +1,7 @@
 import { CATEGORY_NAME } from '@/constants/dnfts';
 import styled from '@emotion/styled';
 import { Badge, Button, Card, Group, Text } from '@mantine/core';
-<<<<<<< HEAD
-import { Cart, OrderItem, nft } from '@prisma/client';
-=======
 import { Cart, OrderItem, nft_test } from '@prisma/client';
->>>>>>> 9cb4d6046 (active sale)
 import { IconX } from '@tabler/icons-react';
 import {
   QueryClient,
@@ -31,11 +27,7 @@ export default function CartPage() {
 
   const queryClient = useQueryClient();
 
-<<<<<<< HEAD
-  const { data } = useQuery<{ nft: CartItem[] }, unknown, CartItem[]>(
-=======
   const { data } = useQuery<{ nft_test: CartItem[] }, unknown, CartItem[]>(
->>>>>>> 9cb4d6046 (active sale)
     [CART_QUERY_KEY],
     () =>
       fetch(CART_QUERY_KEY)
@@ -58,11 +50,7 @@ export default function CartPage() {
   }, [data]);
 
   // TODO: 찜해놓은 dnft를 보여줘도 좋을 것 같음
-<<<<<<< HEAD
-  const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
-=======
   const { data: dnfts } = useQuery<{ dnfts: nft_test[] }, unknown, nft_test[]>(
->>>>>>> 9cb4d6046 (active sale)
     [
       `/api/get-dnfts?skip=0
       &take=3`,

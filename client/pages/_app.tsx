@@ -45,13 +45,8 @@ export default function App({
   });
 
   return (
-<<<<<<< HEAD
-    <WagmiConfig client={client}>
-      <SessionProvider session={pageProps.session} refetchInterval={0}>
-=======
     <SessionProvider session={pageProps.session} refetchInterval={0}>
       <WagmiConfig client={client}>
->>>>>>> 9cb4d6046 (active sale)
         <QueryClientProvider client={queryClient}>
           <div className='px-36'>
             <Header />

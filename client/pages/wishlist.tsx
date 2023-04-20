@@ -1,10 +1,6 @@
 import { CATEGORY_NAME } from '@/constants/dnfts';
-<<<<<<< HEAD
-import { nft } from '@prisma/client';
-=======
 import { Badge, Button, Card, Group, Text } from '@mantine/core';
 import { nft_test } from '@prisma/client';
->>>>>>> 9cb4d6046 (active sale)
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -12,11 +8,7 @@ import { useRouter } from 'next/router';
 export default function Wishlist() {
   const router = useRouter();
 
-<<<<<<< HEAD
-  const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
-=======
   const { data: dnfts } = useQuery<{ dnfts: nft_test[] }, unknown, nft_test[]>(
->>>>>>> 9cb4d6046 (active sale)
     ['/api/get-wishlists'],
     () => fetch('/api/get-wishlists').then((res) => res.json()),
     {
@@ -39,32 +31,6 @@ export default function Wishlist() {
               style={{ maxWidth: 500, cursor: 'pointer' }}
               onClick={() => router.push(`/dnfts/${dnft.id}`)}
             >
-<<<<<<< HEAD
-              <Image
-                className='rounded'
-                alt={dnft.name}
-                src={dnft.ipfs_url ?? ''}
-                width={500}
-                height={300}
-                placeholder='blur'
-                blurDataURL='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg=='
-              />
-              <div>
-                <span>{dnft.name}</span>
-
-                <span className='ml-auto'>
-                  <span className='float-right'>
-                    0.1 ETH
-                    {/* {dnft.price.toLocaleString('ko-KR')}ETH */}
-                  </span>
-                </span>
-              </div>
-              <span className='text-zinc-400'>
-                Weather DNFT
-                {/* {CATEGORY_NAME[dnft.category_id - 1]} */}
-              </span>
-            </div>
-=======
               <Card.Section
                 component='a'
                 onClick={() => router.push(`/dnfts/${dnft.id}`)}
@@ -109,7 +75,6 @@ export default function Wishlist() {
                 {CATEGORY_NAME[dnft.category_id - 1]}
               </span> */}
             </Card>
->>>>>>> 9cb4d6046 (active sale)
           ))}
         </div>
       )}

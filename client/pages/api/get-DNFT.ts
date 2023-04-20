@@ -6,11 +6,7 @@ const prisma = new PrismaClient();
 
 async function getDNFT(id: number) {
   try {
-<<<<<<< HEAD
-    const response = await prisma.nft.findUnique({
-=======
     const response = await prisma.nft_test.findUnique({
->>>>>>> 9cb4d6046 (active sale)
       where: {
         id: id,
       },

@@ -27,11 +27,7 @@ async function getOrder(userId: string) {
         .split(',')
         .map((item) => Number(item))) {
         const res: OrderItem[] = await prisma.$queryRaw`
-<<<<<<< HEAD
-        SELECT i.id, name, ipfs_url FROM OrderItem as i JOIN nft as d ON  i.dnftId = d.id WHERE i.id=${id};`;
-=======
         SELECT i.id, name, ipfs_url FROM OrderItem as i JOIN nft_test as d ON  i.dnftId = d.id WHERE i.id=${id};`;
->>>>>>> 9cb4d6046 (active sale)
         orderItems.push.apply(orderItems, res);
       }
       response.push({ ...order, orderItems });

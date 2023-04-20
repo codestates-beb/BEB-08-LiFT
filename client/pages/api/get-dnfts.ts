@@ -41,11 +41,7 @@ async function getDNFTs({
   // api 조회
 
   try {
-<<<<<<< HEAD
-    const response = await prisma.nft.findMany({
-=======
     const response = await prisma.nft_test.findMany({
->>>>>>> 9cb4d6046 (active sale)
       skip: skip,
       take: take,
       //...orderByCondition,
