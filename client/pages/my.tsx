@@ -1,7 +1,7 @@
 import { CATEGORY_NAME } from '@/constants/dnfts';
 import styled from '@emotion/styled';
 import { Badge } from '@mantine/core';
-import { OrderItem, Orders } from '@prisma/client';
+import { OrderItem, Orders, nft_test } from '@prisma/client';
 import { IconX } from '@tabler/icons-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
@@ -14,9 +14,30 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Box, TextField, TextareaAutosize } from '@mui/material';
+import { Box, TextField, Input, TextareaAutosize } from '@mui/material';
 import { useState } from 'react';
-import { getSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
+
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWaitForTransaction,
+} from 'wagmi';
+import marketABI from '../contract/market_ABI.json';
+import nftABI from '../contract/nft_ABI.json';
+
+import { useAccount, useConnect, useEnsName } from 'wagmi';
+import { InjectedConnector } from 'wagmi/connectors/injected';
+
+interface MyDNFT extends nft_test {
+  token_id: number;
+  owner_address: string;
+  name: string;
+  description: string;
+  ipfs_url: string;
+  user_id: number;
+  nft_contract_address: string;
+}
 
 interface OrderItemDetail extends OrderItem {
   name: string;
@@ -44,9 +65,9 @@ const ORDER_STATUS_MAP = [
 ];
 
 export const ORDER_QUERY_KEY = '/api/get-order';
+export const MYDNFT_QUERY_KEY = '/api/get-mydnft';
 
 export default function MyPage(session) {
-  console.log('session' + JSON.stringify(session));
   console.log('address ' + session.address);
 
   const [editable, setEditable] = useState(false);
@@ -54,6 +75,14 @@ export default function MyPage(session) {
   const [newUserDesc, setNewUserDesc] = useState('userDesc');
   const [userImage, setUserImage] = useState(
     'https://picsum.photos/id/1000/600/600/'
+  );
+
+  const { data: myDNFT } = useQuery<{ nft_test: MyDNFT[] }, unknown, MyDNFT[]>(
+    [MYDNFT_QUERY_KEY],
+    () =>
+      fetch(MYDNFT_QUERY_KEY)
+        .then((res) => res.json())
+        .then((data) => data.dnfts)
   );
 
   const handleEdit = () => {
@@ -75,12 +104,13 @@ export default function MyPage(session) {
   };
 
   const handleSave = () => {
-    fetch('/api/save-card-data', {
+    fetch('http://localhost:1323/mypage/edit', {
+      // TODO: 추후 user API 가 있을 시 수정 => 완료 => 이제 데이터 가져오는 것
       method: 'POST',
       body: JSON.stringify({
-        userName: newUserName,
-        userDesc: newUserDesc,
-        userImage: userImage,
+        name: newUserName,
+        description: newUserDesc,
+        owner_address: session.address,
       }),
     })
       .then((response) => response.json())
@@ -103,6 +133,14 @@ export default function MyPage(session) {
         .then((res) => res.json())
         .then((data) => data.dnfts)
   );
+
+  // const { data } = useQuery<{ dnfts: OrderDetail[] }, unknown, OrderDetail[]>(
+  //   [MYDNFT_QUERY_KEY],
+  //   () =>
+  //     fetch(MYDNFT_QUERY_KEY)
+  //       .then((res) => res.json())
+  //       .then((data) => data.dnfts)
+  // );
 
   console.log(JSON.stringify(data));
 
@@ -179,11 +217,26 @@ export default function MyPage(session) {
             </Card>
           </div>
         </div>
-        <div className='text-2xl mb-3 flex-1 ml-9'>제작한 DNFT</div>
+        <div className='flex-col'>
+          <span className='text-2xl ml-9 flex-1'>
+            나의 DNFT: {myDNFT ? myDNFT.length : 0}
+          </span>
+          <div className='flex flex-col p-4 flex-1 ml-1'>
+            {myDNFT ? ( // myDNFT
+              myDNFT.length > 0 ? (
+                myDNFT.map((item, idx) => <DNFT key={idx} {...item} />)
+              ) : (
+                <div>소유한 DNFT가 없습니다.</div>
+              )
+            ) : (
+              <div>불러오는 중...</div>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className='flex'>
-        <div className='text-2xl mb-3 flex-1 mt-12'>구매한 DNFT</div>
+        <div className='text-2xl mb-3 flex-1 mt-12'>판매중인 DNFT</div>
 
         <div className='text-2xl mb-3 flex-1'>
           <div className='w-full flex-col p-4 mt-8'>
@@ -193,7 +246,7 @@ export default function MyPage(session) {
                 data.length > 0 ? (
                   data.map((item, idx) => <DetailItem key={idx} {...item} />)
                 ) : (
-                  <div>주문내역이 아무것도 없습니다.</div>
+                  <div>주문내역이 없습니다.</div>
                 )
               ) : (
                 <div>불러오는 중...</div>
@@ -270,6 +323,273 @@ const Row = styled.div`
 //   };
 // };
 
+// TODO: 이 부분에 대한 고민
+// 한번의 버튼 클릭으로 이행될 수 없음 usePrepareContractWrite => 한 component? 에서 두번 쓰일 수 없음
+
+const DNFT = (props: MyDNFT, session) => {
+  const { chainId, address } = session;
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const nftCA = '0x73D0b51B1fA88d83E9e029b983D8F70176b9c0A7'; // approve (to: marketCA / tokenId: 1)
+  const marketCA = '0x8e2E5aC4deAFDe90cE08636E9b6dF1Edb6bAd7b7'; // saleNFT (_tokenId: uint256, _price: uint256)
+
+  const abi = [nftABI] as const;
+
+  const { config, error } = usePrepareContractWrite({
+    address: nftCA,
+    abi: nftABI,
+    chainId: 80001,
+    functionName: 'approve',
+    args: [marketCA, 1], // input 값
+    //enabled: Boolean(props.token_id), // 유효한 tokenID가 있을 경우 활성화
+  });
+
+  const {
+    data: sellData,
+    write: approve,
+    isLoading: isSellLoading,
+    isSuccess: isSellStarted,
+  } = useContractWrite(config);
+
+  console.log('config: ' + JSON.stringify(config));
+  console.log('config111 : ' + JSON.stringify(sellData));
+  console.log(error);
+
+  const { isSuccess: txSuccess } = useWaitForTransaction({
+    hash: sellData?.hash,
+  });
+
+  const isSelling = txSuccess;
+
+  return (
+    <div className='w-full flex'>
+      <Card sx={{ display: 'flex', width: 790 }}>
+        <CardMedia
+          component='img'
+          sx={{ width: 151 }}
+          image={props.ipfs_url}
+          title='user image'
+          onClick={() => router.push(`/dnfts/${props.id}`)}
+        />
+        <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: 630 }}>
+          <CardContent sx={{ flex: '1 0 auto' }} className='flex-1'>
+            <Typography component='div' variant='h5'>
+              Name: {props.name}
+            </Typography>
+            <Typography
+              variant='subtitle1'
+              color='text.secondary'
+              component='div'
+            >
+              Token ID: {props.token_id}
+            </Typography>
+            <Typography
+              variant='subtitle1'
+              color='text.secondary'
+              component='div'
+            >
+              Token desc: {props.description}
+            </Typography>
+          </CardContent>
+          <CardActions>
+            {isSelling ? (
+              <SellDNFT />
+            ) : (
+              <button
+                className='button ml-3'
+                onClick={() => approve?.()}
+                disabled={isSellLoading || isSellStarted}
+                data-sell-loading={isSellLoading}
+                data-sell-stated={isSellStarted}
+              >
+                {isSellLoading && 'Waiting for approval'}
+                {isSellStarted && 'Selling...'}
+                {!isSellLoading && !isSellStarted && 'sell'}
+              </button>
+            )}
+
+            {isSelling ? (
+              <Badge className='ml-4' color='pink' variant='light' size='lg'>
+                on sale
+              </Badge>
+            ) : (
+              <Badge className='ml-4' color='blue' variant='light' size='lg'>
+                off sale
+              </Badge>
+            )}
+          </CardActions>
+        </Box>
+      </Card>
+    </div>
+  );
+};
+
+const SellDNFT = (props: MyDNFT, session) => {
+  const { chainId, address } = session;
+  const [price, setPrice] = useState(0);
+
+  const handlePrice = (event) => {
+    event.preventDefault();
+    setPrice(event.target.value);
+  };
+
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const marketCA = '0x8e2E5aC4deAFDe90cE08636E9b6dF1Edb6bAd7b7';
+
+  const { config, error } = usePrepareContractWrite({
+    address: marketCA,
+    abi: marketABI,
+    chainId: 80001,
+    functionName: 'saleNFT',
+    args: [1, price], // input 값
+  });
+
+  const {
+    data: saleData,
+    write: saleNFT,
+    isLoading: isSaleLoading,
+    isSuccess: isSaleStarted,
+  } = useContractWrite(config);
+
+  const { isSuccess: txSuccess } = useWaitForTransaction({
+    hash: saleData?.hash,
+  });
+
+  const isSelling = txSuccess;
+
+  // disabled={!price} onClick={() => saleNFT?.()}
+
+  return (
+    <div className='flex'>
+      <TextField
+        id='standard-basic'
+        label='Price:'
+        variant='standard'
+        onChange={handlePrice}
+      />
+      <button
+        className='button ml-3'
+        onClick={() => saleNFT?.()}
+        disabled={isSaleLoading || isSaleStarted || !price}
+        data-sell-loading={isSaleLoading}
+        data-sell-stated={isSaleStarted}
+      >
+        {isSaleLoading && 'Waiting for approval'}
+        {isSaleStarted && 'Complete Sell'}
+        {!isSaleLoading && !isSaleStarted && 'sell with price'}
+      </button>
+    </div>
+  );
+};
+
+// const DNFT = (props: MyDNFT, session) => {
+//   const { chainId, address } = session;
+
+//   const router = useRouter();
+//   const queryClient = useQueryClient();
+
+//   const nftCA = '0x73D0b51B1fA88d83E9e029b983D8F70176b9c0A7'; // approve (to: marketCA / tokenId: 1)
+//   const marketCA = '0x8e2E5aC4deAFDe90cE08636E9b6dF1Edb6bAd7b7';
+
+//   const [sellApprove, setSellApprove] = useState(false);
+
+//   marketABI;
+
+//   const { config, error } = usePrepareContractWrite({
+//     address: nftCA,
+//     abi: nftABI,
+//     chainId: chainId,
+//     functionName: 'approve(address, uint256)',
+//     args: [marketCA, props.token_id], // input 값
+//     enabled: Boolean(props.token_id), // 유효한 tokenID가 있을 경우 활성화
+//   });
+
+//   const {
+//     data: sellData,
+//     write: approve,
+//     isLoading: isSellLoading,
+//     isSuccess: isSellStarted,
+//   } = useContractWrite(config);
+
+//   const { isSuccess: txSuccess } = useWaitForTransaction({
+//     hash: sellData?.hash,
+//   });
+
+//   const isSelling = txSuccess;
+
+//   usePrepareContractWrite();
+
+//   return (
+//     <div className='w-full flex'>
+//       <Card sx={{ display: 'flex', width: 790 }}>
+//         <CardMedia
+//           component='img'
+//           sx={{ width: 151 }}
+//           image={props.ipfs_url}
+//           title='user image'
+//           onClick={() => router.push(`/dnfts/${props.id}`)}
+//         />
+//         <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: 630 }}>
+//           <CardContent sx={{ flex: '1 0 auto' }} className='flex-1'>
+//             <Typography component='div' variant='h5'>
+//               Name: {props.name}
+//             </Typography>
+//             <Typography
+//               variant='subtitle1'
+//               color='text.secondary'
+//               component='div'
+//             >
+//               Token ID: {props.token_id}
+//             </Typography>
+//             <Typography
+//               variant='subtitle1'
+//               color='text.secondary'
+//               component='div'
+//             >
+//               Token desc: {props.description}
+//             </Typography>
+//             <Input></Input>
+//           </CardContent>
+//           <CardActions>
+//             {isSelling ? (
+//               <Button className='ml-4'>
+//                 input price
+//                 {/* input과 버튼으로 변경 */}
+//               </Button>
+//             ) : (
+//               <button
+//                 className="button"
+//                 onClick={() => approve?.()}
+//                 disabled={isSellLoading || isSellStarted}
+//                 data-sell-loading={isSellLoading}
+//                 data-sell-stated={isSellStarted}
+//               >
+//                 {isSellLoading && 'Waiting for approval'}
+//                 {isSellStarted && 'Selling'}
+//                 {!isSellLoading && !isSellStarted && 'sell'}
+//               </button>
+//             )}
+
+//             {sellApprove ? (
+//               <Badge className='ml-4' color='pink' variant='light'>
+//                 for sale
+//                 {/* input과 버튼으로 변경 */}
+//               </Badge>
+//             ) : (
+//               <Badge className='ml-4' color='blue' variant='light'>
+//                 not for sale
+//               </Badge>
+//             )}
+//           </CardActions>
+//         </Box>
+//       </Card>
+//     </div>
+//   );
+// };
+
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
@@ -286,3 +606,22 @@ export async function getServerSideProps(context) {
     props: session,
   };
 }
+
+// const login = (session) => {
+//   const { address, isConnected } = useAccount();
+//   const { data: ensName } = useEnsName({ address });
+//   const { connect } = useConnect({
+//     connector: new InjectedConnector(),
+//   });
+
+//   if (isConnected) return <div>Connected to {ensName ?? address}</div>;
+//   return <button onClick={() => connect()}>Connect Wallet</button>;
+// }
+
+// export function Profile() {
+//   const { address, isConnected } = useAccount();
+//   const { data: ensName } = useEnsName({ address });
+//   const { connect } = useConnect({
+//     connector: new InjectedConnector(),
+//   });
+// }

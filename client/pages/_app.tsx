@@ -4,6 +4,7 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
 
 import {
   mainnet,
@@ -12,20 +13,24 @@ import {
   arbitrum,
   goerli,
   polygonMumbai,
-  sepolia,
 } from 'wagmi/chains';
 import { createClient, configureChains, WagmiConfig } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { SessionProvider } from 'next-auth/react';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 
-export const { provider, webSocketProvider } = configureChains(
-  [mainnet, polygon, optimism, arbitrum, goerli, polygonMumbai, sepolia],
-  [publicProvider()]
+export const { chains, provider, webSocketProvider } = configureChains(
+  [mainnet, polygon, optimism, arbitrum, goerli, polygonMumbai],
+  [
+    alchemyProvider({ apiKey: '5TGG0GWvMbPVHurH4IfOV-kuIFj1I95U' }),
+    publicProvider(),
+  ]
 );
 
 const client = createClient({
   autoConnect: true,
   provider,
+  // connectors: [new InjectedConnector({ chains })],
   webSocketProvider,
 });
 
@@ -38,11 +43,15 @@ export default function App({
       queries: { staleTime: Infinity },
     },
   });
-  const activeChain = 'ethereum';
 
   return (
+<<<<<<< HEAD
     <WagmiConfig client={client}>
       <SessionProvider session={pageProps.session} refetchInterval={0}>
+=======
+    <SessionProvider session={pageProps.session} refetchInterval={0}>
+      <WagmiConfig client={client}>
+>>>>>>> 9cb4d6046 (active sale)
         <QueryClientProvider client={queryClient}>
           <div className='px-36'>
             <Header />
@@ -52,7 +61,7 @@ export default function App({
             <Footer />
           </div>
         </QueryClientProvider>
-      </SessionProvider>
-    </WagmiConfig>
+      </WagmiConfig>
+    </SessionProvider>
   );
 }

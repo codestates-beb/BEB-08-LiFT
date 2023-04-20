@@ -74,9 +74,15 @@ export default function Header() {
      * instead of using signIn(..., redirect: "/user")
      * we get the url from callback and push it to the router to avoid page refreshing
      */
+<<<<<<< HEAD
     fetch(`/api/auth/sign-up?address=${account}`) // user DB에 저장
       .then((res) => res.json())
       .then((data) => console.log(data));
+=======
+    // fetch(`/api/auth/sign-up?address=${account}`) // user DB에 저장
+    //   .then((res) => res.json())
+    //   .then((data) => console.log(data));
+>>>>>>> 9cb4d6046 (active sale)
     push(url);
   };
 
@@ -607,6 +613,11 @@ export default function Header() {
                 ? 'Sepolia Testnet'
                 : session?.chainId === 80001
                 ? 'Mumbai Testnet'
+<<<<<<< HEAD
+=======
+                : session?.chainId === 1337
+                ? 'Ganache Testnet'
+>>>>>>> 9cb4d6046 (active sale)
                 : session?.chainId}
               <br />
               <Balance />

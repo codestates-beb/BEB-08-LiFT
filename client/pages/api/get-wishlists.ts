@@ -19,7 +19,11 @@ async function getWishlists(userId: string) {
     const dnftId = wishlist?.dnftIds.split(',').map((item) => Number(item));
 
     if (dnftId && dnftId.length > 0) {
+<<<<<<< HEAD
       const response = await prisma.nft.findMany({
+=======
+      const response = await prisma.nft_test.findMany({
+>>>>>>> 9cb4d6046 (active sale)
         where: {
           id: {
             in: dnftId,

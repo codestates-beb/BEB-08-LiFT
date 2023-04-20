@@ -17,6 +17,7 @@ model Weather {
 }
 
 model nft {
+<<<<<<< HEAD
   id              Int     @id @default(autoincrement())
   user_id         Int?
   token_id        Int?
@@ -25,14 +26,27 @@ model nft {
   ipfs_url        String?
   tx_hash         String?
   creator_address String?
+=======
+  id                   Int     @id @default(autoincrement())
+  user_id              Int?    @default(0)
+  token_id             Int?    @default(0)
+  owner_address        String? @db.VarChar(255)
+  name                 String? @db.VarChar(255)
+  description          String? @db.VarChar(255)
+  ipfs_url             String? @db.VarChar(255)
+  nft_contract_address String? @db.VarChar(255)
+
+  @@index([description], map: "idx_nft_description")
+  @@index([name], map: "idx_nft_name")
+  @@index([owner_address], map: "idx_nft_ownerAddress")
+>>>>>>> 9cb4d6046 (active sale)
 }
 
 model user {
-  id          Int     @id @default(autoincrement())
-  name        String?
-  address     String?
-  description String?
-  token_id    String?
+  id            Int     @id @default(autoincrement())
+  name          String? @db.VarChar(255)
+  owner_address String? @unique(map: "owner_address") @db.VarChar(255)
+  description   String? @db.VarChar(255)
 }
 
 model Transaction {
@@ -84,4 +98,15 @@ model Orders {
   receiver     String?
   createdAt    DateTime @default(now())
   status       Int
+}
+
+model nft_test {
+  id                   Int     @id @default(autoincrement())
+  user_id              Int?
+  token_id             Int?
+  owner_address        String? @db.VarChar(255)
+  name                 String? @db.VarChar(255)
+  description          String? @db.VarChar(255)
+  ipfs_url             String? @db.VarChar(255)
+  nft_contract_address String? @db.VarChar(255)
 }

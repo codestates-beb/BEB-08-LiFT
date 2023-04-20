@@ -5,7 +5,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
+<<<<<<< HEAD
 import { Cart, OrderItem, Wishlist, nft } from '@prisma/client';
+=======
+import { Cart, OrderItem, Wishlist, nft_test } from '@prisma/client';
+>>>>>>> 9cb4d6046 (active sale)
 import { format } from 'date-fns';
 import { CATEGORY_NAME } from '@/constants/dnfts';
 import {
@@ -52,7 +56,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const WISHLIST_QUERY_KEY = '/api/get-wishlist';
 
 export default function Products(props: {
+<<<<<<< HEAD
   product: nft & { ipfs_url: string[] };
+=======
+  product: nft_test & { ipfs_url: string[] };
+>>>>>>> 9cb4d6046 (active sale)
 }) {
   const [index, setIndex] = useState(0);
 
@@ -160,7 +168,11 @@ export default function Products(props: {
   const isWished =
     wishlist != null && dnftId != null ? wishlist.includes(dnftId) : false;
 
+<<<<<<< HEAD
   const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
+=======
+  const { data: dnfts } = useQuery<{ dnfts: nft_test[] }, unknown, nft_test[]>(
+>>>>>>> 9cb4d6046 (active sale)
     ['/api/get-cart'],
     () => fetch('/api/get-cart').then((res) => res.json()),
     {

@@ -6,17 +6,13 @@ import { authOptions } from './auth/[...nextauth]';
 
 const prisma = new PrismaClient();
 
-async function getCart(userId: string) {
+async function getMyDNFT(userId: string) {
   try {
-    const cart =
-<<<<<<< HEAD
-      await prisma.$queryRaw`SELECT c.id, userId, name, ipfs_url, dnftId FROM  Cart as c JOIN nft as d WHERE c.dnftId = d.id AND c.userId=${userId};`;
-=======
-      await prisma.$queryRaw`SELECT c.id, userId, name, ipfs_url, dnftId FROM  Cart as c JOIN nft_test as d WHERE c.dnftId = d.id AND c.userId=${userId};`;
->>>>>>> 9cb4d6046 (active sale)
+    const myDNFT =
+      await prisma.$queryRaw`SELECT * FROM nft_test as d WHERE d.owner_address=${userId};`;
 
-    console.log(cart);
-    return cart;
+    console.log(myDNFT);
+    return myDNFT;
   } catch (error) {
     console.error(error);
   }
@@ -40,7 +36,7 @@ export default async function handler(
   }
 
   try {
-    const wishlist = await getCart(String(session.address));
+    const wishlist = await getMyDNFT(String(session.address));
     res.status(200).json({ dnfts: wishlist, message: 'Success' });
   } catch (error) {
     res.status(400).json({ message: 'Failed' });
