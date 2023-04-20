@@ -38,7 +38,7 @@ CREATE INDEX idx_nft_ownerAddress ON nft(owner_address);
  
 -- 판매, 구매 관련한 테이블
 CREATE TABLE market (
-  `id` int PRIMARY KEY AUTO_INCREMENT,
+   `id` int PRIMARY KEY AUTO_INCREMENT,
    `nft_contract_address` varchar(255),
    `market_contract_address` varchar(255),
    `token_id` varchar(255),
