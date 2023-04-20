@@ -1,6 +1,8 @@
 create database lift;
 
 use lift;
+
+
 -- 마이페이지에서 주로 사용할 예정 
 -- 유저 로그인상황 체크하거나 할 때 사용할 예정 
 -- 유저조회, 유저 정보 업데이트시 사용
@@ -33,7 +35,22 @@ CREATE TABLE `nft` (
 CREATE INDEX idx_nft_name ON nft(name);
 CREATE INDEX idx_nft_description ON nft(description);
 CREATE INDEX idx_nft_ownerAddress ON nft(owner_address);
+ 
+-- 판매, 구매 관련한 테이블
+CREATE TABLE market (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+   `nft_contract_address` varchar(255),
+   `market_contract_address` varchar(255),
+   `token_id` varchar(255),
+   `owner_address` varchar(255),
+   `price` int ,
+   `sale_status` varchar(255)
+);
 
+
+-- client > approve > set interface > sell NFT 
+-- backend  > approve(to: 계정주소, tokenId: nft코드 ), sale nft, buy nft >> 스마트 컨트랙트 db에서 업데이트 하면 좋겠다.
+-- post buy >> 구매 백엔드 >> db 업데이트  
 CREATE TABLE `nft_test` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `user_id` int,
