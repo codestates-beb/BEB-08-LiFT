@@ -17,16 +17,6 @@ model Weather {
 }
 
 model nft {
-<<<<<<< HEAD
-  id              Int     @id @default(autoincrement())
-  user_id         Int?
-  token_id        Int?
-  name            String?
-  description     String?
-  ipfs_url        String?
-  tx_hash         String?
-  creator_address String?
-=======
   id                   Int     @id @default(autoincrement())
   user_id              Int?    @default(0)
   token_id             Int?    @default(0)
@@ -39,7 +29,6 @@ model nft {
   @@index([description], map: "idx_nft_description")
   @@index([name], map: "idx_nft_name")
   @@index([owner_address], map: "idx_nft_ownerAddress")
->>>>>>> 9cb4d6046 (active sale)
 }
 
 model user {

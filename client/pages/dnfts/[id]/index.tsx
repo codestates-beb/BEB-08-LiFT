@@ -24,6 +24,26 @@ import { useSession } from 'next-auth/react';
 import { CART_QUERY_KEY } from '@/pages/cart';
 import { ORDER_QUERY_KEY } from '../../my';
 
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWaitForTransaction,
+} from 'wagmi';
+
+import marketABI from '@/contract/market_ABI.json';
+import nftABI from '@/contract/nft_ABI.json';
+import { ethers } from 'ethers';
+
+interface MyDNFT extends nft_test {
+  token_id: number;
+  owner_address: string;
+  name: string;
+  description: string;
+  ipfs_url: string;
+  user_id: number;
+  nft_contract_address: string;
+}
+
 interface CartData {
   dnfts: {
     dnftId: number;
@@ -291,29 +311,10 @@ export default function Products(props: {
                 찜하기
               </Button>
             </div>
-            <Button
-              style={{ backgroundColor: 'black' }}
-              radius='xl'
-              size='md'
-              styles={{
-                root: { paddingRight: 14, height: 48 },
-              }}
-              onClick={() => {
-                if (session == null) {
-                  alert('로그인이 필요합니다.');
-                  router.push('/auth/login');
-                  return;
-                }
-                // 로그인이 된 상태이다.
-                validate('order');
-              }}
-            >
-              구매하기
-            </Button>
-            {/* date-fns */}
-            {/* <div className='text-sm text-zinc-300'>
-              등록: {format(new Date(product.createdAt), 'yyyy년 M월 d일')}
-            </div> */}
+            <BuyDNFT />
+            <div className='text-sm text-zinc-300'>
+              Owner Address: {product.owner_address}
+            </div>
           </div>
         </div>
       ) : (
@@ -322,3 +323,63 @@ export default function Products(props: {
     </>
   );
 }
+
+const BuyDNFT = (props: MyDNFT) => {
+  const { data: session } = useSession();
+
+  console.log('111111: ' + session?.address);
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const nftCA = '0x351f3b5B1EfbE13De1389bE1B5c3B0aa8B6e1265'; // approve (to: marketCA / tokenId: 1)
+  const marketCA = '0x1B507D794f12d9FdAb6D9fc201748B991d5100b3'; // saleNFT (_tokenId: uint256, _price: uint256)
+
+  const { config, error } = usePrepareContractWrite({
+    address: marketCA,
+    abi: marketABI,
+    chainId: 80001,
+    functionName: 'buyNFT',
+    args: [2], // input 값
+    overrides: {
+      from: session?.address, // session.address가 들어가야 함
+      value: ethers.utils.parseEther('1'), // 각 DNFT의 가격을 넣어줘야 한다.
+    },
+    //enabled: Boolean(props.token_id), // 유효한 tokenID가 있을 경우 활성화
+  });
+
+  const {
+    data: buyData,
+    write: buyNFT,
+    isLoading: isBuyLoading,
+    isSuccess: isBuyStarted,
+  } = useContractWrite(config);
+
+  console.log('config: ' + JSON.stringify(config));
+  console.log('config111 : ' + JSON.stringify(buyData));
+  console.log('error:  ' + error);
+
+  const { isSuccess: txSuccess } = useWaitForTransaction({
+    hash: buyData?.hash,
+  });
+
+  const isSelling = txSuccess;
+
+  return (
+    <div>
+      {isSelling ? (
+        'This is yours'
+      ) : (
+        <button
+          data-sell-loading={isBuyLoading}
+          data-sell-stated={isBuyStarted}
+          disabled={isBuyLoading || isBuyStarted}
+          onClick={() => buyNFT?.()}
+        >
+          {isBuyLoading && 'Waiting for approval'}
+          {isBuyStarted && 'Buying...'}
+          {!isBuyLoading && !isBuyStarted && 'Buy'}
+        </button>
+      )}
+    </div>
+  );
+};

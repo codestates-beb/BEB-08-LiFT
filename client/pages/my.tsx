@@ -331,8 +331,8 @@ const DNFT = (props: MyDNFT, session) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const nftCA = '0x73D0b51B1fA88d83E9e029b983D8F70176b9c0A7'; // approve (to: marketCA / tokenId: 1)
-  const marketCA = '0x8e2E5aC4deAFDe90cE08636E9b6dF1Edb6bAd7b7'; // saleNFT (_tokenId: uint256, _price: uint256)
+  const nftCA = '0xb53Ab6AAB500b862BbbC4142Acb8d75ca2c846D6'; // approve (to: marketCA / tokenId: 1)
+  const marketCA = '0x1B507D794f12d9FdAb6D9fc201748B991d5100b3'; // saleNFT (_tokenId: uint256, _price: uint256)
 
   const abi = [nftABI] as const;
 
@@ -341,7 +341,7 @@ const DNFT = (props: MyDNFT, session) => {
     abi: nftABI,
     chainId: 80001,
     functionName: 'approve',
-    args: [marketCA, 1], // input 값
+    args: [marketCA, 2], // input 값
     //enabled: Boolean(props.token_id), // 유효한 tokenID가 있을 경우 활성화
   });
 
@@ -351,6 +351,14 @@ const DNFT = (props: MyDNFT, session) => {
     isLoading: isSellLoading,
     isSuccess: isSellStarted,
   } = useContractWrite(config);
+
+  // const contractWrite = useContractWrite({ // 안됨
+  //   mode: 'recklesslyUnprepared',
+  //   address: nftCA,
+  //   abi: nftABI,
+  //   functionName: 'approve',
+  //   args: [marketCA, 2],
+  // })
 
   console.log('config: ' + JSON.stringify(config));
   console.log('config111 : ' + JSON.stringify(sellData));
@@ -437,14 +445,14 @@ const SellDNFT = (props: MyDNFT, session) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const marketCA = '0x8e2E5aC4deAFDe90cE08636E9b6dF1Edb6bAd7b7';
+  const marketCA = '0x1B507D794f12d9FdAb6D9fc201748B991d5100b3';
 
   const { config, error } = usePrepareContractWrite({
     address: marketCA,
     abi: marketABI,
     chainId: 80001,
     functionName: 'saleNFT',
-    args: [1, price], // input 값
+    args: [2, price], // input 값
   });
 
   const {
@@ -485,111 +493,6 @@ const SellDNFT = (props: MyDNFT, session) => {
   );
 };
 
-// const DNFT = (props: MyDNFT, session) => {
-//   const { chainId, address } = session;
-
-//   const router = useRouter();
-//   const queryClient = useQueryClient();
-
-//   const nftCA = '0x73D0b51B1fA88d83E9e029b983D8F70176b9c0A7'; // approve (to: marketCA / tokenId: 1)
-//   const marketCA = '0x8e2E5aC4deAFDe90cE08636E9b6dF1Edb6bAd7b7';
-
-//   const [sellApprove, setSellApprove] = useState(false);
-
-//   marketABI;
-
-//   const { config, error } = usePrepareContractWrite({
-//     address: nftCA,
-//     abi: nftABI,
-//     chainId: chainId,
-//     functionName: 'approve(address, uint256)',
-//     args: [marketCA, props.token_id], // input 값
-//     enabled: Boolean(props.token_id), // 유효한 tokenID가 있을 경우 활성화
-//   });
-
-//   const {
-//     data: sellData,
-//     write: approve,
-//     isLoading: isSellLoading,
-//     isSuccess: isSellStarted,
-//   } = useContractWrite(config);
-
-//   const { isSuccess: txSuccess } = useWaitForTransaction({
-//     hash: sellData?.hash,
-//   });
-
-//   const isSelling = txSuccess;
-
-//   usePrepareContractWrite();
-
-//   return (
-//     <div className='w-full flex'>
-//       <Card sx={{ display: 'flex', width: 790 }}>
-//         <CardMedia
-//           component='img'
-//           sx={{ width: 151 }}
-//           image={props.ipfs_url}
-//           title='user image'
-//           onClick={() => router.push(`/dnfts/${props.id}`)}
-//         />
-//         <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: 630 }}>
-//           <CardContent sx={{ flex: '1 0 auto' }} className='flex-1'>
-//             <Typography component='div' variant='h5'>
-//               Name: {props.name}
-//             </Typography>
-//             <Typography
-//               variant='subtitle1'
-//               color='text.secondary'
-//               component='div'
-//             >
-//               Token ID: {props.token_id}
-//             </Typography>
-//             <Typography
-//               variant='subtitle1'
-//               color='text.secondary'
-//               component='div'
-//             >
-//               Token desc: {props.description}
-//             </Typography>
-//             <Input></Input>
-//           </CardContent>
-//           <CardActions>
-//             {isSelling ? (
-//               <Button className='ml-4'>
-//                 input price
-//                 {/* input과 버튼으로 변경 */}
-//               </Button>
-//             ) : (
-//               <button
-//                 className="button"
-//                 onClick={() => approve?.()}
-//                 disabled={isSellLoading || isSellStarted}
-//                 data-sell-loading={isSellLoading}
-//                 data-sell-stated={isSellStarted}
-//               >
-//                 {isSellLoading && 'Waiting for approval'}
-//                 {isSellStarted && 'Selling'}
-//                 {!isSellLoading && !isSellStarted && 'sell'}
-//               </button>
-//             )}
-
-//             {sellApprove ? (
-//               <Badge className='ml-4' color='pink' variant='light'>
-//                 for sale
-//                 {/* input과 버튼으로 변경 */}
-//               </Badge>
-//             ) : (
-//               <Badge className='ml-4' color='blue' variant='light'>
-//                 not for sale
-//               </Badge>
-//             )}
-//           </CardActions>
-//         </Box>
-//       </Card>
-//     </div>
-//   );
-// };
-
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
@@ -606,22 +509,3 @@ export async function getServerSideProps(context) {
     props: session,
   };
 }
-
-// const login = (session) => {
-//   const { address, isConnected } = useAccount();
-//   const { data: ensName } = useEnsName({ address });
-//   const { connect } = useConnect({
-//     connector: new InjectedConnector(),
-//   });
-
-//   if (isConnected) return <div>Connected to {ensName ?? address}</div>;
-//   return <button onClick={() => connect()}>Connect Wallet</button>;
-// }
-
-// export function Profile() {
-//   const { address, isConnected } = useAccount();
-//   const { data: ensName } = useEnsName({ address });
-//   const { connect } = useConnect({
-//     connector: new InjectedConnector(),
-//   });
-// }

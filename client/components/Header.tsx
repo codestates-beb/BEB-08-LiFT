@@ -2,7 +2,6 @@ import { IconHeart, IconHome, IconShoppingCart } from '@tabler/icons-react';
 import { useSession, signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { fetchBalance } from '@wagmi/core';
 
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { signIn } from 'next-auth/react';

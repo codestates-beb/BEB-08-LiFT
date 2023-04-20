@@ -20,15 +20,6 @@ export const WeatherDNFTs: Prisma.nft_testCreateInput[] = Array.apply(
   null,
   Array(1)
 ).map((_, idx) => ({
-<<<<<<< HEAD
-  name: `Weather DNFT ${idx + 1}`,
-  description: `저는 Weather DNFT No.${idx + 1} 입니다.`,
-  creator_address: `${address[idx + 1]}`,
-  ipfs_url: `https://picsum.photos/id/${Math.floor(
-    Math.random() * (1000 - idx + 1)
-  )}/1000/600`,
-  tx_hash: `${tsHash[idx + 1]}`,
-=======
   token_id: 1,
   name: `Munbai Weather DNFT ${idx + 1}`,
   description: `내가 만든 Mumbai Weather DNFT No.${idx + 1} 입니다.`,
@@ -37,7 +28,6 @@ export const WeatherDNFTs: Prisma.nft_testCreateInput[] = Array.apply(
     Math.random() * (1000 - idx + 1)
   )}/1000/600`,
   nft_contract_address: '0x73D0b51B1fA88d83E9e029b983D8F70176b9c0A7',
->>>>>>> 9cb4d6046 (active sale)
 }));
 
 // export const SportsDNFTs: Prisma.nftCreateInput[] = Array.apply(
@@ -74,11 +64,7 @@ export const productsItmes: Prisma.nft_testCreateInput[] = [
 ];
 
 const main = async () => {
-<<<<<<< HEAD
-  const CATEGORY_NAME = ['WeatherDNFT'];
-=======
   // const CATEGORY_NAME = ['WeatherDNFT'];
->>>>>>> 9cb4d6046 (active sale)
 
   // CATEGORY_NAME.forEach(async (name, idx) => {
   //   const category = await prisma.categories.upsert({
