@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
@@ -30,6 +31,21 @@ type NFTMain struct {
 	Description          string `json:"description"`
 	IpfsUri              string `json:"ipfs_url"`
 	nft_contract_address string `json:"nft_contract_address"`
+}
+
+type MyPageOwner struct {
+	OwnerAddress string `json:"owner_address"`
+}
+
+type MyPageObject struct {
+	Name               string `json:"user_name"`
+	OwnerAddress       string `json:"user_owner_address"`
+	OwnerDescription   string `json:"user_description"`
+	TokenID            string `json:"nft_token_id"`
+	NFTName            string `json:"nft_name"`
+	NFTDescription     string `json:"nft_description"`
+	IpfsUri            string `json:"nft_ipfs_url"`
+	NFTContractAddress string `json:"nft_contract_address"`
 }
 
 type GetHandler struct {
@@ -80,24 +96,43 @@ func (g *GetHandler) GetMainPage(c echo.Context) error {
 
 func (g *GetHandler) GetMyPage(c echo.Context) error {
 
-	// user := os.Getenv("user")
-	// password := os.Getenv("password")
+	var owner MyPageOwner
+	var myPageObj MyPageObject
+	c.Bind(&owner)
+	fmt.Println("owner", owner)
+	fmt.Println("owner", owner.OwnerAddress)
+	fmt.Println("owner", reflect.TypeOf(owner))
 
-	// //db url 설정
-	// db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
-	// db, err := sql.Open("mysql", db_url)
+	user := os.Getenv("user")
+	password := os.Getenv("password")
 
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer db.Close()
-	// //QueryRow는 결과가 여러 행인 경우 에러반환, 한개 결과값만 받을 수 있음
-	// rows, err := db.Query("SELECT * FROM user where owner_address")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	//db url 설정
+	db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
+	db, err := sql.Open("mysql", db_url)
 
-	return c.JSON(http.StatusOK, "Hello")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	fmt.Println("test1")
+	//rows, err := db.Query("select user.name, user.owner_address, user.description, nft.token_id, nft.name, nft.description, nft.ipfs_url, nft.nft_contract_address from user join nft on user.? = nft.?", owner, owner)
+	rows, err := db.Query("select user.name, user.owner_address, user.description, nft.token_id, nft.name, nft.description, nft.ipfs_url, nft.nft_contract_address from user join nft on user.owner_address = nft.owner_address where user.owner_address = ?", owner.OwnerAddress)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("myPageObj", myPageObj)
+	fmt.Println("myPageObj", &myPageObj)
+	fmt.Println("test2")
+	for rows.Next() {
+		err := rows.Scan(&myPageObj.Name, &myPageObj.OwnerAddress, &myPageObj.OwnerDescription, &myPageObj.TokenID, &myPageObj.NFTName, &myPageObj.NFTDescription, &myPageObj.IpfsUri, &myPageObj.NFTContractAddress)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	}
+	fmt.Println("myPageObj", myPageObj)
+
+	return c.JSON(http.StatusOK, myPageObj)
 
 }
 
