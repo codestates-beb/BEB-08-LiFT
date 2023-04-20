@@ -80,22 +80,22 @@ func (g *GetHandler) GetMainPage(c echo.Context) error {
 
 func (g *GetHandler) GetMyPage(c echo.Context) error {
 
-	user := os.Getenv("user")
-	password := os.Getenv("password")
+	// user := os.Getenv("user")
+	// password := os.Getenv("password")
 
-	//db url 설정
-	db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
-	db, err := sql.Open("mysql", db_url)
+	// //db url 설정
+	// db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
+	// db, err := sql.Open("mysql", db_url)
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-	//QueryRow는 결과가 여러 행인 경우 에러반환, 한개 결과값만 받을 수 있음
-	rows, err := db.Query("SELECT * FROM user where owner_address")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer db.Close()
+	// //QueryRow는 결과가 여러 행인 경우 에러반환, 한개 결과값만 받을 수 있음
+	// rows, err := db.Query("SELECT * FROM user where owner_address")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	return c.JSON(http.StatusOK, "Hello")
 
