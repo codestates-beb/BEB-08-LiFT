@@ -208,6 +208,54 @@ func (g *GetHandler) GetMyWeather(c echo.Context) error {
 
 }
 
-// func (g *GetHandler) Search(c echo.Context) error {
+func (g *GetHandler) Search(c echo.Context) error {
+	qParam := c.QueryParam("q")
+	//test := c.Pa
+	fmt.Println("qParams", qParam)
 
-// }
+	//keywords := strings.Split(q, " ")
+
+	//user, pw 정보 가져오기
+	user := os.Getenv("user")
+	password := os.Getenv("password")
+
+	//db url 설정
+	db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
+	fmt.Println("db_url", db_url)
+
+	db, err := sql.Open("mysql", db_url)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer db.Close()
+	fmt.Println("db", db)
+
+	rows, err := db.Query("SELECT * FROM nft WHERE owner_address LIKE ? OR name LIKE ? OR description LIKE ?", "%"+qParam+"%", "%"+qParam+"%", "%"+qParam+"%")
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	defer rows.Close()
+	var results []map[string]interface{}
+	for rows.Next() {
+
+		var id, user_id, token_id int
+		var owner_address, name, description, ipfs_url, nft_contract_address string
+		err := rows.Scan(&id, &user_id, &token_id, &owner_address, &name, &description, &ipfs_url, &nft_contract_address)
+		if err != nil {
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+		results = append(results, map[string]interface{}{
+			"id":                   id,
+			"user_id":              user_id,
+			"token_id":             token_id,
+			"owner_address":        owner_address,
+			"name":                 name,
+			"description":          description,
+			"ipfs_url":             ipfs_url,
+			"nft_contract_address": nft_contract_address,
+		})
+
+	}
+
+	return c.JSON(http.StatusOK, results)
+}

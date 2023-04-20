@@ -28,7 +28,7 @@ func ConfigureRoutes(server *s.Server) {
 	server.Echo.GET("/detail/:num", getHandler.GetDetail)
 
 	//검색 API
-	//server.Echo.POST("/search   ", getHandler.Search)
+	server.Echo.GET("/search", getHandler.Search)
 
 	//MyPage Edit Api
 	server.Echo.POST("/mypage/edit", postHandler.UpdateMyPage)

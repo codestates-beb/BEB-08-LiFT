@@ -29,6 +29,10 @@ CREATE TABLE `nft` (
 
 );
 
+-- 인덱스 사용시 최적화를 위한 방법 가능함 
+CREATE INDEX idx_nft_name ON nft(name);
+CREATE INDEX idx_nft_description ON nft(description);
+CREATE INDEX idx_nft_ownerAddress ON nft(owner_address);
 
 CREATE TABLE `nft_test` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
