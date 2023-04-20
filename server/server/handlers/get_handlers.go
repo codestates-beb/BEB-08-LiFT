@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	s "echo-dnft/server"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"reflect"
@@ -69,25 +68,25 @@ func (g *GetHandler) GetMainPage(c echo.Context) error {
 	db, err := sql.Open("mysql", db_url)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	defer db.Close()
 	//QueryRow는 결과가 여러 행인 경우 에러반환, 한개 결과값만 받을 수 있음
 	rows, err := db.Query("SELECT * FROM nft")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	for rows.Next() {
 		var nftMain NFTMain
 		err := rows.Scan(&nftMain.ID, &nftMain.UserID, &nftMain.TokenID, &nftMain.OwnerAddress, &nftMain.Name, &nftMain.Description, &nftMain.IpfsUri, &nftMain.nft_contract_address)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 		nftList = append(nftList, nftMain)
 	}
 
 	if err := rows.Err(); err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	fmt.Println("nftList", nftList)
 
@@ -111,14 +110,13 @@ func (g *GetHandler) GetMyPage(c echo.Context) error {
 	db, err := sql.Open("mysql", db_url)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	defer db.Close()
 	fmt.Println("test1")
-	//rows, err := db.Query("select user.name, user.owner_address, user.description, nft.token_id, nft.name, nft.description, nft.ipfs_url, nft.nft_contract_address from user join nft on user.? = nft.?", owner, owner)
 	rows, err := db.Query("select user.name, user.owner_address, user.description, nft.token_id, nft.name, nft.description, nft.ipfs_url, nft.nft_contract_address from user join nft on user.owner_address = nft.owner_address where user.owner_address = ?", owner.OwnerAddress)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	fmt.Println("myPageObj", myPageObj)
 	fmt.Println("myPageObj", &myPageObj)
@@ -126,7 +124,7 @@ func (g *GetHandler) GetMyPage(c echo.Context) error {
 	for rows.Next() {
 		err := rows.Scan(&myPageObj.Name, &myPageObj.OwnerAddress, &myPageObj.OwnerDescription, &myPageObj.TokenID, &myPageObj.NFTName, &myPageObj.NFTDescription, &myPageObj.IpfsUri, &myPageObj.NFTContractAddress)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 
 	}
@@ -145,19 +143,19 @@ func (g *GetHandler) GetDetail(c echo.Context) error {
 	db, err := sql.Open("mysql", db_url)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	defer db.Close()
 
 	rows, err := db.Query("SELECT * from nft where id = ?", num)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	for rows.Next() {
 
 		err := rows.Scan(&nftMain.ID, &nftMain.UserID, &nftMain.TokenID, &nftMain.OwnerAddress, &nftMain.Name, &nftMain.Description, &nftMain.IpfsUri, &nftMain.nft_contract_address)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 
 	}
@@ -179,7 +177,7 @@ func (g *GetHandler) GetMyWeather(c echo.Context) error {
 
 	db, err := sql.Open("mysql", db_url)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
 	defer db.Close()
 	fmt.Println("db", db)
@@ -209,3 +207,7 @@ func (g *GetHandler) GetMyWeather(c echo.Context) error {
 	return c.JSON(http.StatusOK, weatherList)
 
 }
+
+// func (g *GetHandler) Search(c echo.Context) error {
+
+// }

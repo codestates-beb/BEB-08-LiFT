@@ -3,12 +3,14 @@ create database lift;
 use lift;
 -- 마이페이지에서 주로 사용할 예정 
 -- 유저 로그인상황 체크하거나 할 때 사용할 예정 
+-- 유저조회, 유저 정보 업데이트시 사용
 CREATE TABLE `user` (
-  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `id` int PRIMARY KEY AUTO_INCREMENT ,
   `name` varchar(255),
   `owner_address` varchar(255),
   `description` varchar(255)
 );
+ALTER TABLE user ADD UNIQUE (`owner_address`);
 
 -- 마이페이지 및 전체페이지에서 불러올 데이터
 -- 마이페이지에서 해당하는 owner_address == user 테이블에서 해당하는 address에 있는 nft만 불러오도록 하면 될듯 
@@ -17,13 +19,14 @@ CREATE TABLE `user` (
 -- 1 1 서울 37.5 126.9 (테스트 데이터)  
 CREATE TABLE `nft` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `user_id` int,
-  `token_id` int, 
+  `user_id` int default 0,
+  `token_id` int default 0, 
   `owner_address` varchar(255),
   `name` varchar(255),
   `description` varchar(255), 
   `ipfs_url` varchar(255),
   `nft_contract_address` varchar(255)
+
 );
 
 

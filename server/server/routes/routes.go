@@ -27,6 +27,9 @@ func ConfigureRoutes(server *s.Server) {
 	//NFT Detail Page Api
 	server.Echo.GET("/detail/:num", getHandler.GetDetail)
 
+	//검색 API
+	//server.Echo.POST("/search   ", getHandler.Search)
+
 	//MyPage Edit Api
 	server.Echo.POST("/mypage/edit", postHandler.UpdateMyPage)
 
@@ -38,8 +41,5 @@ func ConfigureRoutes(server *s.Server) {
 
 	//Simple DNFT
 	server.Echo.POST("/snfts", postHandler.SimpleCreateNFT)
-
-	//검색 API
-	//server.Echo.POST("/search   ", postHandler.WeatherDynamicNFT)
 
 }

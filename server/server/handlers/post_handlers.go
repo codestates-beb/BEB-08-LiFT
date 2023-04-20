@@ -6,7 +6,6 @@ import (
 	s "echo-dnft/server"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"reflect"
@@ -195,7 +194,7 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 		db, err := sql.Open("mysql", db_url)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 		defer db.Close()
 
@@ -230,13 +229,13 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 		stmt, err := db.Prepare("INSERT INTO nft (id, user_id, token_id, name, description, ipfs_url, nft_contract_address, owner_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 		defer stmt.Close()
 
 		_, err = stmt.Exec(nft_id, user_id, token_id, metadataSlice2[0], metadataSlice2[1], metadataSlice2[2], contractAddress, accountAddress)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 	}
 	fmt.Println("safeMint", safeMint)
@@ -392,7 +391,7 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 
 		db, err := sql.Open("mysql", db_url)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 		defer db.Close()
 
@@ -430,13 +429,13 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 
 		stmt, err := db.Prepare("INSERT INTO nft (id, user_id, token_id, name, description, ipfs_url, nft_contract_address, owner_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 		defer stmt.Close()
 
 		_, err = stmt.Exec(nft_id, user_id, token_id, metadataSlice2[0], metadataSlice2[1], metadataSlice2[2], contractAddress, accountAddress)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
 		}
 	}
 	fmt.Println("mint", mint)
@@ -623,6 +622,7 @@ func (p *PostHandlers) DefaultCreateNFT(c echo.Context) error {
 	return c.JSONBlob(http.StatusOK, metadataBytes)
 
 }
+
 func (p *PostHandlers) UpdateMyPage(c echo.Context) error {
 	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
 	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
@@ -630,7 +630,7 @@ func (p *PostHandlers) UpdateMyPage(c echo.Context) error {
 	var myPage MyPage
 	var user_id int
 	if err := c.Bind(&myPage); err != nil {
-		log.Fatal(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 	fmt.Println("mint Success")
 	user := os.Getenv("user")
@@ -642,34 +642,38 @@ func (p *PostHandlers) UpdateMyPage(c echo.Context) error {
 
 	db, err := sql.Open("mysql", db_url)
 	if err != nil {
-		log.Fatal(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 	defer db.Close()
 
 	fmt.Println("db", db)
-	err = db.QueryRow("SELECT Max(IFNULL(id,1)) from user").Scan(&user_id)
+	err = db.QueryRow("SELECT IFNULL(id,0) from user where owner_address = ?  ", myPage.OwnerAddress).Scan(&user_id)
 	if err != nil {
 		fmt.Println(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
 
 	if user_id == 0 {
 		user_id = 1
-	} else if user_id != 0 {
-		user_id += 1
+		stmt, _ := db.Prepare("INSERT INTO user (name, description, owner_address) VALUES ('?', '?', '?') ON DUPLICATE KEY UPDATE name='?', description='?', owner_address='?'")
+		_, err = stmt.Exec(&myPage.Name, &myPage.Description, &myPage.OwnerAddress, &myPage.Name, &myPage.Description, &myPage.OwnerAddress)
+		if err != nil {
+			fmt.Println(err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		defer stmt.Close()
 
-	} 
-
-	stmt, err := db.Prepare("INSERT INTO user(id, name, owner_address, description) VALUES (?, ?, ?, ?)")
-	if err != nil {
-		log.Fatal(err)
+	} else {
+		stmt, _ := db.Prepare("UPDATE user  set name = ?  ,  description = ?  where owner_address = ?")
+		_, err = stmt.Exec(&myPage.Name, &myPage.Description, &myPage.OwnerAddress)
+		if err != nil {
+			fmt.Println(err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		defer stmt.Close()
 	}
-	defer stmt.Close()
 
-	_, err = stmt.Exec(&user_id, &myPage.Name, &myPage.OwnerAddress, &myPage.Description)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("myPAge", myPage)
+	fmt.Println("myPage", myPage)
 
 	return c.String(http.StatusOK, "Success Edit MyPage")
 
