@@ -36,10 +36,7 @@
     "eslint": "8.37.0",
     "eslint-config-next": "13.2.4",
     "ethers": "^5",
-<<<<<<< HEAD
-=======
     "framer-motion": "^10.12.4",
->>>>>>> 9cb4d6046 (active sale)
     "jwt-decode": "^3.1.2",
     "moralis": "^2.18.4",
     "mysql": "^2.18.1",
