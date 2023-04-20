@@ -15,8 +15,31 @@ func ConfigureRoutes(server *s.Server) {
 	server.Echo.Use(middleware.Recover())
 	server.Echo.Use(middleware.CORS())
 
-	server.Echo.GET("/get", getHandler.GetHandle)
+	//Main Api
+	server.Echo.GET("/", getHandler.GetMainPage)
+
+	//Location Api
+	server.Echo.GET("/location", getHandler.GetMyWeather)
+
+	//MyPage Api
+	server.Echo.GET("/mypage", getHandler.GetMyPage)
+
+	//NFT Detail Page Api
+	server.Echo.GET("/detail/:num", getHandler.GetDetail)
+
+	//MyPage Edit Api
+	server.Echo.POST("/mypage/edit", postHandler.UpdateMyPage)
+
+	//Automation DNFT
 	server.Echo.POST("/mnfts", postHandler.MultipleCreateNFT)
+
+	//WEATHER DNFT API
+	server.Echo.POST("/wdnfts", postHandler.WeatherDynamicNFT)
+
+	//Simple DNFT
 	server.Echo.POST("/snfts", postHandler.SimpleCreateNFT)
+
+	//검색 API
+	//server.Echo.POST("/search   ", postHandler.WeatherDynamicNFT)
 
 }

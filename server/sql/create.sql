@@ -6,9 +6,8 @@ use lift;
 CREATE TABLE `user` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
-  `address` varchar(255),
-  `description` varchar(255),
-  `token_id` varchar(255) 
+  `owner_address` varchar(255),
+  `description` varchar(255)
 );
 
 -- 마이페이지 및 전체페이지에서 불러올 데이터
@@ -24,7 +23,19 @@ CREATE TABLE `nft` (
   `name` varchar(255),
   `description` varchar(255), 
   `ipfs_url` varchar(255),
-  `tx_hash` varchar(255),
+  `nft_contract_address` varchar(255)
+);
+
+
+CREATE TABLE `nft_test` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `user_id` int,
+  `token_id` int, 
+  `owner_address` varchar(255),
+  `name` varchar(255),
+  `description` varchar(255), 
+  `ipfs_url` varchar(255),
+  `nft_contract_address` varchar(255)
 );
 
 

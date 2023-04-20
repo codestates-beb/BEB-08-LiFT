@@ -23,8 +23,3 @@ func NewConfig() *Config {
 	}
 	//fmt.Println("config")
 }
-
-func Print() string {
-	fmt.Println("Print")
-	return "Print"
-}

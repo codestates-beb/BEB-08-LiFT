@@ -1,6 +1,14 @@
 {
-  "editor.formatOnSave": true,
-  "[solidity]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+
+    "terminal.integrated.allowMnemonics": false,
+    "terminal.integrated.shell.linux": "/bin/bash",
+    "terminal.integrated.automationProfile.linux": {
+        
+    },
+    "code-runner.runInTerminal": true,
+    "go.terminal.activateEnvironment": false,
+    "go.testExplorer.showOutput": true,
+    "gitlens.terminal.overrideGitEditor": false,
+    "gitlens.terminalLinks.enabled": false,
+    "gitlens.terminalLinks.showDetailsView": false
 }
