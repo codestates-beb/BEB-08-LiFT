@@ -93,6 +93,7 @@ func (g *GetHandler) GetMainPage(c echo.Context) error {
 	return c.JSON(http.StatusOK, nftList)
 }
 
+// TODO 값이 여러개일 경우 배열에 저장, 로직자체를 배열로 넣고 해당 배열을 전부매핑해서 리스폰스 보내기
 func (g *GetHandler) GetMyPage(c echo.Context) error {
 
 	var owner MyPageOwner

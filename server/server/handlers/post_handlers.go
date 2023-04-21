@@ -56,6 +56,7 @@ var (
 	token_id int
 )
 
+// TODO DB에 다이나믹 NFT 2,3,4번째도 넣을 수 있게 수정필요
 func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
 	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
@@ -243,6 +244,7 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	return c.String(http.StatusOK, "Congratulations. You've successfully minted.")
 }
 
+// TODO DB에 다이나믹 NFT 2,3,4번째도 넣을 수 있게 수정필요
 func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
 	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
