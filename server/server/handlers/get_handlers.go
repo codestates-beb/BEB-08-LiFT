@@ -55,6 +55,10 @@ func NewGetHandler(server *s.Server) *GetHandler {
 	return &GetHandler{server: server}
 }
 
+// func (g *GetHandler) GetTokenPrice(c echo.Context) error {
+
+// }
+
 func (g *GetHandler) GetMainPage(c echo.Context) error {
 
 	var nftList []NFTMain

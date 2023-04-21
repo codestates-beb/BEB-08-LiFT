@@ -61,7 +61,7 @@
 	},
 	"settings": {
 		"compilationTarget": {
-			"lift_market.sol": "erc721Interface"
+			"lift_market2.sol": "erc721Interface"
 		},
 		"evmVersion": "paris",
 		"libraries": {},
@@ -99,12 +99,12 @@
 				"dweb:/ipfs/QmQJquTMtc6fgm5JQzGdsGpA2fqBe3MHWEdt2qzaLySMdN"
 			]
 		},
-		"lift_market.sol": {
-			"keccak256": "0x009c91306617f7bec49a1e12802fb33307301b671bc556c7cdfbbb34122e66db",
+		"lift_market2.sol": {
+			"keccak256": "0x2a8b45da64de0e521255ecf810f2480bc158a053b824441ed3534235431984ba",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://fc7892956c33ed04d7c362e7d799ded915439036655bf4f652017c4dd9bb6f0a",
-				"dweb:/ipfs/QmTH6VKvV7cBvnozt498jtamwQzcKodmKz6LD8b5MnsLvF"
+				"bzz-raw://782eaf4b38ac8b636c168114123a2b9b5738900bb5e30e934e13d5d0dedfbf03",
+				"dweb:/ipfs/QmdY4R8DFe6EKrGVSQsruSQjaoCvuXeWg6qF5bCs3i2rAx"
 			]
 		}
 	},

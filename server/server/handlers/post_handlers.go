@@ -685,6 +685,6 @@ func (p *PostHandlers) UpdateMyPage(c echo.Context) error {
 
 	fmt.Println("myPage", myPage)
 
-	return c.String(http.StatusOK, "Success Edit MyPage")
+	return c.JSON(http.StatusOK, myPage)
 
 }

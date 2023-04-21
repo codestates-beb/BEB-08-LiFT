@@ -465,6 +465,7 @@ var ABI = `[
 	}
 ]`
 
+// WEATHER DNFT
 var ABI2 = `[
 	{
 		"inputs": [
