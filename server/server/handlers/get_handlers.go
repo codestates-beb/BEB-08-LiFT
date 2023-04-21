@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"reflect"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
@@ -95,18 +94,11 @@ func (g *GetHandler) GetMainPage(c echo.Context) error {
 
 // TODO 값이 여러개일 경우 배열에 저장, 로직자체를 배열로 넣고 해당 배열을 전부매핑해서 리스폰스 보내기
 // TODO query식으로 붙여서 변경하기
+// 전부 변경했음
 func (g *GetHandler) GetMyPage(c echo.Context) error {
 
-	var owner MyPageOwner
 	var myPageObj MyPageObject
 	qParam := c.QueryParam("owner_address")
-	fmt.Print("qParam", qParam)
-	fmt.Print("qParam", reflect.TypeOf(qParam))
-	//owner = qParam
-	//c.Bind(qParam)
-	fmt.Println("owner", owner)
-	fmt.Println("owner", owner.OwnerAddress)
-	fmt.Println("owner", reflect.TypeOf(owner))
 
 	user := os.Getenv("user")
 	password := os.Getenv("password")
@@ -119,27 +111,35 @@ func (g *GetHandler) GetMyPage(c echo.Context) error {
 		fmt.Println(err)
 	}
 	defer db.Close()
-	fmt.Println("test1")
+
 	rows, err := db.Query("select user.name, user.owner_address, user.description, nft.token_id, nft.name, nft.description, nft.ipfs_url, nft.nft_contract_address from user join nft on user.owner_address = nft.owner_address where user.owner_address = ?", qParam)
 	if err != nil {
 		fmt.Println(err)
 	}
-	//objSlice := make([]string, 0)
-	//metadataSlice := make([]string, len(data2))
-	fmt.Println("myPageObj", myPageObj)
-	fmt.Println("myPageObj", &myPageObj)
-	fmt.Println("test2")
+
+	var results []map[string]interface{}
+
 	for rows.Next() {
-		err := rows.Scan(&myPageObj.Name, &myPageObj.OwnerAddress, &myPageObj.OwnerDescription, &myPageObj.TokenID, &myPageObj.NFTName, &myPageObj.NFTDescription, &myPageObj.IpfsUri, &myPageObj.NFTContractAddress)
+		err := rows.Scan(&myPageObj.Name, &myPageObj.OwnerAddress, &myPageObj.OwnerDescription, &myPageObj.TokenID,
+			&myPageObj.NFTName, &myPageObj.NFTDescription, &myPageObj.IpfsUri, &myPageObj.NFTContractAddress)
 		if err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println("rows", rows)
-		//objSlice = append(objSlice, rows)
-	}
-	fmt.Println("myPageObj", myPageObj)
+		results = append(results, map[string]interface{}{
+			"user_name":            myPageObj.Name,
+			"user_address":         myPageObj.OwnerAddress,
+			"user_description":     myPageObj.OwnerDescription,
+			"token_id":             myPageObj.TokenID,
+			"nft_name":             myPageObj.NFTName,
+			"nft_description":      myPageObj.NFTDescription,
+			"nft_ipfs_url":         myPageObj.IpfsUri,
+			"nft_contract_address": myPageObj.NFTContractAddress,
+		})
 
-	return c.JSON(http.StatusOK, myPageObj)
+	}
+	fmt.Println("results", results)
+
+	return c.JSON(http.StatusOK, results)
 
 }
 
@@ -219,10 +219,7 @@ func (g *GetHandler) GetMyWeather(c echo.Context) error {
 
 func (g *GetHandler) Search(c echo.Context) error {
 	qParam := c.QueryParam("q")
-	//test := c.Pa
 	fmt.Println("qParams", qParam)
-
-	//keywords := strings.Split(q, " ")
 
 	//user, pw 정보 가져오기
 	user := os.Getenv("user")

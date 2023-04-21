@@ -57,6 +57,7 @@ var (
 )
 
 // TODO DB에 다이나믹 NFT 2,3,4번째도 넣을 수 있게 수정필요
+// 수정 완료
 func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
 	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
@@ -140,16 +141,11 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	for uri := range metadataURLs {
 		metadataSlice = append(metadataSlice, uri)
 	}
-	fmt.Println("metadataSlice slice before", metadataSlice)
-	metadataSlice = metadataSlice[4:]
-	fmt.Println("metadataSlice slice[4:]", metadataSlice)
 
+	metadataSlice = metadataSlice[4:]
 	metadataString := strings.Join(metadataSlice, ",") // 슬라이스를 하나의 문자열로 결합
-	fmt.Println("metadataString", metadataString)
 	metadataString = strings.Replace(metadataString, "\\", "", -1)
 	metadataelements := strings.Split(metadataString, ",")
-	fmt.Println("metadataelements2", metadataelements)
-	fmt.Println("type check metadataelements", reflect.TypeOf(metadataelements))
 
 	contractAddress := os.Getenv("CONTRACTS")
 	//accountAddress := os.Getenv("WALLET_ADDRESS")
@@ -210,20 +206,6 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 		}
 		defer db.Close()
 
-		fmt.Println("db", db)
-
-		// err = db.QueryRow("SELECT Max(IFNULL(id,1) ) from nft ").Scan(&nft_id)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// }
-		// err = db.QueryRow("SELECT Max(IFNULL(user_id,1))  from nft ").Scan(&user_id)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// }
-		// err = db.QueryRow("SELECT Max(IFNULL(token_id,1)) from nft where owner_address=?", accountAddress).Scan(&token_id)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// }
 		err = db.QueryRow("SELECT COALESCE(Max(id), 0)  from nft where owner_address=?", accountAddress).Scan(&nft_id)
 		if err != nil {
 			fmt.Println(err)
@@ -236,10 +218,6 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 		if err != nil {
 			fmt.Println(err)
 		}
-
-		fmt.Println("nft_id", nft_id)
-		fmt.Println("user_id", user_id)
-		fmt.Println("token_id", token_id)
 		if nft_id == 0 && user_id == 0 || token_id == 0 {
 			nft_id, user_id, token_id = 1, 1, 1
 		} else if nft_id != 0 && user_id != 0 && token_id != 0 {
@@ -247,10 +225,6 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 			user_id += 1
 			token_id += 1
 		}
-
-		fmt.Println("nft_id", nft_id)
-		fmt.Println("user_id", user_id)
-		fmt.Println("token_id", token_id)
 
 		stmt, err := db.Prepare("INSERT INTO nft (id, user_id, token_id, name, description, ipfs_url, nft_contract_address, owner_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
@@ -302,6 +276,7 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 			}
 
 		} else {
+			fmt.Println("i.image", v)
 			data2[i] = v
 		}
 	}
@@ -333,6 +308,7 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 				"image":       meta["image"].(string),
 				"attributes":  meta["attributes"].([]interface{}),
 			}
+			
 			//fmt.Println("metadata", metadata)
 			//fmt.Println("len(metadataSlice2)", len(metadataSlice2))
 			if len(metadataSlice2) == 0 {
@@ -400,10 +376,6 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 	}
 	fmt.Println("balance", balance)
 
-	// fmt.Println("type check getIpfsUri", reflect.TypeOf(getIpfsUri)) // []string
-	// getIpfsUriSlice, _ := getIpfsUri.([]string)
-	//fmt.Println("firstElement", getIpfsUriSlice[0])
-
 	//컨트랙트 주소 :0x443F2C402ae77877F0FB011491e02A10E153A33b
 	//metadataelements >> 성공
 	// tokenid는 owner address가 일치하면서 디비에 있는 값과 맞췄을 때 마지막 token_id에서 +1
@@ -453,9 +425,6 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 		if user_id == 0 || token_id == 0 {
 			user_id, token_id = 1, 1
 		} else if nft_id != 0 && user_id != 0 && token_id != 0 {
-			//nft_id 1,2,3,4,5,6
-			//user_id 1,2,3,4,5,6?
-			//token_id 1 1 2 3
 			nft_id += 1
 			user_id += 1
 			token_id += 1
