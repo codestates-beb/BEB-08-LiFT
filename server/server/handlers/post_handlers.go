@@ -67,6 +67,8 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 	data2 := make(map[string]interface{})
 	var weatherLocationId string
+	var ownerAddress string
+	fmt.Println("ownerAddress", ownerAddress)
 	for i, v := range data {
 
 		if i == "locationId" {
@@ -76,12 +78,20 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 			default:
 				fmt.Println("locationId is not a string ")
 			}
-		} else {
+		} else if i == "owner_address" {
+			switch s := v.(type) {
+			case string:
+				ownerAddress = s
+			default:
+				fmt.Println("ownerId is not a string ")
+			}
 
+		} else {
 			data2[i] = v
 		}
 	}
 	fmt.Println("weatherLocationId", weatherLocationId)
+	fmt.Println("ownerAddress", ownerAddress)
 	//메타데이터 슬라이스 변수를 data.Types 크기만큼 할당해서 생성한다.
 	metadataSlice := make([]string, len(data2))
 
@@ -142,7 +152,8 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	fmt.Println("type check metadataelements", reflect.TypeOf(metadataelements))
 
 	contractAddress := os.Getenv("CONTRACTS")
-	accountAddress := os.Getenv("WALLET_ADDRESS")
+	//accountAddress := os.Getenv("WALLET_ADDRESS")
+	accountAddress := ownerAddress
 	fmt.Println("contractAddress", contractAddress)
 	fmt.Println("accountAddress", accountAddress)
 
@@ -201,18 +212,31 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 
 		fmt.Println("db", db)
 
-		err = db.QueryRow("SELECT Max(IFNULL(id,1) ) from nft ").Scan(&nft_id)
+		// err = db.QueryRow("SELECT Max(IFNULL(id,1) ) from nft ").Scan(&nft_id)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
+		// err = db.QueryRow("SELECT Max(IFNULL(user_id,1))  from nft ").Scan(&user_id)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
+		// err = db.QueryRow("SELECT Max(IFNULL(token_id,1)) from nft where owner_address=?", accountAddress).Scan(&token_id)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
+		err = db.QueryRow("SELECT COALESCE(Max(id), 0)  from nft where owner_address=?", accountAddress).Scan(&nft_id)
 		if err != nil {
 			fmt.Println(err)
 		}
-		err = db.QueryRow("SELECT Max(IFNULL(user_id,1))  from nft ").Scan(&user_id)
+		err = db.QueryRow("SELECT COALESCE(Max(user_id), 0)  from nft where owner_address=?", accountAddress).Scan(&user_id)
 		if err != nil {
 			fmt.Println(err)
 		}
-		err = db.QueryRow("SELECT Max(IFNULL(token_id,1)) from nft where owner_address=?", accountAddress).Scan(&token_id)
+		err = db.QueryRow("SELECT COALESCE(Max(token_id), 0) from nft where owner_address=?", accountAddress).Scan(&token_id)
 		if err != nil {
 			fmt.Println(err)
 		}
+
 		fmt.Println("nft_id", nft_id)
 		fmt.Println("user_id", user_id)
 		fmt.Println("token_id", token_id)
@@ -245,6 +269,7 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 }
 
 // TODO DB에 다이나믹 NFT 2,3,4번째도 넣을 수 있게 수정필요
+// 수정완료함
 func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
 	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
@@ -257,6 +282,8 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 
 	data2 := make(map[string]interface{})
 	var weatherLocationId string
+	var ownerAddress string
+	fmt.Println("ownerId", ownerAddress)
 	for i, v := range data {
 
 		if i == "locationId" {
@@ -266,11 +293,19 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 			default:
 				fmt.Println("locationId is not a string ")
 			}
-		} else {
+		} else if i == "owner_address" {
+			switch s := v.(type) {
+			case string:
+				ownerAddress = s
+			default:
+				fmt.Println("ownerId is not a string ")
+			}
 
+		} else {
 			data2[i] = v
 		}
 	}
+	fmt.Println("ownerAddress", ownerAddress)
 	fmt.Println("weatherLocationId", weatherLocationId)
 	//메타데이터 슬라이스 변수를 data.Types 크기만큼 할당해서 생성한다.
 	metadataSlice := make([]string, len(data2))
@@ -341,7 +376,8 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 	fmt.Println("type check metadataelements", reflect.TypeOf(metadataelements))
 
 	contractAddress := os.Getenv("WEATHERNFT")
-	accountAddress := os.Getenv("WALLET_ADDRESS")
+	//accountAddress := os.Getenv("WALLET_ADDRESS")
+	accountAddress := ownerAddress
 	fmt.Println("contractAddress", contractAddress)
 	fmt.Println("accountAddress", accountAddress)
 
@@ -399,23 +435,23 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 
 		fmt.Println("db", db)
 
-		err = db.QueryRow("SELECT Max(IFNULL(id,1))  from nft ").Scan(&nft_id)
+		err = db.QueryRow("SELECT COALESCE(Max(id), 0)  from nft where owner_address=?", accountAddress).Scan(&nft_id)
 		if err != nil {
 			fmt.Println(err)
 		}
-		err = db.QueryRow("SELECT Max(IFNULL(user_id,1))  from nft ").Scan(&user_id)
+		err = db.QueryRow("SELECT COALESCE(Max(user_id), 0)  from nft where owner_address=?", accountAddress).Scan(&user_id)
 		if err != nil {
 			fmt.Println(err)
 		}
-		err = db.QueryRow("SELECT Max(IFNULL(token_id,1)) from nft where owner_address=?", accountAddress).Scan(&token_id)
+		err = db.QueryRow("SELECT COALESCE(Max(token_id), 0) from nft where owner_address=?", accountAddress).Scan(&token_id)
 		if err != nil {
 			fmt.Println(err)
 		}
 		fmt.Println("nft_id", nft_id)
 		fmt.Println("user_id", user_id)
 		fmt.Println("token_id", token_id)
-		if nft_id == 0 && user_id == 0 || token_id == 0 {
-			nft_id, user_id, token_id = 1, 1, 1
+		if user_id == 0 || token_id == 0 {
+			user_id, token_id = 1, 1
 		} else if nft_id != 0 && user_id != 0 && token_id != 0 {
 			//nft_id 1,2,3,4,5,6
 			//user_id 1,2,3,4,5,6?
