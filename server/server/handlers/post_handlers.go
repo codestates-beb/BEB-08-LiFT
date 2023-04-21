@@ -218,8 +218,8 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 		if err != nil {
 			fmt.Println(err)
 		}
-		if nft_id == 0 && user_id == 0 || token_id == 0 {
-			nft_id, user_id, token_id = 1, 1, 1
+		if user_id == 0 || token_id == 0 {
+			user_id, token_id = 1, 1
 		} else if nft_id != 0 && user_id != 0 && token_id != 0 {
 			nft_id += 1
 			user_id += 1
@@ -274,9 +274,7 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 			default:
 				fmt.Println("ownerId is not a string ")
 			}
-
 		} else {
-			fmt.Println("i.image", v)
 			data2[i] = v
 		}
 	}
@@ -308,14 +306,14 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 				"image":       meta["image"].(string),
 				"attributes":  meta["attributes"].([]interface{}),
 			}
-			
-			//fmt.Println("metadata", metadata)
+
+			fmt.Println("meta[image].(string)", meta["image"].(string))
 			//fmt.Println("len(metadataSlice2)", len(metadataSlice2))
 			if len(metadataSlice2) == 0 {
 				metadataSlice2 = append(metadataSlice2, meta["name"].(string))
 				metadataSlice2 = append(metadataSlice2, meta["description"].(string))
 				metadataSlice2 = append(metadataSlice2, meta["image"].(string))
-				//fmt.Println("metadataSlice2", metadataSlice2)
+
 			}
 
 			//metadataSlice2 = append(metadataSlice2, meta["attributes"].([]interface{}))
@@ -646,6 +644,7 @@ func (p *PostHandlers) UpdateMyPage(c echo.Context) error {
 	db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
 
 	fmt.Println("myPage", myPage)
+	fmt.Println("myPage", myPage.OwnerAddress)
 
 	db, err := sql.Open("mysql", db_url)
 	if err != nil {
@@ -654,20 +653,23 @@ func (p *PostHandlers) UpdateMyPage(c echo.Context) error {
 	defer db.Close()
 
 	fmt.Println("db", db)
-	err = db.QueryRow("SELECT IFNULL(id,0) from user where owner_address = ?  ", myPage.OwnerAddress).Scan(&user_id)
+	//COALESCE(Max(user_id), 0)
+	// IFNULL(id,0)
+	err = db.QueryRow("SELECT COALESCE(Max(id), 0) from user where owner_address = ?  ", myPage.OwnerAddress).Scan(&user_id)
 	if err != nil {
 		fmt.Println(err)
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
-
+	fmt.Println("user_id", user_id)
 	if user_id == 0 {
 		user_id = 1
-		stmt, _ := db.Prepare("INSERT INTO user (name, description, owner_address) VALUES ('?', '?', '?') ON DUPLICATE KEY UPDATE name='?', description='?', owner_address='?'")
+		stmt, _ := db.Prepare("INSERT INTO user (name, description, owner_address) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE name=?, description=?, owner_address=?")
 		_, err = stmt.Exec(&myPage.Name, &myPage.Description, &myPage.OwnerAddress, &myPage.Name, &myPage.Description, &myPage.OwnerAddress)
 		if err != nil {
 			fmt.Println(err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
+		fmt.Println("stmt", stmt)
 		defer stmt.Close()
 
 	} else {
@@ -677,6 +679,7 @@ func (p *PostHandlers) UpdateMyPage(c echo.Context) error {
 			fmt.Println(err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
+		fmt.Println("stmt", stmt)
 		defer stmt.Close()
 	}
 
