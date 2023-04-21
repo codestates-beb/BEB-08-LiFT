@@ -51,7 +51,7 @@ CREATE TABLE market (
 -- client > approve > set interface > sell NFT 
 -- backend  > approve(to: 계정주소, tokenId: nft코드 ), sale nft, buy nft >> 스마트 컨트랙트 db에서 업데이트 하면 좋겠다.
 -- post buy >> 구매 백엔드 >> db 업데이트  
-CREATE TABLE `nft_test` (
+CREATE TABLE `automation_dnft` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `user_id` int,
   `token_id` int, 

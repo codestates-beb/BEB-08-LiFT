@@ -50,6 +50,11 @@ type tokenObj struct {
 	OwnerAddress string `json:"owner_address"`
 }
 
+type buyerObj struct {
+	TokenID      string `json:"token_id"`
+	BuyerAddress string `json:"buyer_address"`
+}
+
 // 변수 설정
 var (
 	//Mutex 동시실행 방지하는 변수
@@ -695,11 +700,11 @@ func (p *PostHandlers) UpdateMyPage(c echo.Context) error {
 
 }
 
-// func (p *PostHandlers) Buy(c echo.Context) error {
+func (p *PostHandlers) Buy(c echo.Context) error {
 
-// 	//c.JSON(http.StatusOK, "")
-// 	c.String(http.StatusOK, "Test")
-// }
+	//c.JSON(http.StatusOK, "")
+	c.String(http.StatusOK, "Test")
+}
 
 // TODO DB 날리고 업데이트하면 해당 함수 업데이트 필요
 func (p *PostHandlers) UpdateMetaData(c echo.Context) error {
@@ -759,7 +764,6 @@ func (p *PostHandlers) UpdateMetaData(c echo.Context) error {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("newTokenURI", newTokenURI)
 
 		user := os.Getenv("user")
 		password := os.Getenv("password")
@@ -768,16 +772,23 @@ func (p *PostHandlers) UpdateMetaData(c echo.Context) error {
 		db, _ := sql.Open("mysql", db_url)
 		defer db.Close()
 
-		stmt, _ := db.Prepare("UPDATE nft  set ipfs_url = ?  where owner_address = ? and id = ? ")
-		// stmt, _ := db.Prepare("UPDATE nft  set ipfs_url = ?  where owner_address = ? and token_id = ? ") db 수정 후 이 쿼리로 적용해야함
-		_, err = stmt.Exec(&newTokenURI, &tokenObject.OwnerAddress, &tokenObject.TokenID)
+		//before https://ipfs.thirdwebcdn.com/ipfs/QmbrnTEsM1XywtYXP3GLHW7jpCq233UiNc3vSemWH2h7D6/snow-chainlink.gif
+		//after
+		stmt, err := db.Prepare("UPDATE nft set ipfs_url = ?, owner_address = ? where id = ? ")
+		if err != nil {
+			fmt.Println(err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		defer stmt.Close()
+		// stmt, _ := db.Prepare("UPDATE nft  set ipfs_url = ?, owner_address =?  where  token_id = ?") db 수정 후 이 쿼리로 적용해야함
+		_, err = stmt.Exec(newTokenURI, tokenObject.OwnerAddress, num_tokenId)
 		if err != nil {
 			fmt.Println(err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
 		fmt.Println("stmt", stmt)
 		results = append(results, newTokenURI.(string), tokenObject.OwnerAddress)
-		defer stmt.Close()
+
 	}
 	fmt.Println("results", results)
 	//return c.String(http.StatusOK, "Update Metadata")
