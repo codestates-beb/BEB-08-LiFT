@@ -42,4 +42,7 @@ func ConfigureRoutes(server *s.Server) {
 	//Simple DNFT
 	server.Echo.POST("/snfts", postHandler.SimpleCreateNFT)
 
+	//MetaData Update
+	server.Echo.POST("/metadata", postHandler.UpdateMetaData)
+
 }
