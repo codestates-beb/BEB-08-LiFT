@@ -49,10 +49,10 @@ type tokenObj struct {
 	TokenID      string `json:"token_id"`
 	OwnerAddress string `json:"owner_address"`
 }
-
 type buyerObj struct {
-	TokenID      string `json:"token_id"`
-	BuyerAddress string `json:"buyer_address"`
+	TokenID       string `json:"token_id"`
+	BuyerAddress  string `json:"buyer_address"`
+	SellerAddress string `json:"seller_address"`
 }
 
 // 변수 설정
@@ -702,8 +702,84 @@ func (p *PostHandlers) UpdateMyPage(c echo.Context) error {
 
 func (p *PostHandlers) Buy(c echo.Context) error {
 
-	//c.JSON(http.StatusOK, "")
-	c.String(http.StatusOK, "Test")
+	lock.Lock()         //동시성 문제를 해결하기위한 mutex 값 설정
+	defer lock.Unlock() //동시성 문제를 해결하기위한 mutex 값 해제
+
+	var buyerObj buyerObj
+	if err := c.Bind(&buyerObj); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+	fmt.Println("buyerObj", &buyerObj)
+
+	contractAddress := os.Getenv("WEATHERNFT")
+	//accountAddress := os.Getenv("WALLET_ADDRESS")
+	buyerAddress := buyerObj.BuyerAddress
+	ownerAddress := buyerObj.SellerAddress
+	fmt.Println("buyerAddress", buyerAddress)
+	fmt.Println("ownerAddress", ownerAddress)
+
+	sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
+		PrivateKey: os.Getenv("PRIVATEKEY"),
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	contract, err := sdk.GetContractFromAbi(contractAddress, ABI2)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("contract", contract)
+
+	num_tokenId, _ := strconv.Atoi(buyerObj.TokenID)
+	ownerOf, err := contract.Call(context.Background(), "ownerOf", num_tokenId)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("ownerOf", ownerOf)
+	//0x61327612EC4aFD93e370eC0599f933bB08020A54 real owner
+	fmt.Println("buyerObj.BuyerAddress", buyerObj.BuyerAddress)
+	fmt.Println("num_tokenId", num_tokenId)
+
+	//common.HexToAddress : common.Address 타입을 반환한다.
+	//common.Address는 Ethereum 주소를 나타내는 구조체 20바이트 배열로 구성되고 0x로 시작함
+	//common.Address를 문자열로 변환하려면 hexutil.Encode함수 사용이 가능함
+	//hexutil.Encode함수는 []byte 인자를 받는다.
+
+	//요청한 오너 어드레스를 common.Address 타입으로 변환
+	address := common.HexToAddress(buyerObj.SellerAddress)
+	fmt.Println("address", address)
+	fmt.Println("type check", reflect.TypeOf(address))
+
+	//토큰아이디의 주인과 요청받은 address가 같은 주소일 경우
+	fmt.Println(reflect.TypeOf(buyerObj.SellerAddress))
+	fmt.Println(reflect.TypeOf(ownerOf))
+	if address == ownerOf {
+		user := os.Getenv("user")
+		password := os.Getenv("password")
+		//db url 설정
+		db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
+		db, _ := sql.Open("mysql", db_url)
+		defer db.Close()
+		fmt.Println("db test")
+		stmt, err := db.Prepare("UPDATE nft set owner_address = ?  where id = ?")
+		if err != nil {
+			fmt.Println(err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		defer stmt.Close()
+
+		// stmt, _ := db.Prepare("UPDATE nft  set ipfs_url = ?, owner_address =?  where  token_id = ?") db 수정 후 이 쿼리로 적용해야함
+		_, err = stmt.Exec(buyerObj.BuyerAddress, num_tokenId)
+		if err != nil {
+			fmt.Println(err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		fmt.Println("stmt", stmt)
+
+	}
+
+	return c.String(http.StatusOK, "Congratulations on your purchase. Owner has changed ")
 }
 
 // TODO DB 날리고 업데이트하면 해당 함수 업데이트 필요

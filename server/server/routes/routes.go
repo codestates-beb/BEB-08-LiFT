@@ -45,4 +45,7 @@ func ConfigureRoutes(server *s.Server) {
 	//MetaData Update
 	server.Echo.POST("/metadata", postHandler.UpdateMetaData)
 
+	//buy Update
+	server.Echo.POST("/buy", postHandler.Buy)
+
 }
