@@ -453,10 +453,22 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 		if err != nil {
 			fmt.Println(err)
 		}
+		// Define a listener function to be called whenever a new Transfer event is received
+		// listener := func(event thirdweb.ContractEvent) {
+		// 	fmt.Printf("event listener %#v\n", event)
+		// }
+
+		// // Add a new listener for the mint event
+		// subscription := contract.Events.AddEventListener(context.Background(), "mint", listener)
+		// fmt.Println("listener", listener)
+		// fmt.Println("subscription", subscription)
+		// // Unsubscribe from the Transfer event at some time in the future, closing the listener
+		// subscription.Unsubscribe()
 	}
 	fmt.Println("mint", mint)
 
-	return c.String(http.StatusOK, "Congratulations. You've successfully Weather NFT minted.")
+	//return c.String(http.StatusOK, "Congratulations. You've successfully Weather NFT minted.")
+	return c.JSON(http.StatusOK, mint)
 }
 
 func (p *PostHandlers) SimpleCreateNFT(c echo.Context) error {
