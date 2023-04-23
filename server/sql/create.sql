@@ -31,6 +31,19 @@ CREATE TABLE `nft` (
 
 );
 
+
+CREATE TABLE `nft_metadata` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `token_id` int default 0, 
+  `owner_address` varchar(255),
+   `nft_contract_address` varchar(255),
+  `ipfs_url1` varchar(255),
+  `ipfs_url2` varchar(255),
+  `ipfs_url3` varchar(255),
+  `ipfs_url4` varchar(255)
+);
+
+
 -- 인덱스 사용시 최적화를 위한 방법 가능함 
 CREATE INDEX idx_nft_name ON nft(name);
 CREATE INDEX idx_nft_description ON nft(description);

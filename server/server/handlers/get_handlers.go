@@ -31,6 +31,21 @@ type NFTMain struct {
 	nft_contract_address string `json:"nft_contract_address"`
 }
 
+type NFTDetail struct {
+	ID                   int    `json:"id"`
+	UserID               int    `json:"user_id"`
+	TokenID              int    `json:"token_id"`
+	OwnerAddress         string `json:"owner_address"`
+	Name                 string `json:"name"`
+	Description          string `json:"description"`
+	IpfsUri              string `json:"ipfs_url"`
+	nft_contract_address string `json:"nft_contract_address"`
+	IpfsUri1             string `json:"ipfs_url1"`
+	IpfsUri2             string `json:"ipfs_url2"`
+	IpfsUri3             string `json:"ipfs_url3"`
+	IpfsUri4             string `json:"ipfs_url4"`
+}
+
 type MyPageOwner struct {
 	OwnerAddress string `json:"owner_address"`
 }

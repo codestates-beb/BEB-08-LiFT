@@ -237,7 +237,7 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 			token_id += 1
 		}
 
-		stmt, err := db.Prepare("INSERT INTO nft (id, user_id, token_id, name, description, ipfs_url, nft_contract_address, owner_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+		stmt, err := db.Prepare("INSERT INTO automation_dnft (id, user_id, token_id, name, description, ipfs_url, nft_contract_address, owner_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -250,7 +250,8 @@ func (p *PostHandlers) MultipleCreateNFT(c echo.Context) error {
 	}
 	fmt.Println("safeMint", safeMint)
 
-	return c.String(http.StatusOK, "Congratulations. You've successfully minted.")
+	//return c.String(http.StatusOK, "Congratulations. You've successfully minted.")
+	return c.JSON(http.StatusOK, safeMint)
 }
 
 // TODO DB에 다이나믹 NFT 2,3,4번째도 넣을 수 있게 수정필요
@@ -304,6 +305,7 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 	// fmt.Println("metadataSlice", metadataSlice, metadataURLs)
 
 	metadataSlice2 := make([]string, 0)
+	metaImageSlice3 := make([]string, 0)
 	for i, _ := range data2 {
 		typeData := i
 		go func() {
@@ -318,8 +320,8 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 				"attributes":  meta["attributes"].([]interface{}),
 			}
 
-			fmt.Println("meta[image].(string)", meta["image"].(string))
-			//fmt.Println("len(metadataSlice2)", len(metadataSlice2))
+			//fmt.Println("meta[image].(string)", meta["image"].(string))
+			metaImageSlice3 = append(metaImageSlice3, meta["image"].(string))
 			if len(metadataSlice2) == 0 {
 				metadataSlice2 = append(metadataSlice2, meta["name"].(string))
 				metadataSlice2 = append(metadataSlice2, meta["description"].(string))
@@ -439,6 +441,18 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 			token_id += 1
 		}
 
+		fmt.Println("metaImageSlice3", metaImageSlice3[0], metaImageSlice3[1], metaImageSlice3[2], metaImageSlice3[3])
+		stmt0, err := db.Prepare("INSERT INTO nft_metadata (id, token_id,  owner_address,nft_contract_address, ipfs_url1, ipfs_url2,ipfs_url3,ipfs_url4) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		_, err = stmt0.Exec(nft_id, token_id, accountAddress, contractAddress, metaImageSlice3[0], metaImageSlice3[1], metaImageSlice3[2], metaImageSlice3[3])
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer stmt0.Close()
+
 		fmt.Println("nft_id", nft_id)
 		fmt.Println("user_id", user_id)
 		fmt.Println("token_id", token_id)
@@ -453,17 +467,7 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 		if err != nil {
 			fmt.Println(err)
 		}
-		// Define a listener function to be called whenever a new Transfer event is received
-		// listener := func(event thirdweb.ContractEvent) {
-		// 	fmt.Printf("event listener %#v\n", event)
-		// }
 
-		// // Add a new listener for the mint event
-		// subscription := contract.Events.AddEventListener(context.Background(), "mint", listener)
-		// fmt.Println("listener", listener)
-		// fmt.Println("subscription", subscription)
-		// // Unsubscribe from the Transfer event at some time in the future, closing the listener
-		// subscription.Unsubscribe()
 	}
 	fmt.Println("mint", mint)
 
