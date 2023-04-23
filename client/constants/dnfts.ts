@@ -4,8 +4,7 @@ export const CATEGORY_NAME = [
   'London W_DNFT',
 ];
 
-export const TAKE = 9;
-// TODO: 변동 9 => 40 9개씩 나눠서 하면 createdAt이 없는 이상 보여줄 수 가 없음
+export const TAKE = 30;
 
 export const FILTERS = [
   {

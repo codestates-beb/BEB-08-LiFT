@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 async function getCart(userId: string) {
   try {
     const cart =
-      await prisma.$queryRaw`SELECT c.id, userId, name, ipfs_url, dnftId FROM  Cart as c JOIN nft_test as d WHERE c.dnftId = d.id AND c.userId=${userId};`;
+      await prisma.$queryRaw`SELECT c.id, userId, name, ipfs_url, dnftId FROM  Cart as c JOIN nft as d WHERE c.dnftId = d.id AND c.userId=${userId};`;
 
     console.log(cart);
     return cart;

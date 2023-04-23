@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 async function getMyDNFT(userId: string) {
   try {
     const myDNFT =
-      await prisma.$queryRaw`SELECT * FROM nft_test as d WHERE d.owner_address=${userId};`;
+      await prisma.$queryRaw`SELECT * FROM nft as d WHERE d.owner_address=${userId};`;
 
     console.log(myDNFT);
     return myDNFT;

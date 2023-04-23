@@ -1,4 +1,4 @@
-import { nft_test } from '@prisma/client';
+import { nft } from '@prisma/client';
 import { use, useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import {
@@ -20,6 +20,8 @@ import useDebounce from '@/hooks/useDebounce';
 import { useQuery } from '@tanstack/react-query';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { useContractRead } from 'wagmi';
+import marketABI from '@/contract/market_ABI.json';
 
 export default function Dnfts() {
   const router = useRouter();
@@ -59,10 +61,10 @@ export default function Dnfts() {
   );
 
   // 한번 조회한 기능을 다시 조회하지 않도록 하는 기능 (get-dnfts)
-  const { data: dnfts } = useQuery<{ dnfts: nft_test[] }, unknown, nft_test[]>(
+  const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
     [
       `/api/get-dnfts?skip=${
-        TAKE * (activePage - 1) // 다른 방법으로는  test할 때 + 3을 하던가 Infinte scroll로 변화해야 함
+        TAKE * (activePage - 1)
       }&take=${TAKE}&orderBy=${selectedFilter}&contains=${debouncedKeyword}`,
     ],
     () =>
@@ -75,6 +77,70 @@ export default function Dnfts() {
       select: (data) => data.dnfts,
     }
   );
+
+  const marketCA = '0xC78bc4Aac028a5e94F8D70b70EaE57ec3e0b0527';
+
+  const DNFTPriceArray = [];
+
+  // Loop through dnfts array
+  for (let i = 0; i < 2; i++) {
+    // Get data using useContractRead hook
+    const {
+      data: dataPrice,
+      isError,
+      isLoading,
+    } = useContractRead({
+      address: marketCA,
+      abi: marketABI,
+      functionName: 'sale',
+      chainId: session?.chainId,
+      args: [14], // pass current dnft's token_id
+    });
+
+    // Push dataPrice to DNFTPriceArray
+    DNFTPriceArray.push(dataPrice);
+  }
+
+  // DNFTPriceArray will contain all the data retrieved from useContractRead hook
+  console.log(DNFTPriceArray);
+
+  // const {
+  //   data: dataPrice,
+  //   isError,
+  //   isLoading,
+  // } = useContractRead({
+  //   address: marketCA,
+  //   abi: marketABI,
+  //   functionName: 'sale',
+  //   chainId: session?.chainId, // check
+  //   args: [i], // product.token_id
+  // });
+
+  // 한번 조회한 기능을 다시 조회하지 않도록 하는 기능 (get-dnfts)
+  // const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
+  //   [
+  //     `http://localhost:1323?skip=${
+  //       TAKE * (activePage - 1) // 다른 방법으로는  test할 때 + 3을 하던가 Infinte scroll로 변화해야 함
+  //     }&take=${TAKE}&orderBy=${selectedFilter}&contains=${debouncedKeyword}`,
+  //   ],
+  //   () =>
+  //     fetch(
+  //       `http://localhost:1323?skip=${
+  //         TAKE * (activePage - 1)
+  //       }&take=${TAKE}&orderBy=${selectedFilter}&contains=${debouncedKeyword}`
+  //     ).then((res) => res.json()),
+  //   {
+  //     select: (data) => data.dnfts,
+  //   }
+  // );
+
+  // const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
+  //   [`http://localhost:1323/`],
+  //   () => fetch(`http://localhost:1323/`).then((res) => res.json()),
+  //   {
+  //     select: (data) => data.dnfts,
+  //   }
+  // );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
@@ -135,23 +201,25 @@ export default function Dnfts() {
       </div>
 
       {dnfts && (
-        <div className='grid grid-cols-3 gap-5'>
-          {dnfts // TODO:  일단 이렇게 반대로 출력하게 함
-            // .slice(0)
-            // .reverse()
+        <div className='grid grid-cols-3 gap-5 ml-2'>
+          {dnfts
+
+            .slice(0)
+            .reverse()
             .map((dnft) => (
               <Card
+                className='ml-3'
                 shadow='lg'
                 padding='lg'
                 radius='md'
                 key={dnft.id}
                 withBorder
                 style={{ maxWidth: 500, cursor: 'pointer' }}
-                onClick={() => router.push(`/dnfts/${dnft.id}`)}
+                onClick={() => router.push(`/detail/${dnft.id}`)}
               >
                 <Card.Section
                   component='a'
-                  onClick={() => router.push(`/dnfts/${dnft.id}`)}
+                  onClick={() => router.push(`/detail/${dnft.id}`)}
                 >
                   <Image
                     className='rounded'
@@ -165,12 +233,15 @@ export default function Dnfts() {
                 </Card.Section>
                 <Group position='apart' mt='md' mb='xs'>
                   <Text weight={500}>{dnft.name}</Text>
-                  <Badge color='pink' variant='light'>
-                    On Sale
+                  <Badge color='blue' variant='light'>
+                    off Sale
                   </Badge>
                 </Group>
                 <Text size='sm' color='dimmed'>
                   {dnft.description}
+                </Text>
+                <Text size='sm' color='dimmed'>
+                  token ID: {dnft.token_id}
                 </Text>
                 <Button
                   variant='light'

@@ -49,6 +49,25 @@ button[data-mint-done='true'] {
   transform: scale(0.85);
 }
 
+h1 {
+  font-size: 24px;
+}
+h2 {
+  font-size: 18px;
+}
+a {
+  color: inherit;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: '100%';
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

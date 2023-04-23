@@ -17,7 +17,7 @@ import {
 import { createClient, configureChains, WagmiConfig } from 'wagmi';
 import { publicProvider } from 'wagmi/providers/public';
 import { SessionProvider } from 'next-auth/react';
-import { InjectedConnector } from 'wagmi/connectors/injected';
+import '../styles/globals.css';
 
 export const { chains, provider, webSocketProvider } = configureChains(
   [mainnet, polygon, optimism, arbitrum, goerli, polygonMumbai],

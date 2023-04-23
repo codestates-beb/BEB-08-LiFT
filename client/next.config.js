@@ -7,7 +7,8 @@ const nextConfig = {
   images: {
     domains: [
       'picsum.photos',
-      'gateway.ipfscdn.io', // thirdweb의 ipfs 사진에 대한 도메인 수락
+      'gateway.ipfscdn.io',
+      'ipfs.thirdwebcdn.com', // thirdweb의 ipfs 사진에 대한 도메인 수락
     ],
   },
   // next/image를 설정할 시 위와 같이 사진에 대한 도메인을 일일히 설정해줘야 한다. next/image가 아니라 일반적인 image를 쓰면 된다.

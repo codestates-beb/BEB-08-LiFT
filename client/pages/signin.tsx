@@ -50,7 +50,7 @@ function SignIn() {
 
   return (
     <div>
-      <h3>Web3 Authentication</h3>
+      <h3>메타마스크를 통해 로그인하세요</h3>
       <button
         className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-auto mb-5'
         onClick={handleAuth}

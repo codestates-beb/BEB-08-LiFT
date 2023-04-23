@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function getDNFT(id: number) {
   try {
-    const response = await prisma.nft_test.findUnique({
+    const response = await prisma.nft.findUnique({
       where: {
         id: id,
       },

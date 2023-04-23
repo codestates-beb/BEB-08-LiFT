@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "TimeID": 1,
+    "name": "1 min"
+  },
+  {
+    "id": 2,
+    "TimeID": 2,
+    "name": "5min"
+  },
+  {
+    "id": 3,
+    "TimeID": 3,
+    "name": "1 hours"
+  }
+]

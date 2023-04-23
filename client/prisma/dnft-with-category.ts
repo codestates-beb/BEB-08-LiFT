@@ -89,7 +89,7 @@ const main = async () => {
   // await prisma.products.deleteMany({});
 
   for (const p of productsItmes) {
-    const product = await prisma.nft_test.create({
+    const product = await prisma.nft.create({
       data: p,
     });
 

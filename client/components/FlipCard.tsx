@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 
 let AnimatedBox = motion.div;
 
-// TODO: 구매 Page / Detail page에서 구현
 // Framer animations
 const duration = 0.3;
 const flipVariants = {
@@ -53,6 +52,15 @@ export function FrontCard({ isCardFlipped, children }: any) {
     <AnimatedCardFace
       variants={flipVariants}
       animate={isCardFlipped ? 'frontFlipped' : 'shown'}
+      style={
+        isCardFlipped
+          ? {}
+          : {
+              backgroundColor: '#7A70FF',
+              backgroundImage: 'linear-gradient(-370deg, #3898FF, #7A70FF)',
+              color: 'white',
+            }
+      }
     >
       {children}
     </AnimatedCardFace>
@@ -88,7 +96,7 @@ function AnimatedCardFace({ children, style, ...rest }: any) {
         backfaceVisibility: 'hidden',
         height: '100%',
         overflow: 'hidden',
-        width: '100%',
+        width: '198%',
         display: 'flex',
         flexDirection: 'column',
         borderRadius: 12,

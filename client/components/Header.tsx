@@ -19,23 +19,6 @@ interface BalanceProps {
 export default function Header() {
   const { data: session } = useSession();
 
-  // moralis를 사용하려고 했으나 지속적인 에러 발생 => 방법을 찾지 못해 wagmi로 변동
-  // useEffect(() => {
-  //   async function fetchBalance() {
-  //     if (session) {
-  //       const { chainId, address } = session;
-  //       console.log('1: ' + chainId);
-  //       console.log('1: ' + address);
-  //       const response = await fetch(
-  //         `/api/balance?chainId=0x13881&address=${address}`
-  //       );
-  //       const data: BalanceResult = await response;
-  //       console.log(data); // Prints the balance to the console
-  //     }
-  //   }
-  //   fetchBalance();
-  // }, [session]);
-
   const { disconnect } = useDisconnect();
   const { connectAsync } = useConnect();
   const { disconnectAsync } = useDisconnect();
@@ -87,7 +70,7 @@ export default function Header() {
         <span className='m-auto' />
         {session ? (
           <button
-            onClick={() => router.push('/mintDNFT')}
+            onClick={() => router.push('/selectDNFT')}
             className=' relative inline-flex items-center justify-center p-0.5 mr-4 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-500 to-pink-500 group-hover:from-purple-500 group-hover:to-pink-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800'
           >
             <span className='relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0'>
@@ -113,7 +96,7 @@ export default function Header() {
         ) : (
           <IconHeart className='mr-4' onClick={() => router.push('/signin')} />
         )}
-        {session ? (
+        {/* {session ? (
           <IconShoppingCart
             className='mr-4'
             onClick={() => router.push('/cart')}
@@ -123,16 +106,16 @@ export default function Header() {
             className='mr-4'
             onClick={() => router.push('/signin')}
           />
-        )}
+        )} */}
 
         {session ? (
           <Image
             alt='profile'
-            src={'https://picsum.photos/id/1000/600/600/'}
+            src={'https://picsum.photos/id/1005/600/600/'}
             width={30}
             height={30}
             style={{ borderRadius: '50%' }}
-            onClick={() => router.push('/my')}
+            onClick={() => router.push('/mypage')}
           />
         ) : (
           <button

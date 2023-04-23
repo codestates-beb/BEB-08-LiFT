@@ -24,7 +24,7 @@ async function getDNFTsCount(category: number, contains: string) {
       : undefined;
 
   try {
-    const response = await prisma.nft_test.count({ where: where });
+    const response = await prisma.nft.count({ where: where });
     console.log(response);
     return response;
   } catch (error) {

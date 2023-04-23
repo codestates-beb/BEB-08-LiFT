@@ -1,6 +1,6 @@
 import { CATEGORY_NAME } from '@/constants/dnfts';
 import { Badge, Button, Card, Group, Text } from '@mantine/core';
-import { nft_test } from '@prisma/client';
+import { nft } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 export default function Wishlist() {
   const router = useRouter();
 
-  const { data: dnfts } = useQuery<{ dnfts: nft_test[] }, unknown, nft_test[]>(
+  const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
     ['/api/get-wishlists'],
     () => fetch('/api/get-wishlists').then((res) => res.json()),
     {
@@ -29,11 +29,11 @@ export default function Wishlist() {
               key={dnft.id}
               withBorder
               style={{ maxWidth: 500, cursor: 'pointer' }}
-              onClick={() => router.push(`/dnfts/${dnft.id}`)}
+              onClick={() => router.push(`/detail/${dnft.id}`)}
             >
               <Card.Section
                 component='a'
-                onClick={() => router.push(`/dnfts/${dnft.id}`)}
+                onClick={() => router.push(`/detail/${dnft.id}`)}
               >
                 <Image
                   className='rounded'

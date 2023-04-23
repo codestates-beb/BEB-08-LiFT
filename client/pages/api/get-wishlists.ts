@@ -19,7 +19,7 @@ async function getWishlists(userId: string) {
     const dnftId = wishlist?.dnftIds.split(',').map((item) => Number(item));
 
     if (dnftId && dnftId.length > 0) {
-      const response = await prisma.nft_test.findMany({
+      const response = await prisma.nft.findMany({
         where: {
           id: {
             in: dnftId,

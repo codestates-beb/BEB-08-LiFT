@@ -41,7 +41,7 @@ async function getDNFTs({
   // api 조회
 
   try {
-    const response = await prisma.nft_test.findMany({
+    const response = await prisma.nft.findMany({
       skip: skip,
       take: take,
       //...orderByCondition,
