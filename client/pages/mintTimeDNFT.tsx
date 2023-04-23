@@ -137,9 +137,6 @@ interface Property {
   trait_type: string;
   value: string;
 }
-// https://gateway.ipfscdn.io/ipfs/QmNTP7UejsrZpZTJfh6pwjMD6bajZh2t2iAZagPqNsGZwm/images.jpeg
-// sun, rain, cloudy, snow => 0, 1, 2, 3
-// seoul: 37.5 126.9 / london: 36.9 -93.9 new york 40.7 -74
 
 const Create: NextPage = (props) => {
   const [ImageUri, setImageUri] = useState('https://example.com/snow.jpg');
@@ -275,7 +272,7 @@ const Create: NextPage = (props) => {
     }
   };
 
-  const handleLocationChange = (event) => {
+  const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setLocation(event.target.value);
     const selectedLocation = props.location.find(
@@ -298,42 +295,50 @@ const Create: NextPage = (props) => {
     }
   };
 
-  const handleNameChange1 = (event) => {
+  const handleNameChange1 = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setName1(event.target.value);
   };
 
-  const handleDesciptionChange1 = (event) => {
+  const handleDesciptionChange1 = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     event.preventDefault();
     setDescription1(event.target.value);
   };
 
-  const handleNameChange2 = (event) => {
+  const handleNameChange2 = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setName2(event.target.value);
   };
 
-  const handleDesciptionChange2 = (event) => {
+  const handleDesciptionChange2 = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     event.preventDefault();
     setDescription2(event.target.value);
   };
 
-  const handleNameChange3 = (event) => {
+  const handleNameChange3 = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setName3(event.target.value);
   };
 
-  const handleDesciptionChange3 = (event) => {
+  const handleDesciptionChange3 = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     event.preventDefault();
     setDescription3(event.target.value);
   };
 
-  const handleNameChange4 = (event) => {
+  const handleNameChange4 = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setName4(event.target.value);
   };
 
-  const handleDesciptionChange4 = (event) => {
+  const handleDesciptionChange4 = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     event.preventDefault();
     setDescription4(event.target.value);
   };
@@ -663,7 +668,7 @@ const Create: NextPage = (props) => {
                   </p>
                   <p style={{ marginBottom: 6 }}>Nonce: {message?.nonce}</p>
                   <p style={{ marginBottom: 6 }}>Gas: {message?.gas}</p>
-                  <p style={{ marginBottom: 24 }}>tx_Hash: {message?.hash}</p>
+                  <p style={{ marginBottom: 10 }}>tx_Hash: {message?.hash}</p>
                   <p style={{ marginBottom: 6 }}>
                     View on{' '}
                     <Link

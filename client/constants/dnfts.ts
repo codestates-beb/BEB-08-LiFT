@@ -2,9 +2,10 @@ export const CATEGORY_NAME = [
   'Seoul W_DNFT',
   'New York W_DNFT',
   'London W_DNFT',
+  'Time DNFT',
 ];
 
-export const TAKE = 30;
+export const TAKE = 40;
 
 export const FILTERS = [
   {

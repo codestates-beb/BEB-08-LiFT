@@ -11,9 +11,11 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Box, TextField, Input, TextareaAutosize } from '@mui/material';
+import { Box, TextField, Input, TextareaAutosize, Link } from '@mui/material';
 import { useState } from 'react';
 import { getSession, useSession } from 'next-auth/react';
+
+import FlipCard, { BackCard, FrontCard } from '../components/FlipCardSecond';
 
 import {
   usePrepareContractWrite,
@@ -22,6 +24,7 @@ import {
 } from 'wagmi';
 import marketABI from '../contract/market_ABI.json';
 import nftABI from '../contract/nft_ABI.json';
+import Image from 'next/image';
 
 interface MyDNFT {
   token_id: number;
@@ -83,7 +86,7 @@ export default function MyPage(session) {
           <div>
             {myDNFT
               ?.map((item, idx) => <MyDetail key={idx} {...item} />)
-              .slice(myDNFT.length - 1)}
+              .slice(0)}
           </div>
         </div>
         <div className='flex-col'>
@@ -266,7 +269,7 @@ const DNFT = (props: MyDNFT) => {
     abi: nftABI,
     chainId: session?.chainId,
     functionName: 'approve',
-    args: [marketCA, 14], // TODO: 추후에 props.tokenId 로 변경
+    args: [marketCA, props.token_id],
     enabled: Boolean(props.token_id), // 유효한 tokenID가 있을 경우 활성화
   });
 
@@ -373,7 +376,7 @@ const SellDNFT = (props) => {
     abi: marketABI,
     chainId: session?.chainId,
     functionName: 'saleNFT',
-    args: [14, price], // TODO: props 로 변경
+    args: [props, price],
   });
 
   const {

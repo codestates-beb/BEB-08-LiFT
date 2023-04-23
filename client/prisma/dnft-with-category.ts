@@ -1,3 +1,4 @@
+//! 더미 데이터 생성
 import { Prisma, PrismaClient } from '@prisma/client';
 import { address, tsHash } from './ganache_address';
 

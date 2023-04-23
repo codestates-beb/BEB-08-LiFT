@@ -30,7 +30,7 @@ export const { chains, provider, webSocketProvider } = configureChains(
 const client = createClient({
   autoConnect: true,
   provider,
-  // connectors: [new InjectedConnector({ chains })],
+
   webSocketProvider,
 });
 

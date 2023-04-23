@@ -38,13 +38,10 @@ function SignIn() {
      * instead of using signIn(..., redirect: "/user")
      * we get the url from callback and push it to the router to avoid page refreshing
      */
-    fetch(`/api/auth/sign-up?address=${account}`) // user DB에 저장
+    fetch(`/api/auth/sign-up?address=${account}`)
       .then((res) => res.json())
       .then((data) => console.log(data));
 
-    // fetch(`/api/auth/enroll-wishlist?address=${account}`) // wishlist DB에 저장
-    //   .then((res) => res.json())
-    //   .then((data) => console.log(data));
     push(url);
   };
 

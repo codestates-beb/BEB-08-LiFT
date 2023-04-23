@@ -22,6 +22,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useContractRead } from 'wagmi';
 import marketABI from '@/contract/market_ABI.json';
+import nftABI from '../contract/nft_ABI.json';
 
 export default function Dnfts() {
   const router = useRouter();
@@ -35,17 +36,6 @@ export default function Dnfts() {
 
   const delay = 600;
   const debouncedKeyword = useDebounce<String>(keyword, delay);
-
-  // 한번 조회한 기능을 다시 조회하지 않도록 하는 기능 (count)
-  // const { data: categories } = useQuery<
-  //   { dnfts: categories[] },
-  //   unknown,
-  //   categories[]
-  // >(
-  //   ['/api/get-categories'],
-  //   () => fetch('/api/get-categories').then((res) => res.json()),
-  //   { select: (data) => data.dnfts }
-  // );
 
   const { data: total } = useQuery(
     [
@@ -79,72 +69,34 @@ export default function Dnfts() {
   );
 
   const marketCA = '0xC78bc4Aac028a5e94F8D70b70EaE57ec3e0b0527';
+  const nftCA = '0x1077a33ED9aDD3d55aE3ef66C28b9638B9611C1d';
 
-  const DNFTPriceArray = [];
+  const [dataPriceShow, setDataPrice] = useState<number | string>('');
 
-  // Loop through dnfts array
-  for (let i = 0; i < 2; i++) {
-    // Get data using useContractRead hook
-    const {
-      data: dataPrice,
-      isError,
-      isLoading,
-    } = useContractRead({
-      address: marketCA,
-      abi: marketABI,
-      functionName: 'sale',
-      chainId: session?.chainId,
-      args: [14], // pass current dnft's token_id
-    });
-
-    // Push dataPrice to DNFTPriceArray
-    DNFTPriceArray.push(dataPrice);
-  }
-
-  // DNFTPriceArray will contain all the data retrieved from useContractRead hook
-  console.log(DNFTPriceArray);
-
-  // const {
-  //   data: dataPrice,
-  //   isError,
-  //   isLoading,
-  // } = useContractRead({
-  //   address: marketCA,
-  //   abi: marketABI,
-  //   functionName: 'sale',
-  //   chainId: session?.chainId, // check
-  //   args: [i], // product.token_id
-  // });
-
-  // 한번 조회한 기능을 다시 조회하지 않도록 하는 기능 (get-dnfts)
-  // const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
-  //   [
-  //     `http://localhost:1323?skip=${
-  //       TAKE * (activePage - 1) // 다른 방법으로는  test할 때 + 3을 하던가 Infinte scroll로 변화해야 함
-  //     }&take=${TAKE}&orderBy=${selectedFilter}&contains=${debouncedKeyword}`,
-  //   ],
-  //   () =>
-  //     fetch(
-  //       `http://localhost:1323?skip=${
-  //         TAKE * (activePage - 1)
-  //       }&take=${TAKE}&orderBy=${selectedFilter}&contains=${debouncedKeyword}`
-  //     ).then((res) => res.json()),
-  //   {
-  //     select: (data) => data.dnfts,
-  //   }
-  // );
-
-  // const { data: dnfts } = useQuery<{ dnfts: nft[] }, unknown, nft[]>(
-  //   [`http://localhost:1323/`],
-  //   () => fetch(`http://localhost:1323/`).then((res) => res.json()),
-  //   {
-  //     select: (data) => data.dnfts,
-  //   }
-  // );
+  const {
+    data: dataPrice,
+    isError,
+    isLoading,
+  } = useContractRead({
+    address: marketCA,
+    abi: marketABI,
+    functionName: 'sale',
+    chainId: session?.chainId,
+    args: [dnfts?.length], // pass current dnft's token_id
+    overrides: { from: session?.address },
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
   };
+
+  useEffect(() => {
+    if (dataPrice !== undefined) {
+      setDataPrice(dataPrice?.toNumber()); // or setDataPrice(data.toString());
+    } else {
+      setDataPrice('');
+    }
+  }, [dataPrice]);
 
   return (
     <div className='mt-10 mb-36'>
@@ -233,15 +185,24 @@ export default function Dnfts() {
                 </Card.Section>
                 <Group position='apart' mt='md' mb='xs'>
                   <Text weight={500}>{dnft.name}</Text>
-                  <Badge color='blue' variant='light'>
-                    off Sale
-                  </Badge>
+                  {dataPriceShow ? (
+                    <Badge color='pink' variant='light'>
+                      on Sale
+                    </Badge>
+                  ) : (
+                    <Badge color='blue' variant='light'>
+                      off Sale
+                    </Badge>
+                  )}
                 </Group>
                 <Text size='sm' color='dimmed'>
                   {dnft.description}
                 </Text>
                 <Text size='sm' color='dimmed'>
                   token ID: {dnft.token_id}
+                </Text>
+                <Text size='sm' color='dimmed'>
+                  Price: {dataPriceShow ? dataPriceShow : '0'}
                 </Text>
                 <Button
                   variant='light'

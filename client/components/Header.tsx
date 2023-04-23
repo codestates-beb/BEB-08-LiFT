@@ -56,7 +56,7 @@ export default function Header() {
      * instead of using signIn(..., redirect: "/user")
      * we get the url from callback and push it to the router to avoid page refreshing
      */
-    // fetch(`/api/auth/sign-up?address=${account}`) // user DB에 저장
+    // fetch(`/api/auth/sign-up?address=${account}`) // user DB에 저장 (test)
     //   .then((res) => res.json())
     //   .then((data) => console.log(data));
     push(url);
@@ -66,7 +66,9 @@ export default function Header() {
   return (
     <div className='mt-12 mb-12'>
       <div className='w-full flex h-50 items-center'>
-        <IconHome onClick={() => router.push('/')} />
+        <button onClick={() => router.push('/')}>
+          <Image src='/Logo.png' alt='My Image' width={150} height={150} />
+        </button>
         <span className='m-auto' />
         {session ? (
           <button
@@ -96,7 +98,7 @@ export default function Header() {
         ) : (
           <IconHeart className='mr-4' onClick={() => router.push('/signin')} />
         )}
-        {/* {session ? (
+        {/* {session ? ( // 장바구니 기능 만들어지면 활성화
           <IconShoppingCart
             className='mr-4'
             onClick={() => router.push('/cart')}

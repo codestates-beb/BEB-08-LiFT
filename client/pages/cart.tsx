@@ -1,3 +1,5 @@
+//! ERC 1155 를 통해 2개 이상의 nft를 동시에 구매할 수 있는 smart contract가 필요
+
 // import { CATEGORY_NAME } from '@/constants/dnfts';
 // import styled from '@emotion/styled';
 // import { Badge, Button, Card, Group, Text } from '@mantine/core';

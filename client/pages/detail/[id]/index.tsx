@@ -52,13 +52,13 @@ interface CartData {
 }
 
 interface BuyData {
-  token_id: number;
+  token_id: string;
   buyer_address: string;
   seller_address: string;
 }
 
 const BuyMe: BuyData = {
-  token_id: 0,
+  token_id: '',
   buyer_address: '',
   seller_address: '',
 };
@@ -144,9 +144,11 @@ export default function Products(props: {
   const product = props.product;
   const [message, setMessage] = useState('');
 
-  BuyMe.token_id = product.id;
-  BuyMe.buyer_address = session?.address;
-  BuyMe.seller_address = product.owner_address;
+  BuyMe.token_id = product.token_id;
+  BuyMe.buyer_address = '0x61327612EC4aFD93e370eC0599f933bB08020A54';
+  BuyMe.seller_address = '0x65CAFeFA9cb3bA556Efd416fE4281F2Ee30BB36b';
+
+  console.log('wef: ' + product.owner_address);
 
   const buyClick = async () => {
     try {
@@ -157,7 +159,7 @@ export default function Products(props: {
         },
         body: JSON.stringify(BuyMe),
       });
-      const data = await response.json();
+      const data = await response;
       setMessage(data.message);
     } catch (error) {
       setMessage('Error: ' + error);
@@ -177,16 +179,16 @@ export default function Products(props: {
   const { config, error } = usePrepareContractWrite({
     address: marketCA,
     abi: marketABI,
-    chainId: 80001,
+    chainId: session.chainId,
     functionName: 'buyNFT',
-    args: [14], // input 값
+    args: [product.token_id],
     overrides: {
-      from: session?.address, // session.address가 들어가야 함
-      value: ethers.utils.parseEther('1'), // 각 DNFT의 가격을 넣어줘야 한다.
+      from: session?.address,
+      value: ethers.utils.parseEther('1'),
     },
-    //enabled: Boolean(props.token_id), // 유효한 tokenID가 있을 경우 활성화
+    enabled: Boolean(props.token_id), // 유효한 tokenID가 있을 경우 활성화
   });
-  //value: ethers.utils.parseEther('1'),
+
   const {
     data: buyData,
     write: buyNFT,
@@ -197,6 +199,8 @@ export default function Products(props: {
   console.log('config: ' + JSON.stringify(config));
   console.log('buydata : ' + JSON.stringify(buyData));
   console.log('error:  ' + error);
+
+  const [dataPriceShow, setDataPrice] = useState<number | string>('Loading...');
 
   const { isSuccess: txSuccess } = useWaitForTransaction({
     hash: buyData?.hash,
@@ -212,9 +216,20 @@ export default function Products(props: {
     address: marketCA,
     abi: marketABI,
     functionName: 'sale',
-    chainId: session?.chainId, // check
-    args: [3], // product.token_id
+    chainId: session?.chainId,
+    args: [product.token_id],
+    overrides: { from: session?.address },
   });
+
+  useEffect(() => {
+    if (dataPrice !== undefined) {
+      setDataPrice(dataPrice?.toNumber());
+    } else {
+      setDataPrice('Loading...');
+    }
+  }, [dataPrice]);
+
+  console.log('dataPrice: ' + dataPrice);
 
   return (
     <div>
@@ -256,22 +271,33 @@ export default function Products(props: {
               </div>
             </div>
             <div style={{ maxWidth: 600 }} className='flex flex-col space-y-6'>
-              <div className='text-lg text-zinc-400'>Weather DNFT</div>
-              {dataPrice === 'string' ? (
-                <Badge color='pink' variant='light' size='lg'>
-                  on Sale
-                </Badge>
-              ) : (
-                <Badge color='blue' variant='light' size='lg'>
-                  off Sale
-                </Badge>
-              )}
+              <div className='flex'>
+                <div className='text-lg text-zinc-400'>Weather DNFT</div>
+                {dataPriceShow === 0 ? (
+                  <Badge
+                    color='blue'
+                    variant='light'
+                    size='lg'
+                    className='mr-auto ml-10'
+                  >
+                    off Sale
+                  </Badge>
+                ) : (
+                  <Badge
+                    color='pink'
+                    variant='light'
+                    size='lg'
+                    className='mr-auto ml-10'
+                  >
+                    on Sale
+                  </Badge>
+                )}
+              </div>
               <div className='text-4xl font-semibold'>{product.name}</div>
               <div className='text-lg'>Owner: {product.owner_address}</div>
               <div className='text-lg'>Token ID: {product.token_id}</div>
               <div className='text-lg'>
-                Price:
-                {typeof dataPrice === 'string' ? dataPrice : 'Loading...'}
+                Price: {dataPriceShow ? dataPriceShow : '0'} MATIC
               </div>
               <div className='text-2xl mb-3 mt-4'>Description :</div>
               <div
@@ -314,10 +340,8 @@ export default function Products(props: {
                 </Button>
               </div>
               <div>
-                {Paid && message ? (
-                  <ButtonBuy>
-                    {'This is yours :' + JSON.stringify(message)}
-                  </ButtonBuy>
+                {Paid ? (
+                  <ButtonBuy>{'This is yours'}</ButtonBuy>
                 ) : (
                   <ButtonBuy
                     className='w-full content-center justify-center'
@@ -325,8 +349,7 @@ export default function Products(props: {
                     data-sell-stated={isBuyStarted}
                     onClick={async () => {
                       try {
-                        const data1 = await new Promise(() => buyNFT?.());
-                        const data2 = await new Promise(() => buyClick());
+                        await Promise.all([buyNFT?.(), buyClick()]);
                         console.log('Purchase successful!');
                       } catch (error) {
                         console.log('Purchase failed:', error);
@@ -419,22 +442,3 @@ const ButtonBuy = styled.div`
     }
   }
 `;
-
-// Products.getInitialProps = async function () {
-
-//   const {
-//     data: dataPrice,
-//     isError,
-//     isLoading,
-//   } = useContractRead({
-//     address: '',
-//     abi: marketABI,
-//     functionName: 'sale',
-//     chainId: 1,
-//     args: [3], // product.token_id
-//   });
-
-//   return {
-//     price: dataPrice,
-//   };
-// };

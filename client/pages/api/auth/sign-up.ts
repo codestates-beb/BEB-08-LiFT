@@ -1,6 +1,6 @@
 // // 로그인 후 user 정보 저장 => 새로운 회원이면 새로 형성 후 저장, 혹은 수정 사항이 있을 시 적용, 그외에는 실행되지 않음.
 // // session에 정보가 담겨 있는 만큼 session을 가져와서 적용
-// //!  jwtDecode가 필요한지는 확인 필요
+// ! 지갑연결시 자동으로 db에 저장될 수 있게 하는 기능 (test)
 
 // import type { NextApiRequest, NextApiResponse } from 'next';
 // import { PrismaClient } from '@prisma/client';
