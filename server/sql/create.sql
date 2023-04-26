@@ -1,14 +1,18 @@
 create database lift;
 
 use lift;
+
+
 -- 마이페이지에서 주로 사용할 예정 
 -- 유저 로그인상황 체크하거나 할 때 사용할 예정 
+-- 유저조회, 유저 정보 업데이트시 사용
 CREATE TABLE `user` (
-  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `id` int PRIMARY KEY AUTO_INCREMENT ,
   `name` varchar(255),
   `owner_address` varchar(255),
   `description` varchar(255)
 );
+ALTER TABLE user ADD UNIQUE (`owner_address`);
 
 -- 마이페이지 및 전체페이지에서 불러올 데이터
 -- 마이페이지에서 해당하는 owner_address == user 테이블에서 해당하는 address에 있는 nft만 불러오도록 하면 될듯 
@@ -17,17 +21,50 @@ CREATE TABLE `user` (
 -- 1 1 서울 37.5 126.9 (테스트 데이터)  
 CREATE TABLE `nft` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
-  `user_id` int,
-  `token_id` int, 
+  `user_id` int default 0,
+  `token_id` int default 0, 
   `owner_address` varchar(255),
   `name` varchar(255),
   `description` varchar(255), 
   `ipfs_url` varchar(255),
   `nft_contract_address` varchar(255)
+
 );
 
 
-CREATE TABLE `nft_test` (
+CREATE TABLE `nft_metadata` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `token_id` int default 0, 
+  `owner_address` varchar(255),
+   `nft_contract_address` varchar(255),
+  `ipfs_url1` varchar(255),
+  `ipfs_url2` varchar(255),
+  `ipfs_url3` varchar(255),
+  `ipfs_url4` varchar(255)
+);
+
+
+-- 인덱스 사용시 최적화를 위한 방법 가능함 
+CREATE INDEX idx_nft_name ON nft(name);
+CREATE INDEX idx_nft_description ON nft(description);
+CREATE INDEX idx_nft_ownerAddress ON nft(owner_address);
+ 
+-- 판매, 구매 관련한 테이블
+CREATE TABLE market (
+   `id` int PRIMARY KEY AUTO_INCREMENT,
+   `nft_contract_address` varchar(255),
+   `market_contract_address` varchar(255),
+   `token_id` varchar(255),
+   `owner_address` varchar(255),
+   `price` int ,
+   `sale_status` varchar(255)
+);
+
+
+-- client > approve > set interface > sell NFT 
+-- backend  > approve(to: 계정주소, tokenId: nft코드 ), sale nft, buy nft >> 스마트 컨트랙트 db에서 업데이트 하면 좋겠다.
+-- post buy >> 구매 백엔드 >> db 업데이트  
+CREATE TABLE `automation_dnft` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `user_id` int,
   `token_id` int, 
