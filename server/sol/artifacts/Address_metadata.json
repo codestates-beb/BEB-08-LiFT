@@ -1,0 +1,46 @@
+{
+	"compiler": {
+		"version": "0.8.18+commit.87f61d96"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"details": "Collection of functions related to the address type",
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"marketPlace2_open.sol": "Address"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"marketPlace2_open.sol": {
+			"keccak256": "0xec22678f96c64ccf72dc8093522bb412b016d4d95a01cbd58b8d3b33807b8667",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://cf1fd50ea4adea9c7af122e0db44590bc36472637c5aeeedc69ca60308a898ba",
+				"dweb:/ipfs/QmXGHSgirLDf3mviAh81NBUgUrxnqXSVgfcevXCX8oDKEJ"
+			]
+		}
+	},
+	"version": 1
+}
