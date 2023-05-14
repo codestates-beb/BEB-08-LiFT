@@ -418,23 +418,23 @@ func (p *PostHandlers) WeatherDynamicNFT(c echo.Context) error {
 
 		fmt.Println("db", db)
 
-		err = db.QueryRow("SELECT COALESCE(Max(id), 0)  from nft where owner_address=?", accountAddress).Scan(&nft_id)
+		err = db.QueryRow("SELECT COALESCE(Max(id), 1)  from nft where owner_address=?", accountAddress).Scan(&nft_id)
 		if err != nil {
 			fmt.Println(err)
 		}
-		err = db.QueryRow("SELECT COALESCE(Max(user_id), 0)  from nft where owner_address=?", accountAddress).Scan(&user_id)
+		err = db.QueryRow("SELECT COALESCE(Max(user_id), 1)  from nft where owner_address=?", accountAddress).Scan(&user_id)
 		if err != nil {
 			fmt.Println(err)
 		}
-		err = db.QueryRow("SELECT COALESCE(Max(token_id), 0) from nft where owner_address=?", accountAddress).Scan(&token_id)
+		err = db.QueryRow("SELECT COALESCE(Max(token_id), 1) from nft where owner_address=?", accountAddress).Scan(&token_id)
 		if err != nil {
 			fmt.Println(err)
 		}
 		fmt.Println("nft_id", nft_id)
 		fmt.Println("user_id", user_id)
 		fmt.Println("token_id", token_id)
-		if user_id == 0 || token_id == 0 {
-			user_id, token_id = 1, 1
+		if nft_id == 0 || user_id == 0 || token_id == 0 {
+			nft_id, user_id, token_id = 1, 1, 1
 		} else if nft_id != 0 && user_id != 0 && token_id != 0 {
 			nft_id += 1
 			user_id += 1
@@ -733,6 +733,8 @@ func (p *PostHandlers) Buy(c echo.Context) error {
 	ownerAddress := buyerObj.SellerAddress
 	fmt.Println("buyerAddress", buyerAddress)
 	fmt.Println("ownerAddress", ownerAddress)
+	fmt.Println("buyerAddress type ", reflect.TypeOf(buyerAddress))
+	fmt.Println("ownerAddress type", reflect.TypeOf(ownerAddress))
 
 	sdk, err := thirdweb.NewThirdwebSDK("mumbai", &thirdweb.SDKOptions{
 		PrivateKey: os.Getenv("PRIVATEKEY"),
@@ -766,36 +768,38 @@ func (p *PostHandlers) Buy(c echo.Context) error {
 	address := common.HexToAddress(buyerObj.SellerAddress)
 	fmt.Println("address", address)
 	fmt.Println("type check", reflect.TypeOf(address))
+	fmt.Println("ownerOf", ownerOf)
+	fmt.Println("ownerOf type check ", reflect.TypeOf(ownerOf))
 
 	//토큰아이디의 주인과 요청받은 address가 같은 주소일 경우
 	fmt.Println(reflect.TypeOf(buyerObj.SellerAddress))
 	fmt.Println(reflect.TypeOf(ownerOf))
-	if address == ownerOf {
-		user := os.Getenv("user")
-		password := os.Getenv("password")
-		//db url 설정
-		db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
-		db, _ := sql.Open("mysql", db_url)
-		defer db.Close()
-		fmt.Println("db test")
-		stmt, err := db.Prepare("UPDATE nft set owner_address = ?  where id = ?")
-		if err != nil {
-			fmt.Println(err)
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-		}
-		defer stmt.Close()
 
-		// stmt, _ := db.Prepare("UPDATE nft  set ipfs_url = ?, owner_address =?  where  token_id = ?") db 수정 후 이 쿼리로 적용해야함
-		_, err = stmt.Exec(buyerObj.BuyerAddress, num_tokenId)
-		if err != nil {
-			fmt.Println(err)
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-		}
-		fmt.Println("stmt", stmt)
-
+	user := os.Getenv("user")
+	password := os.Getenv("password")
+	//db url 설정
+	db_url := fmt.Sprintf("%s:%s@tcp(152.69.231.140:3306)/lift", user, password)
+	db, _ := sql.Open("mysql", db_url)
+	defer db.Close()
+	fmt.Println("db test")
+	//stmt, err := db.Prepare("UPDATE nft set owner_address = ?  where id = ?")
+	stmt, err := db.Prepare("UPDATE nft set owner_address = ? where id = ? ")
+	if err != nil {
+		fmt.Println(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 	}
+	defer stmt.Close()
 
-	return c.String(http.StatusOK, "Congratulations on your purchase. Owner has changed ")
+	num_tokenId2 := 1
+	// stmt, _ := db.Prepare("UPDATE nft  set ipfs_url = ?, owner_address =?  where  token_id = ?") db 수정 후 이 쿼리로 적용해야함
+	_, err = stmt.Exec(buyerObj.BuyerAddress, num_tokenId2)
+	if err != nil {
+		fmt.Println(err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+	}
+	fmt.Println("stmt", stmt)
+
+	return c.JSON(http.StatusOK, "Congratulations on your purchase. Owner has changed ")
 }
 
 // TODO DB 날리고 업데이트하면 해당 함수 업데이트 필요
